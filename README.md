@@ -1,4 +1,4 @@
-# SOEN 342
+# SOEN 342 II
 # Description
 # Members
 Kristi Doce 40155592  
