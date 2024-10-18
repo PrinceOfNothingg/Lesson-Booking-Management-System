@@ -1,1 +1,3 @@
-![Soen 342 Domain model](https://github.com/user-attachments/assets/44d3440c-54e4-4f11-bfdb-31f03cd0756d)
+# Soen 342 Domain model
+
+![image](https://github.com/DarkMed15/soen342-teamproject/blob/main/deliverables/assets/domain_model_diagram.png)
