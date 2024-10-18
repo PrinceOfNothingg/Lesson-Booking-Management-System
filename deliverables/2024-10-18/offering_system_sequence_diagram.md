@@ -6,6 +6,11 @@
 
 ## View Offering
 
+<details>
+<summary>
+View Offering plantUml Code
+</summary>
+
 ``` plantuml
 @startuml
 participant "__:Actor__" as actor
@@ -32,9 +37,16 @@ end
 @enduml
 ```
 
+</details>
+
 ![image](https://github.com/DarkMed15/soen342-teamproject/blob/main/deliverables/assets/view_offering_system_sequence_diagram.png)
 
 ## Create Offering
+
+<details>
+<summary>
+Create Offering plantUml Code
+</summary>
 
 ``` plantuml
 @startuml
@@ -73,9 +85,16 @@ actor -> system : endSession()
 @enduml
 ```
 
+</details>
+
 ![image](https://github.com/DarkMed15/soen342-teamproject/blob/main/deliverables/assets/create_offering_system_sequence_diagram.png)
 
 ## Delete Offering
+
+<details>
+<summary>
+Delete Offering plantUml Code
+</summary>
 
 ``` plantuml
 @startuml
@@ -115,9 +134,16 @@ system --> actor : confirmation
 @enduml
 ```
 
+</details>
+
 ![image](https://github.com/DarkMed15/soen342-teamproject/blob/main/deliverables/assets/delete_offering_system_sequence_diagram.png)
 
 ## Take on Offering
+
+<details>
+<summary>
+Take Offering plantUml Code
+</summary>
 
 ``` plantuml
 @startuml
@@ -146,5 +172,7 @@ else cancel
 end
 @enduml
 ```
+
+</details>
 
 ![image](https://github.com/DarkMed15/soen342-teamproject/blob/main/deliverables/assets/take_offering_system_sequence_diagram.png)
