@@ -305,11 +305,11 @@ Space/Location exists and is available at given daytime slot(s)
   <tr>
    <td>PostConditions
    </td>
-   <td>Schedule is created
+   <td>LocationSchedule is created
 <p>
 Lesson is created
 <p>
-Association between lesson and schedule is created
+Association between lesson and locaitonSchedule is created
 <p>
 Offering is created
 <p>
@@ -380,9 +380,9 @@ If the lesson location-schedule is not unique, display an error.
   <tr>
    <td>PostConditions
    </td>
-   <td>Association between lesson and schedule is deleted
+   <td>Association between lesson and locationSchedule is deleted
 <p>
-Schedule is deleted
+LocationSchedule is deleted
 <p>
 Lesson is deleted
 <p>
