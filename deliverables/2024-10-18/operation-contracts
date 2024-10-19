@@ -1,0 +1,53 @@
+Contract: getOfferings
+Operation: getOfferings()
+Cross References: Use case: View Offerings as Public, client and instructor
+Preconditions: 
+  - User connected to the system.
+Postconditions:
+	- If Public User: System gets all offerings associated with an instructor.
+	- If Registered Client: System gets all offerings (available and non-available)
+associated with an instructor
+	- If Registered Instructor: System gets only offerings not associated with any instructor
+
+
+Contract: makeOffering
+Operation: makeOffering (location, schedule, format, type)
+Cross References: Use case: Create Offerings
+Preconditions: 
+  - User is an administrator 
+  - User is authenticated
+  - Combination of location and schedule must exist in the system and be available.
+Postconditions:
+  - Instance of LocationSchedule is created and initialized.
+  - Instance of Lesson is created and initialized.
+  - Association between instances of LocationSchedule and Lesson is created.
+  - Instance of Offering is created and initialized.
+  - Association between instances of Offering and Lesson is created.
+  - Offering is set as active.
+
+
+Contract: removeOffering
+Operation: removeOffering (offering)
+Cross References: Use case: Delete Offerings
+Preconditions: 
+    - User is authenticated
+  - User must have permissions the remove offerings (administrator)
+Postconditions:
+  - Association between lesson and offering is deleted.
+  - If it has clients associated with it, the system deletes the client-offering association.
+  - If it has an instructor associated with it, the system deletes the instructor-offering association.
+  - Instance of offering is deleted from the system.
+
+
+
+
+Contract: takeOffering
+Operation: takeOffering (offering)
+Cross References: Use case: Take on offerings
+Preconditions: 
+  - User is authenticated.
+  - User is an instructor.
+  - Offering must exist in the system and must not be associated with another instructor.
+Postconditions:
+  - Association between instances of Offering and Instructor is created.
+  - Offering is set as taken, and status changes to available.
