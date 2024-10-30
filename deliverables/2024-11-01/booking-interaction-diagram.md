@@ -11,4 +11,3 @@
 ## Cancel Booking
 
 ![image](https://github.com/DarkMed15/soen342-teamproject/blob/main/deliverables/assets/cancel_booking_interaction_diagram.png)
-
