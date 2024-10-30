@@ -46,9 +46,9 @@ Offering(s) with available seats exist.
 <p>System retrieves and displays offerings
 <p>Actor selects 1 or more offerings
 <p>Actor submits selection
-<p>System locks seat for selected offering(s) temporarily
 <p>System prompts for submit confirmation
 <p>Actor confirms
+<p>System locks seat for selected offering(s) temporarily
 <p>System creates booking(s)
 <p>System updates offering status, seats, and unlocks for selected offering(s)
 <p>System outputs confirmation message
