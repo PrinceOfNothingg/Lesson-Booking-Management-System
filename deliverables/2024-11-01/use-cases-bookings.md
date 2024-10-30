@@ -50,6 +50,7 @@ Offering(s) with available seats exist.
 <p>System prompts for submit confirmation
 <p>Actor confirms
 <p>System creates booking(s)
+<p>System updates offering status, seats, and unlocks for selected offering(s)
 <p>System outputs confirmation message
 
    </td>
