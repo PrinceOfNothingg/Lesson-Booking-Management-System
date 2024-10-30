@@ -80,7 +80,7 @@ else location daytime slot not unique
   system --> actor : error
 end
 
-actor -> system : endSession()
+actor -> system : endMakeOfferingSession()
 
 @enduml
 ```
