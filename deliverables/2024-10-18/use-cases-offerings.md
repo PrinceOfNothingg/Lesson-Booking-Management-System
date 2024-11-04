@@ -89,7 +89,7 @@ System displays account page
   <tr>
    <td>Inputs
    </td>
-   <td>Name, phone, age, specializations
+   <td>Name, phone, age, specializations, availabilities
    </td>
   </tr>
   <tr>
@@ -103,7 +103,10 @@ System displays account page
    </td>
    <td>Actor visits instructor registration page
 <p>
-Actor enters information
+Actor enters information:
+<br>- unique name and phone
+<br>- specializations from list of spec. options
+<br>- availabilities from list of location options
 <p>
 Actor submits request
 <p>
@@ -117,7 +120,7 @@ System displays account page
   <tr>
    <td>Extensions (alt. flows)
    </td>
-   <td>If the account already exists, display an error.
+   <td>If the account already exists ({name,phone} not unique), display an error.
    </td>
   </tr>
 </table>
@@ -125,53 +128,6 @@ System displays account page
 <table>
   <tr>
    <td>UC3
-   </td>
-   <td>Instructor adds their availabilities
-   </td>
-  </tr>
-  <tr>
-   <td>Primary Actor
-   </td>
-   <td>Instructor
-   </td>
-  </tr>
-  <tr>
-   <td>Preconditions
-   </td>
-   <td>Instructor is authenticated
-   </td>
-  </tr>
-  <tr>
-   <td>PostConditions
-   </td>
-   <td>Associations between instructor and citie(s) is created
-   </td>
-  </tr>
-  <tr>
-   <td>Main Success Scenario
-   </td>
-   <td>Actor visits availability management page
-<p>
-System displays available cities
-<p>
-Actor selects cities
-<p>
-Actor submits
-<p>
-System add availabilities to actor
-   </td>
-  </tr>
-  <tr>
-   <td>Extensions (alt. flows)
-   </td>
-   <td>
-   </td>
-  </tr>
-</table>
-
-<table>
-  <tr>
-   <td>UC4
    </td>
    <td>Login
    </td>
@@ -230,7 +186,7 @@ System displays homepage
 
 <table>
   <tr>
-   <td>UC5
+   <td>UC4
    </td>
    <td>Delete Account
    </td>
@@ -283,7 +239,7 @@ System deletes selected account and related resources
 
 <table>
   <tr>
-   <td>UC6
+   <td>UC5
    </td>
    <td>Create Offerings
    </td>
@@ -299,7 +255,9 @@ System deletes selected account and related resources
    </td>
    <td>Administrator is authenticated
 <p>
-Space/Location exists and is available at given daytime slot(s)
+Space/Location exists.
+<p>
+Location+Schedule+lesson type is unique and does not already exist.
    </td>
   </tr>
   <tr>
@@ -307,13 +265,13 @@ Space/Location exists and is available at given daytime slot(s)
    </td>
    <td>LocationSchedule is created
 <p>
-Lesson is created
+Lesson(s) is created
 <p>
-Association between lesson and locaitonSchedule is created
+Association between lesson(s) and locationSchedule(s) is created
 <p>
-Offering is created
+Offering(s) is created (private/group/both)
 <p>
-Association between offering and lesson is created
+Association between offering(s) and lesson is created
    </td>
   </tr>
   <tr>
@@ -360,7 +318,7 @@ If the lesson location-schedule is not unique, display an error.
 
 <table>
   <tr>
-   <td>UC7
+   <td>UC6
    </td>
    <td>Delete Offerings
    </td>
@@ -384,11 +342,13 @@ If the lesson location-schedule is not unique, display an error.
 <p>
 LocationSchedule is deleted
 <p>
+Association between Lesson and Offering is deleted.
+<p>
 Lesson is deleted
 <p>
 Association between offering and instructor is deleted.
 <p>
-Association between offering and clients is deleted.
+Association between offering and clients (booking) is deleted.
 <p>
 Offering is deleted.
    </td>
@@ -423,7 +383,7 @@ System deletes offering
 
 <table>
   <tr>
-   <td>UC8
+   <td>UC7
    </td>
    <td>Take on offerings
    </td>
@@ -438,6 +398,10 @@ System deletes offering
    <td>Preconditions
    </td>
    <td>Instructor is authenticated
+<p>
+Instructor specialization match Offering/Lesson type
+<p>
+Instructor availability match Offering/Lesson location
 <p>
 Instance of offering exists
    </td>
@@ -478,7 +442,7 @@ System adds offerings to instructor
 
 <table>
   <tr>
-   <td>UC9
+   <td>UC8
    </td>
    <td>View Offerings as Public
    </td>
@@ -494,7 +458,7 @@ System adds offerings to instructor
    </td>
    <td>Actor Is not registered nor authenticated
 <p>
-Offering(s) has association with an instructor
+There exist Offering(s) with an association to an instructor
    </td>
   </tr>
   <tr>
@@ -521,7 +485,7 @@ System retrieves and displays all offerings (available, non-available) that have
 
 <table>
   <tr>
-   <td>UC10
+   <td>UC9
    </td>
    <td>View Offerings as client
    </td>
@@ -537,7 +501,7 @@ System retrieves and displays all offerings (available, non-available) that have
    </td>
    <td>Actor is authenticated.
 <p>
-Offering(s) has association with an instructor
+There exist Offering(s) with an association to an instructor
    </td>
   </tr>
   <tr>
@@ -564,7 +528,7 @@ System retrieves and displays all offerings (available, non-available) that have
 
 <table>
   <tr>
-   <td>UC11
+   <td>UC10
    </td>
    <td>View Offerings as instructor
    </td>

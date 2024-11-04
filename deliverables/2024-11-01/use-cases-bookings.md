@@ -17,18 +17,15 @@
    <td>Preconditions
    </td>
    <td>User is a client
-<p>
-Client is authenticated
-<p>
-Offering(s) with available seats exist.
+<p>Client is authenticated
+<p>Offering(s) with available seats exist.
+<p>Client does not have another booking for the same schedule.
    </td>
   </tr>
   <tr>
    <td>PostConditions
    </td>
    <td>Booking is created.
-<p>
-<p>Booking is created.
 <p>Association between booking and offering is created.
 <p>Association between booking and client is created.
 <p>System updates private offering(s) status to non-available.
@@ -41,8 +38,6 @@ Offering(s) with available seats exist.
    <td>Main Success Scenario
    </td>
    <td>Actor visits offerings page
-<p>
-<p>Actor visits offerings page
 <p>System retrieves and displays offerings
 <p>Actor selects 1 or more offerings
 <p>Actor submits selection
