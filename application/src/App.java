@@ -1,3 +1,5 @@
+package application.src;
+
 public class App extends Thread {
     
     App() {

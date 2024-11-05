@@ -1,7 +1,6 @@
+package application.src;
 
 import java.sql.*;
-
-import javax.sql.DataSource;
 
 import org.postgresql.ds.PGSimpleDataSource;
 
