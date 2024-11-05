@@ -6,14 +6,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class UserRepository {
+public class ClientRepository {
 
     private Database psql = new Database();
     private Connection conn = psql.getConnection();
-    private static ArrayList clients = new ArrayList<Client>();
     
-    public ArrayList<Client> get() {
+    public List<Client> get() {
+        ArrayList<Client> clients = new ArrayList<>();
         try {
 
             PreparedStatement st = conn.prepareStatement("select * from client");

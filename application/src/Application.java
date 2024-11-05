@@ -24,9 +24,9 @@ public class Application {
             e.printStackTrace();
         }
 
-        UserRepository userRepo = new UserRepository();
-        userRepo.get().forEach(System.out::println);
-        System.out.println(userRepo.get(1));
+        ClientRepository clients = new ClientRepository();
+        clients.get().forEach(System.out::println);
+        System.out.println(clients.get(1));
 
     }
 }

@@ -1,6 +1,5 @@
 package application.src;
 
-
 abstract class User {
 
     protected long id;
@@ -67,5 +66,8 @@ abstract class User {
     public void setDependant(boolean dependant) {
         this.dependant = dependant;
     }
-    
+
+    abstract User get();
+    abstract boolean update();
+    abstract boolean delete();
 }
