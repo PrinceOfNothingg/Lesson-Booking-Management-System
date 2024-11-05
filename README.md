@@ -11,7 +11,7 @@ Mehdi Kahouache 40250581
 
 ### Dependencies
 
-1. Install Nodejs and NPM ***[NodeJS installation Guide][nodejs-install-url]***
+1. Install Java JDK
 2. Install PostgreSQL ***[Postgresql Installation Guide][postgresql-install-url]***
    - Initialize DB <br> ```pg_ctl -D /var/lib/pgsql/data initdb```
    - Replace pg_hba.conf with that of this repo i.e. project/database/pg_hba.conf
@@ -42,12 +42,5 @@ psql -U soen -d soendb < database/soen.sql
 ## Usage
 
 1. Ensure ***Dependencies*** are installed.
-2. In the ```app``` folder run:
 
-    ```sh
-    npm install
-    npm run dev
-    ```
-
-[nodejs-install-url]: https://github.com/nodesource/distributions/blob/master/README.md
 [postgresql-install-url]: https://www.postgresql.org/docs/16/index.html

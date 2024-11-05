@@ -1,152 +1,6 @@
 
 REVOKE CONNECT ON DATABASE soendb FROM public;
 
-
---DROP SCHEMA public;
---CREATE SCHEMA public AUTHORIZATION pg_database_owner;
-
-
-
-DROP SEQUENCE IF EXISTS public.administrator_id_seq;
-
-CREATE SEQUENCE public.administrator_id_seq
-	INCREMENT BY 1
-	MINVALUE 1
-	MAXVALUE 9223372036854775807
-	START 1
-	CACHE 1
-	NO CYCLE;
-
-DROP SEQUENCE IF EXISTS public.booking_id_seq;
-
-CREATE SEQUENCE public.booking_id_seq
-	INCREMENT BY 1
-	MINVALUE 1
-	MAXVALUE 9223372036854775807
-	START 1
-	CACHE 1
-	NO CYCLE;
-
-DROP SEQUENCE IF EXISTS public.client_id_seq;
-
-CREATE SEQUENCE public.client_id_seq
-	INCREMENT BY 1
-	MINVALUE 1
-	MAXVALUE 9223372036854775807
-	START 1
-	CACHE 1
-	NO CYCLE;
-
-DROP SEQUENCE IF EXISTS public.guardian_id_seq;
-
-CREATE SEQUENCE public.guardian_id_seq
-	INCREMENT BY 1
-	MINVALUE 1
-	MAXVALUE 9223372036854775807
-	START 1
-	CACHE 1
-	NO CYCLE;
-
-DROP SEQUENCE IF EXISTS public.instructor_id_seq;
-
-CREATE SEQUENCE public.instructor_id_seq
-	INCREMENT BY 1
-	MINVALUE 1
-	MAXVALUE 9223372036854775807
-	START 1
-	CACHE 1
-	NO CYCLE;
-
-DROP SEQUENCE IF EXISTS public.location_id_seq;
-
-CREATE SEQUENCE public.location_id_seq
-	INCREMENT BY 1
-	MINVALUE 1
-	MAXVALUE 9223372036854775807
-	START 1
-	CACHE 1
-	NO CYCLE;
-
-DROP SEQUENCE IF EXISTS public.location_schedule_id_seq;
-
-CREATE SEQUENCE public.location_schedule_id_seq
-	INCREMENT BY 1
-	MINVALUE 1
-	MAXVALUE 9223372036854775807
-	START 1
-	CACHE 1
-	NO CYCLE;
-
-DROP SEQUENCE IF EXISTS public.offering_id_seq;
-
-CREATE SEQUENCE public.offering_id_seq
-	INCREMENT BY 1
-	MINVALUE 1
-	MAXVALUE 9223372036854775807
-	START 1
-	CACHE 1
-	NO CYCLE;
-
-DROP SEQUENCE IF EXISTS public.representative_id_seq;
-
-CREATE SEQUENCE public.representative_id_seq
-	INCREMENT BY 1
-	MINVALUE 1
-	MAXVALUE 9223372036854775807
-	START 1
-	CACHE 1
-	NO CYCLE;
-
-DROP SEQUENCE IF EXISTS public.schedule_id_seq;
-
-CREATE SEQUENCE public.schedule_id_seq
-	INCREMENT BY 1
-	MINVALUE 1
-	MAXVALUE 9223372036854775807
-	START 1
-	CACHE 1
-	NO CYCLE;
-
-DROP SEQUENCE IF EXISTS public.space_id_seq;
-
-CREATE SEQUENCE public.space_id_seq
-	INCREMENT BY 1
-	MINVALUE 1
-	MAXVALUE 9223372036854775807
-	START 1
-	CACHE 1
-	NO CYCLE;
-
-
-
--- public.administrator definition
-
-DROP TABLE IF EXISTS public.administrator;
-
-CREATE TABLE public.administrator (
-	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
-	active bool NULL DEFAULT true,
-	"name" varchar NOT NULL,
-	phone text NOT NULL,
-	age int4 NOT NULL,
-	CONSTRAINT administrator_pk PRIMARY KEY (id)
-);
-
-
--- public.guardian definition
-
-DROP TABLE IF EXISTS public.guardian;
-
-CREATE TABLE public.guardian (
-	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
-	active bool NULL DEFAULT true,
-	"name" varchar NOT NULL,
-	phone text NOT NULL,
-	age int4 NOT NULL,
-	CONSTRAINT guardian_pk PRIMARY KEY (id)
-);
-
-
 -- public.client definition
 
 DROP TABLE IF EXISTS public.client;
@@ -162,20 +16,40 @@ CREATE TABLE public.client (
 );
 
 
+-- public.administrator definition
+
+DROP TABLE IF EXISTS public.administrator;
+
+CREATE TABLE public.administrator (
+	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	
+	CONSTRAINT administrator_pk PRIMARY KEY (id)
+) inherits (client);
+
+
+-- public.guardian definition
+
+DROP TABLE IF EXISTS public.guardian;
+
+CREATE TABLE public.guardian (
+	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	
+	CONSTRAINT guardian_pk PRIMARY KEY (id)
+) inherits (client);
+
+
+
 -- public.instructor definition
 
 DROP TABLE IF EXISTS public.instructor;
 
 CREATE TABLE public.instructor (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
-	active bool NULL DEFAULT true,
-	"name" varchar NOT NULL,
-	phone text NOT NULL,
-	age int4 NOT NULL,
+	
 	specializations _text NOT NULL,
 	availabilities _text NOT NULL,
 	CONSTRAINT instructor_pk PRIMARY KEY (id)
-);
+) inherits (client);
 
 
 -- public.representative definition
