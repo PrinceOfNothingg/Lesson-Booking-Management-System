@@ -10,9 +10,12 @@ import java.util.List;
 
 public class ClientRepository {
 
-    private Database psql = new Database();
-    private Connection conn = psql.getConnection();
+    private Connection conn;
     
+    public ClientRepository(Database db){
+        this.conn = db.getConnection();
+    }
+
     public List<Client> get() {
         ArrayList<Client> clients = new ArrayList<>();
         try {
@@ -28,8 +31,7 @@ public class ClientRepository {
                     rs.getString(3),
                     rs.getInt(4),
                     rs.getString(5),
-                    rs.getBoolean(6)
-                    ));
+                    rs.getBoolean(7)));
             }
             rs.close();
             st.close();
@@ -55,8 +57,7 @@ public class ClientRepository {
                                     rs.getString(3),
                                     rs.getInt(4),
                                     rs.getString(5),
-                                    rs.getBoolean(6)
-                                    );
+                                    rs.getBoolean(6));
             }
             rs.close();
             st.close();

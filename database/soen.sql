@@ -1,19 +1,32 @@
 
 REVOKE CONNECT ON DATABASE soendb FROM public;
 
+
+CREATE TYPE "role" AS enum ('client', 'guardian', 'instructor', 'admin');
+
+-- public.user definition
+
+DROP TABLE IF EXISTS public.users;
+
+CREATE TABLE public.users (
+	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	active bool NULL DEFAULT true,
+	"name" varchar NOT NULL,
+	age int4 NOT NULL,
+	phone text NOT NULL,
+	"role" "role" NOT NULL,
+	CONSTRAINT user_pk PRIMARY KEY (id)
+);
+
 -- public.client definition
 
 DROP TABLE IF EXISTS public.client;
 
 CREATE TABLE public.client (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
-	active bool NULL DEFAULT true,
-	"name" varchar NOT NULL,
-	age int4 NOT NULL,
-	phone text NOT NULL,
 	dependant bool NULL DEFAULT false,
 	CONSTRAINT client_pk PRIMARY KEY (id)
-);
+) inherits (users);
 
 
 -- public.administrator definition
@@ -24,7 +37,7 @@ CREATE TABLE public.administrator (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	
 	CONSTRAINT administrator_pk PRIMARY KEY (id)
-) inherits (client);
+) inherits (users);
 
 
 -- public.guardian definition
@@ -33,9 +46,8 @@ DROP TABLE IF EXISTS public.guardian;
 
 CREATE TABLE public.guardian (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
-	
 	CONSTRAINT guardian_pk PRIMARY KEY (id)
-) inherits (client);
+) inherits (users);
 
 
 
@@ -45,11 +57,10 @@ DROP TABLE IF EXISTS public.instructor;
 
 CREATE TABLE public.instructor (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
-	
 	specializations _text NOT NULL,
 	availabilities _text NOT NULL,
 	CONSTRAINT instructor_pk PRIMARY KEY (id)
-) inherits (client);
+) inherits (users);
 
 
 -- public.representative definition
@@ -214,6 +225,6 @@ CREATE TABLE public.booking (
 -- ALTER SEQUENCE IF EXISTS public.space_id_seq OWNED BY public."space".id;
 
 
-INSERT INTO administrator ("name", phone, age) VALUES 
-('kristi', '1111111', '88'),
-('mehdi', '2222222', '88');
+INSERT INTO administrator ("name", phone, age, "role") VALUES 
+('kristi', '1111111', '88', 'admin'),
+('mehdi', '2222222', '88', 'admin');

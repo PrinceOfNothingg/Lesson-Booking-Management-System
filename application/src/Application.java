@@ -24,7 +24,7 @@ public class Application {
             e.printStackTrace();
         }
 
-        ClientRepository clients = new ClientRepository();
+        ClientRepository clients = new ClientRepository(new Database());
         clients.get().forEach(System.out::println);
         System.out.println(clients.get(1));
 
