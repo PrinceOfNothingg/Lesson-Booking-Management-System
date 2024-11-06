@@ -1,16 +1,15 @@
 package application.src;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
 public class User {
 
-    protected long id;
+    protected long id = -1;
     protected boolean active = true;
-    protected String name;
-    protected int age;
-    protected String phone;
-    protected String role;
+    protected String name = null;
+    protected int age = -1;
+    protected String phone = null;
+    protected String role = null;
+
+    enum Type {CLIENT, GUARDIAN, INTRUCTOR, ADMIN, GUEST}
 
     protected User() {}
     protected User(long id, boolean active, String name, int age, String phone, String role) {
@@ -69,36 +68,27 @@ public class User {
         this.role = role;
     }
 
+    public boolean isEmpty() {
+        return this.name == null && this.phone == null && this.role == null;
+    }
+
     public void viewOfferings(){
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'viewBookings'");
     }
 
-    public static User login(Scanner scanner, UserRepository repo){
-        // ask creds
-        // attempt login
-        // err ask register
-        User user;
-
-        while(true){
-            String username, phone;
-
-            System.out.println("Enter your username:");
-            username = scanner.nextLine();
-
-            System.out.println("Enter your phone:");
-            phone = scanner.nextLine();
-
-            user = repo.get(username, phone);
-
-            if(user.name == null){
-                System.out.println("Invalid credentials.");
-            }
-            else {
-                System.out.println("Authentication successful.");
-                break;
-            }
-        }
-        return user;
+    User get() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'get'");
+    }
+    boolean update() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    }
+    boolean delete() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    }
+    public String toString() {
+        return name + ": " + phone;
     }
 }

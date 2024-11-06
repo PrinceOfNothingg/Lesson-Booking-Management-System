@@ -1,6 +1,7 @@
 package application.src;
 
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,17 +9,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientRepository {
+public class AdministratorRepository {
 
     private Connection conn;
-    private String table = "client";
+    private String table = "administrator";
     
-    public ClientRepository(Database db){
+    public AdministratorRepository(Database db){
         this.conn = db.getConnection();
     }
 
-    public List<Client> get() {
-        ArrayList<Client> clients = new ArrayList<>();
+    public List<Administrator> get() {
+        ArrayList<Administrator> administrators = new ArrayList<>();
         try {
             String query = "select * from " + table;
             PreparedStatement st = conn.prepareStatement(query);
@@ -26,15 +27,15 @@ public class ClientRepository {
             System.out.println("DEBUG: " + st);
 
             while (rs.next()) {
-                clients.add(
-                    new Client(
+                System.out.println("DEBUG: " + rs);
+                administrators.add(
+                    new Administrator(
                     rs.getLong(1),
                     rs.getBoolean(2),
                     rs.getString(3),
                     rs.getInt(4),
                     rs.getString(5),
-                    rs.getString(6),
-                    rs.getBoolean(7)));
+                    rs.getString(6)));
             }
             rs.close();
             st.close();
@@ -42,11 +43,11 @@ public class ClientRepository {
             e.printStackTrace();
         }
         
-        return clients;
+        return administrators;
     }
 
-    public Client get(long id) {
-        Client client = new Client();
+    public Administrator get(long id) {
+        Administrator administrator = new Administrator();
         try {
             String query = "select * from " + table + " where id = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
@@ -55,14 +56,14 @@ public class ClientRepository {
             System.out.println("DEBUG: " + st);
 
             while (rs.next()) {
-                client = new Client(
+                System.out.println("DEBUG: " + rs);
+                administrator = new Administrator(
                                     rs.getLong(1),
                                     rs.getBoolean(2),
                                     rs.getString(3),
                                     rs.getInt(4),
                                     rs.getString(5),
-                                    rs.getString(6),
-                                    rs.getBoolean(7));
+                                    rs.getString(6));
             }
             rs.close();
             st.close();
@@ -70,11 +71,11 @@ public class ClientRepository {
             e.printStackTrace();
         }
         
-        return client;
+        return administrator;
     }
 
-    public Client get(String name, String phone) {
-        Client client = new Client();
+    public Administrator get(String name, String phone) {
+        Administrator administrator = new Administrator();
         try {
             String query = "select * from " + table + " where name = ? and phone = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
@@ -84,14 +85,15 @@ public class ClientRepository {
             System.out.println("DEBUG: " + st);
 
             while (rs.next()) {
-                client = new Client(
+                System.out.println("DEBUG: " + rs);
+                administrator = new Administrator(
                                 rs.getLong(1),
                                 rs.getBoolean(2),
                                 rs.getString(3),
                                 rs.getInt(4),
                                 rs.getString(5),
-                                rs.getString(6),
-                                rs.getBoolean(7));
+                                rs.getString(6));
+                System.out.println("DEBUG: " + rs);
             }
             rs.close();
             st.close();
@@ -99,20 +101,19 @@ public class ClientRepository {
             e.printStackTrace();
         }
         
-        return client;
+        return administrator;
     }
 
-    public boolean insert(Client client) {
+    public boolean insert(Administrator administrator) {
         boolean success = false;
         try {
-            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\", dependant) values (?,?,?,?,?,?)";
-            PreparedStatement st = conn.prepareStatement(query);
+            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\") values (?,?,?,?,?)";
+            PreparedStatement st = conn.prepareStatement(query);            
             st.setBoolean(1, true);
-            st.setString(2, client.name);
-            st.setInt(3, client.age);
-            st.setString(4, client.phone);
-            st.setString(5, client.role);
-            st.setBoolean(6, client.dependant);
+            st.setString(2, administrator.name);
+            st.setInt(4, administrator.age);
+            st.setString(3, administrator.phone);
+            st.setString(5, administrator.role);
             ResultSet rs = st.executeQuery();
             System.out.println("DEBUG: " + st);
             System.out.println("DEBUG: " + rs);
@@ -125,5 +126,4 @@ public class ClientRepository {
         
         return success;
     }
-
 }

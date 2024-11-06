@@ -1,23 +1,23 @@
 package application.src;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Client extends User {
+public class Guardian extends User {
 
-    protected boolean dependant = false;
+    private ArrayList<Guardian> dependants = new ArrayList<>();
 
-    public Client(){}
-    public Client(long id, boolean active, String name, int age, String phone, String role, boolean dependant) {
+    public Guardian(){}
+    public Guardian(long id, boolean active, String name, int age, String phone, String role) {
         super( id, active, name, age, phone, role);
-        this.dependant = dependant;
     }
 
-    public boolean isDependant() {
-        return dependant;
-    }
 
-    public void setDependant(boolean dependant) {
-        this.dependant = dependant;
+    public ArrayList<Guardian> getDependants() {
+        return dependants;
+    }
+    public void setDependants(ArrayList<Guardian> dependants) {
+        this.dependants = dependants;
     }
     
     public void makeBooking(){
@@ -42,12 +42,10 @@ public class Client extends User {
         throw new UnsupportedOperationException("Unimplemented method 'viewOfferings'");
     }
 
-    public static Client login(Scanner scanner, ClientRepository clients){
-        Client client = new Client();
+    public static Guardian login(Scanner scanner, GuardianRepository guardians){
+        Guardian guardian = new Guardian();
         String username;
         String phone;
-        String input;
-
         while(true){
             username = Utils.getUserName(scanner);
             if(username.isEmpty())
@@ -57,9 +55,9 @@ public class Client extends User {
             if(phone.isEmpty())
                 break;
 
-            client = clients.get(username, phone);
+            guardian = guardians.get(username, phone);
 
-            if(client.isEmpty()){
+            if(guardian.isEmpty()){
                 System.out.println("Invalid credentials.");
             }
             else {
@@ -68,11 +66,11 @@ public class Client extends User {
             }
         }
 
-        return client;
+        return guardian;
     }
 
-    public static Client register(Scanner scanner, ClientRepository clients){
-        Client client = new Client();
+    public static Guardian register(Scanner scanner, GuardianRepository guardians, ClientRepository clients, RepresentativeRepository representatives){
+        Guardian guardian = new Guardian();
         String username;
         String phone;
         while(true){
@@ -85,15 +83,19 @@ public class Client extends User {
                 break;
 
             int age = Utils.getAge(scanner);
-            if(age < 18)
-                break;
+            
+            guardian = guardians.get(username, phone);
 
-            client = clients.get(username, phone);
+            if(guardian.isEmpty()){
+                ArrayList<Client> children = registerDependants(scanner, clients);
 
-            if(client.isEmpty()){
-                client = new Client(0, true, username, age, phone, "client", false);
-                clients.insert(client);
-                client = clients.get(username, phone);
+                guardian = new Guardian(0, true, username, age, phone, "guardian");
+                guardians.insert(guardian);
+                guardian = guardians.get(username, phone);
+
+                for (Client client : children) {
+                    representatives.insert(guardian, client);
+                }
                 break;
             }
             else {
@@ -101,7 +103,21 @@ public class Client extends User {
             }
         }
 
-        return client;
+        return guardian;
+    }
+
+    public static ArrayList<Client> registerDependants(Scanner scanner, ClientRepository clients){
+        int count = Utils.getInt(scanner, "Enter the number of dependants to register:");
+        ArrayList<Client> children = new ArrayList<>();
+        
+        int i = 1;
+        while(i++ < count) {
+            System.out.println("%n%nEnter dependant "+i+" information.");
+            Client c = Client.register(scanner, clients);
+            children.add(c);
+        }
+
+        return children;
     }
 
     @Override

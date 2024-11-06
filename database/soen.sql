@@ -2,7 +2,7 @@
 REVOKE CONNECT ON DATABASE soendb FROM public;
 
 
-CREATE TYPE "role" AS enum ('client', 'guardian', 'instructor', 'admin');
+CREATE TYPE "role" AS enum ('client', 'guardian', 'instructor', 'admin', 'guest');
 
 -- public.user definition
 
@@ -14,9 +14,9 @@ CREATE TABLE public.users (
 	"name" varchar NOT NULL,
 	age int4 NOT NULL,
 	phone text NOT NULL,
-	"role" "role" NOT NULL,
+	"role" "role" NOT NULL DEFAULT 'guest',
 	CONSTRAINT user_pk PRIMARY KEY (id),
-	CONSTRAINT UNIQUE ("name", phone, "role")
+	UNIQUE ("name", phone, "role")
 );
 
 -- public.client definition
@@ -25,6 +25,7 @@ DROP TABLE IF EXISTS public.client;
 
 CREATE TABLE public.client (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	"role" "role" NOT NULL DEFAULT 'client',
 	dependant bool NULL DEFAULT false,
 	CONSTRAINT client_pk PRIMARY KEY (id)
 ) inherits (users);
@@ -36,7 +37,7 @@ DROP TABLE IF EXISTS public.administrator;
 
 CREATE TABLE public.administrator (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
-	
+	"role" "role" NOT NULL DEFAULT 'admin',
 	CONSTRAINT administrator_pk PRIMARY KEY (id)
 ) inherits (users);
 
@@ -47,6 +48,7 @@ DROP TABLE IF EXISTS public.guardian;
 
 CREATE TABLE public.guardian (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	"role" "role" NOT NULL DEFAULT 'guardian',
 	CONSTRAINT guardian_pk PRIMARY KEY (id)
 ) inherits (users);
 
@@ -58,6 +60,7 @@ DROP TABLE IF EXISTS public.instructor;
 
 CREATE TABLE public.instructor (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	"role" "role" NOT NULL DEFAULT 'instructor',
 	specializations _text NOT NULL,
 	availabilities _text NOT NULL,
 	CONSTRAINT instructor_pk PRIMARY KEY (id)
@@ -90,7 +93,7 @@ CREATE TABLE public."location" (
 	"name" varchar NULL,
 	city varchar NOT NULL,
 	CONSTRAINT location_pk PRIMARY KEY (id),
-	CONSTRAINT UNIQUE ("name", city)
+	UNIQUE ("name", city)
 );
 
 
@@ -180,7 +183,7 @@ CREATE TABLE public.offering (
 	lesson_id int8 NOT NULL,
 	CONSTRAINT offering_pk PRIMARY KEY (id),
 	CONSTRAINT offering_fk FOREIGN KEY (lesson_id) REFERENCES public.lesson(id),
-	CONSTRAINT UNIQUE (lesson_id)
+	UNIQUE (lesson_id)
 );
 
 
@@ -195,7 +198,7 @@ CREATE TABLE public.instructor_offering (
 	CONSTRAINT instructor_offering_pk PRIMARY KEY (id),
 	CONSTRAINT instructor_offering_fk FOREIGN KEY (instructor_id) REFERENCES public.instructor(id),
 	CONSTRAINT instructor_offering_fk_1 FOREIGN KEY (offering_id) REFERENCES public.offering(id),
-	CONSTRAINT UNIQUE (offering_id)
+	UNIQUE (offering_id)
 );
 
 
