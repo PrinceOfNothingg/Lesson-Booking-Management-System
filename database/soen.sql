@@ -15,7 +15,8 @@ CREATE TABLE public.users (
 	age int4 NOT NULL,
 	phone text NOT NULL,
 	"role" "role" NOT NULL,
-	CONSTRAINT user_pk PRIMARY KEY (id)
+	CONSTRAINT user_pk PRIMARY KEY (id),
+	CONSTRAINT UNIQUE ("name", phone, "role")
 );
 
 -- public.client definition
@@ -75,10 +76,9 @@ CREATE TABLE public.representative (
 	relationship varchar NULL,
 	CONSTRAINT representative_pk PRIMARY KEY (id),
 	CONSTRAINT representative_fk FOREIGN KEY (guardian_id) REFERENCES public.guardian(id) ON DELETE CASCADE,
-	CONSTRAINT representative_fk_1 FOREIGN KEY (client_id) REFERENCES public.client(id) ON DELETE CASCADE
+	CONSTRAINT representative_fk_1 FOREIGN KEY (client_id) REFERENCES public.client(id) ON DELETE CASCADE,
+	check (guardian_id <> client_id)
 );
-
-
 
 -- public.location definition
 
@@ -89,7 +89,8 @@ CREATE TABLE public."location" (
 	active bool NULL DEFAULT true,
 	"name" varchar NULL,
 	city varchar NOT NULL,
-	CONSTRAINT location_pk PRIMARY KEY (id)
+	CONSTRAINT location_pk PRIMARY KEY (id),
+	CONSTRAINT UNIQUE ("name", city)
 );
 
 
@@ -174,11 +175,12 @@ DROP TABLE IF EXISTS public.offering;
 CREATE TABLE public.offering (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	active bool NULL DEFAULT true,
-	status varchar NOT NULL DEFAULT 'non-available'::character varying,
+	"status" varchar NOT NULL DEFAULT 'non-available'::character varying,
 	taken bool NOT NULL DEFAULT false,
 	lesson_id int8 NOT NULL,
 	CONSTRAINT offering_pk PRIMARY KEY (id),
-	CONSTRAINT offering_fk FOREIGN KEY (lesson_id) REFERENCES public.lesson(id)
+	CONSTRAINT offering_fk FOREIGN KEY (lesson_id) REFERENCES public.lesson(id),
+	CONSTRAINT UNIQUE (lesson_id)
 );
 
 
@@ -192,7 +194,8 @@ CREATE TABLE public.instructor_offering (
 	offering_id int8 NOT NULL,
 	CONSTRAINT instructor_offering_pk PRIMARY KEY (id),
 	CONSTRAINT instructor_offering_fk FOREIGN KEY (instructor_id) REFERENCES public.instructor(id),
-	CONSTRAINT instructor_offering_fk_1 FOREIGN KEY (offering_id) REFERENCES public.offering(id)
+	CONSTRAINT instructor_offering_fk_1 FOREIGN KEY (offering_id) REFERENCES public.offering(id),
+	CONSTRAINT UNIQUE (offering_id)
 );
 
 
