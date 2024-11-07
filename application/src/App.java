@@ -9,134 +9,40 @@ public class App extends Thread {
     UserRepository userRepo = new UserRepository(psql);
     ClientRepository clientRepo = new ClientRepository(psql);
     GuardianRepository guardianRepo = new GuardianRepository(psql);
+    AdministratorRepository administratorRepo = new AdministratorRepository(psql);
     RepresentativeRepository representativeRepo = new RepresentativeRepository(psql);
     InstructorRepository instructorRepo = new InstructorRepository(psql);
-    AdministratorRepository administratorRepo = new AdministratorRepository(psql);
+    BookingRepository bookingRepo = new BookingRepository(psql);
+    InstructorOfferingRepository instructorOfferingRepo = new InstructorOfferingRepository(psql);
+    LocationRepository locationRepo = new LocationRepository(psql);
+    ScheduleRepository scheduleRepo = new ScheduleRepository(psql);
+    LocationScheduleRepository locationScheduleRepo = new LocationScheduleRepository(psql);
+    OfferingRepository offeringRepo = new OfferingRepository(psql);
 
     App() {}
 
-    private void printBanner(){
-        System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("--------------------------Welcome to Activities Board!--------------------------");
-        System.out.println("--------------------------------------------------------------------------------\n");
-    }
-
-    private int printStartMenu(){
-        System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("--------------------------           Start            --------------------------");
-        System.out.println("--------------------------------------------------------------------------------");
-        System.out.println("Please select one of the following options:");
-        System.out.println("1. Log in");
-        System.out.println("2. Register");
-        System.out.println("3. View Offerings");
-        System.out.println("4. Quit");
-        System.out.println("--------------------------------------------------------------------------------\n");
-        return 4;
-    }
-
-    private int printLoginMenu(){
-        System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("--------------------------           Login            --------------------------");
-        System.out.println("--------------------------------------------------------------------------------");
-        System.out.println("Please select one of the following options:");
-        System.out.println("1. Log in as Client");
-        System.out.println("2. Log in as Guardian");
-        System.out.println("3. Log in as Instructor");
-        System.out.println("4. Log in as Admin");
-        System.out.println("5. Quit");
-        System.out.println("--------------------------------------------------------------------------------\n");
-        return 5;
-    }
-
-    private int printRegistrationMenu(){
-        System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("--------------------------        Registration        --------------------------");
-        System.out.println("--------------------------------------------------------------------------------");
-        System.out.println("Please select one of the following options:");
-        System.out.println("1. Register as Client");
-        System.out.println("2. Register as Guardian");
-        System.out.println("3. Register as Instructor");
-        System.out.println("4. Register as Admin");
-        System.out.println("5. Quit");
-        System.out.println("--------------------------------------------------------------------------------\n");
-        return 5;
-    }
-
-    private int getSelection(Scanner scanner, int min, int max) {
-        int choice = -1;
-        while (true) {
-            try {
-                choice = Integer.parseInt(scanner.nextLine());
-                
-                if (choice < min || choice > max) {
-                    System.out.println("Please select between " + min + " and " + max + ".");
-                } else {
-                    break;
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid option.");
-            }
-        }
-        return choice - 1; // because we use it in a switch statement
-    }
-
-    private int handleStartSelection(Scanner scanner) {
-        int choice = -1;
-        int min = 0;
-        int max = -1;
-        do {
-            max = printStartMenu();
-            choice = getSelection(scanner, min, max);
-        } while (choice < min || choice > max);
-        return choice;
-    }
-
-    private int handleRegistrationSelection(Scanner scanner) {
-        int choice = -1;
-        int min = 0;
-        int max = -1;
-        do {
-            max = printRegistrationMenu();
-            choice = getSelection(scanner, min, max);
-        } while (choice < min || choice > max);
-        return choice;
-    }
-
-    private int handleLoginSelection(Scanner scanner) {
-        int choice = -1;
-        int min = 0;
-        int max = -1;
-        do {
-            max = printLoginMenu();
-            choice = getSelection(scanner, min, max);
-        } while (choice < min || choice > max);
-        return choice;
-    }
-
     public void run() {
 
-        printBanner();
+        Utils.printBanner();
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
         enum StartMenu {LOGIN, REGISTER, VIEW_OFFERINGS, QUIT}
 
-
         while(running) {
 
-            int choice = handleStartSelection(scanner);
-
-
-            User user = null;
+            User user = new User();
             Client client = null;
             Guardian guardian = null;
             Instructor instructor = null;
             Administrator administrator = null;
 
+            int choice = Utils.handleStartSelection(scanner);
+            boolean restart = false;
             switch (choice) {
             case 0: //Login
                 
-                User.Type selectedLogin = User.Type.values()[handleLoginSelection(scanner)];
+                User.Type selectedLogin = User.Type.values()[Utils.handleLoginSelection(scanner)];
 
                 switch (selectedLogin) {
                     case User.Type.CLIENT:
@@ -152,11 +58,12 @@ public class App extends Thread {
                         user = Administrator.login(scanner, administratorRepo);
                         break;
                     default:
+                        restart = true;
                         break;
                 }
                 break;
             case 1: //Register
-                User.Type selectedRegistration = User.Type.values()[handleRegistrationSelection(scanner)];
+                User.Type selectedRegistration = User.Type.values()[Utils.handleRegistrationSelection(scanner)];
 
                 switch (selectedRegistration) {
                     case User.Type.CLIENT:
@@ -172,10 +79,15 @@ public class App extends Thread {
                         user = Administrator.register(scanner, administratorRepo);
                         break;
                     default:
+                        restart = true;
                         break;
                 }
+                //fall through
             case 2: //View offerings
-                user = new User();
+                if(user == null){
+                    System.out.println("Invalid User. Restarting.");
+                    restart = true;
+                }
                 break;
             case 3: // quit
             default:
@@ -184,36 +96,31 @@ public class App extends Thread {
                 break;
             }
 
-            if(choice == 1 && choice == 2 && user == null){
-                System.out.println("Invalid User. Restarting.");
+            if(restart || !running){
                 continue;
             }
 
-            // switch (user.getRole()) {
-            //     case "client":
-            //         client = (Client) user;
-            //         while(!done){
-            //             client.displayClientMenu();
-            //             client.execute();
-            //             if(terminate)
-            //                 running = false;
-            //                 client.logout();
-            //         }
-            //         break;
-            //     case "guardian":
-            //         guardian = (Guardian) user;
-            //         break;
-            //     case "instructor":
-            //         instructor = (Instructor) user;
-            //         break;
-            //     case "admin":
-            //         administrator = (Administrator) user;
-            //         break;
-            //     case "guest":
-            //         break;
-            //     default:
-            //         break;
-            // }
+            boolean done = false;
+            switch (user.getRole()) {
+                case "client":
+                    client = (Client) user;
+                    client.process(scanner, offeringRepo, bookingRepo);
+                    break;
+                case "guardian":
+                    guardian = (Guardian) user;
+                    break;
+                case "instructor":
+                    instructor = (Instructor) user;
+                    break;
+                case "admin":
+                    administrator = (Administrator) user;
+                    break;
+                case "guest":
+                    user.process(scanner, offeringRepo);
+                    break;
+                default:
+                    break;
+            }
         }
 
         scanner.close();

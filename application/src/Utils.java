@@ -5,6 +5,104 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Utils {
+
+    public static void printBanner(){
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("--------------------------Welcome to Activities Board!--------------------------");
+        System.out.println("--------------------------------------------------------------------------------\n");
+    }
+
+    public static int printStartMenu(){
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("--------------------------           Start            --------------------------");
+        System.out.println("--------------------------------------------------------------------------------");
+        System.out.println("Please select one of the following options:");
+        System.out.println("1. Log in");
+        System.out.println("2. Register");
+        System.out.println("3. View Offerings");
+        System.out.println("4. Quit");
+        System.out.println("--------------------------------------------------------------------------------\n");
+        return 4;
+    }
+
+    public static int printLoginMenu(){
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("--------------------------           Login            --------------------------");
+        System.out.println("--------------------------------------------------------------------------------");
+        System.out.println("Please select one of the following options:");
+        System.out.println("1. Log in as Client");
+        System.out.println("2. Log in as Guardian");
+        System.out.println("3. Log in as Instructor");
+        System.out.println("4. Log in as Admin");
+        System.out.println("5. Quit");
+        System.out.println("--------------------------------------------------------------------------------\n");
+        return 5;
+    }
+
+    public static int printRegistrationMenu(){
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("--------------------------        Registration        --------------------------");
+        System.out.println("--------------------------------------------------------------------------------");
+        System.out.println("Please select one of the following options:");
+        System.out.println("1. Register as Client");
+        System.out.println("2. Register as Guardian");
+        System.out.println("3. Register as Instructor");
+        System.out.println("4. Register as Admin");
+        System.out.println("5. Quit");
+        System.out.println("--------------------------------------------------------------------------------\n");
+        return 5;
+    }
+
+    public static int getSelection(Scanner scanner, int min, int max) {
+        int choice = -1;
+        while (true) {
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+                
+                if (choice < min || choice > max) {
+                    System.out.println("Please select between " + min + " and " + max + ".");
+                } else {
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid option.");
+            }
+        }
+        return choice - 1; // because we use it in a switch statement
+    }
+
+    public static int handleStartSelection(Scanner scanner) {
+        int choice = -1;
+        int min = 0;
+        int max = -1;
+        do {
+            max = printStartMenu();
+            choice = getSelection(scanner, min, max);
+        } while (choice < min || choice > max);
+        return choice;
+    }
+
+    public static int handleRegistrationSelection(Scanner scanner) {
+        int choice = -1;
+        int min = 0;
+        int max = -1;
+        do {
+            max = printRegistrationMenu();
+            choice = getSelection(scanner, min, max);
+        } while (choice < min || choice > max);
+        return choice;
+    }
+
+    public static int handleLoginSelection(Scanner scanner) {
+        int choice = -1;
+        int min = 0;
+        int max = -1;
+        do {
+            max = printLoginMenu();
+            choice = getSelection(scanner, min, max);
+        } while (choice < min || choice > max);
+        return choice;
+    }
     
     public static String getString(Scanner scanner, String msg){
         String s = "";
