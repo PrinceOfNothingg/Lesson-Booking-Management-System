@@ -91,9 +91,10 @@ CREATE TABLE public."location" (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	active bool NULL DEFAULT true,
 	"name" varchar NULL,
+	"address" text NULL,
 	city varchar NOT NULL,
 	CONSTRAINT location_pk PRIMARY KEY (id),
-	UNIQUE ("name", city)
+	UNIQUE ("name", "address", city)
 );
 
 
@@ -131,7 +132,6 @@ CREATE TABLE public.lesson (
 	"type" varchar NOT NULL,
 	mode bool NOT NULL DEFAULT false,
 	seats int4 NOT NULL DEFAULT 1,
-	taken bool NOT NULL DEFAULT false,
 	CONSTRAINT lesson_pk PRIMARY KEY (id)
 );
 
