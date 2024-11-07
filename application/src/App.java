@@ -27,7 +27,7 @@ public class App extends Thread {
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
-        enum StartMenu {LOGIN, REGISTER, VIEW_OFFERINGS, QUIT}
+        // enum StartMenu {LOGIN, REGISTER, VIEW_OFFERINGS, QUIT}
 
         while(running) {
 

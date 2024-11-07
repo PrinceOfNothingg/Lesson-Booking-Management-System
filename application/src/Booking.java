@@ -3,6 +3,7 @@ package application.src;
 import org.json.simple.JSONObject;
 
 public class Booking {
+    //TODO fix add location and schedule etc to retrieve and present all pffering related data.
 
     private long id = -1;
     private boolean active = false;
