@@ -39,11 +39,11 @@ public class Database {
     }
 
     public void test() throws SQLException {
-        PreparedStatement st = connection.prepareStatement("select * from client");
+        PreparedStatement st = connection.prepareStatement("select * from administrator");
         ResultSet rs = st.executeQuery();
         
         while (rs.next()) {
-            System.out.println(rs.getString(1));
+            System.out.println(rs.getString(3));
         }
         rs.close();
         st.close();

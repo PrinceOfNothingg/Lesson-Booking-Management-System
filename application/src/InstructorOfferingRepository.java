@@ -8,30 +8,29 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocationScheduleRepository {
+public class InstructorOfferingRepository {
 
     private Connection conn;
-    private String table = "locationSchedule";
+    private String table = "instructor_offering";
     
-    public LocationScheduleRepository(Database db){
+    public InstructorOfferingRepository(Database db){
         this.conn = db.getConnection();
     }
 
-    public List<LocationSchedule> get() {
-        ArrayList<LocationSchedule> locationSchedules = new ArrayList<>();
+    public List<InstructorOffering> get() {
+        ArrayList<InstructorOffering> instructorOfferings = new ArrayList<>();
         try {
             String query = "select * from " + table;
             PreparedStatement st = conn.prepareStatement(query);
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                locationSchedules.add(
-                    new LocationSchedule(
+                instructorOfferings.add(
+                    new InstructorOffering(
                     rs.getLong(1),
                     rs.getBoolean(2),
                     rs.getLong(3),
-                    rs.getLong(4),
-                    rs.getLong(5)));
+                    rs.getLong(4)));
             }
             rs.close();
             st.close();
@@ -39,19 +38,18 @@ public class LocationScheduleRepository {
             e.printStackTrace();
         }
         
-        return locationSchedules;
+        return instructorOfferings;
     }
 
 
-    public boolean insert(LocationSchedule ls) {
+    public boolean insert(Instructor instructor, Offering offering) {
         boolean success = false;
         try {
-            String query = "insert into "+ table +" (active, location_id, schedule_id, lesson_id) values (?,?,?,?)";
+            String query = "insert into "+ table +" (active, instructor_id, offering_id) values (?,?,?)";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
-            st.setLong(2, ls.getLocationId());
-            st.setLong(3, ls.getScheduleId());
-            st.setLong(4, ls.getLessonId());
+            st.setLong(2, instructor.getId());
+            st.setLong(3, offering.getId());
             st.executeQuery();
             System.out.println("DEBUG: " + st);
             st.close();

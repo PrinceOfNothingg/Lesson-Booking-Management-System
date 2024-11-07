@@ -31,7 +31,9 @@ public class OfferingRepository {
                     rs.getBoolean(2),
                     rs.getString(3),
                     rs.getBoolean(4),
-                    rs.getLong(5)));
+                    rs.getString(3),
+                    rs.getBoolean(4),
+                    rs.getInt(5)));
             }
             rs.close();
             st.close();
@@ -56,7 +58,9 @@ public class OfferingRepository {
                     rs.getBoolean(2),
                     rs.getString(3),
                     rs.getBoolean(4),
-                    rs.getLong(5));
+                    rs.getString(3),
+                    rs.getBoolean(4),
+                    rs.getInt(5));
             }
             rs.close();
             st.close();
@@ -65,5 +69,33 @@ public class OfferingRepository {
         }
         
         return offering;
+    }
+
+    public List<Offering> getTaken(boolean taken) {
+        ArrayList<Offering> offerings = new ArrayList<>();
+        try {
+            String query = "select * from " + table + " where taken = ?";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setBoolean(1, taken);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                offerings.add(
+                    new Offering(
+                    rs.getLong(1),
+                    rs.getBoolean(2),
+                    rs.getString(3),
+                    rs.getBoolean(4),
+                    rs.getString(3),
+                    rs.getBoolean(4),
+                    rs.getInt(5)));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return offerings;
     }
 }

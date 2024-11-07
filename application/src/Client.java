@@ -20,33 +20,60 @@ public class Client extends User {
         this.dependant = dependant;
     }
     
-    public void makeBooking(){
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'makeBooking'");
+
+    public void viewBookings(BookingRepository bookings){
+        bookings.getByClientId(this.id).forEach(System.out::println);
     }
-    public void viewBookings(){
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'viewBookings'");
+
+    public void viewBooking(Scanner scanner, BookingRepository bookings){
+        boolean done = false;
+        while(!done){
+            System.out.println("\n--------------------------------------------------------------------------------");
+            System.out.println("                          View Booking Details" + this.name);
+            System.out.println("--------------------------------------------------------------------------------");
+            
+            int bookingId = Utils.getInt(scanner, "Please enter the id of a booking (q to quit):");
+            if (bookingId == 0)
+                break;
+            Booking booking = bookings.get(bookingId);
+            System.out.println(booking);
+        }
     }
-    public void viewBookingDetails(){
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'viewBookingDetails'");
+    
+    public void makeBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
+        boolean done = false;
+        while(!done){
+            System.out.println("\n--------------------------------------------------------------------------------");
+            System.out.println("                          Make a Booking" + this.name);
+            System.out.println("--------------------------------------------------------------------------------");
+            
+            int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
+            if (offeringId == 0)
+                break;
+            Offering offering = offerings.get(offeringId);
+
+            //TODO
+            // check offering is valid
+            // check offering schedule not conflicting
+            // create a booking/insert
+            // update offering seats, status
+            // confirm
+            
+
+            //System.out.println(booking);
+        }
     }
-    public void cancelBooking(){
+
+    public void cancelBooking(BookingRepository bookings){
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'cancelBooking'");
     }
-    @Override
-    public void viewOfferings(){
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'viewOfferings'");
-    }
+
 
     public static Client login(Scanner scanner, ClientRepository clients){
         Client client = new Client();
         String username;
         String phone;
-        String input;
 
         while(true){
             username = Utils.getUserName(scanner);
@@ -70,7 +97,18 @@ public class Client extends User {
 
         return client;
     }
-
+    public Client logout(){
+        Client client = new Client();
+        this.id = client.id;
+        this.active = client.active;
+        this.name = client.name;
+        this.age = client.age;
+        this.phone = client.phone;
+        this.role = client.role;
+        this.dependant = client.dependant;
+        return client;
+    }
+    
     public static Client register(Scanner scanner, ClientRepository clients){
         Client client = new Client();
         String username;
@@ -102,6 +140,64 @@ public class Client extends User {
         }
 
         return client;
+    }
+
+    private int printMenu(){
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          " + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
+        System.out.println("Please select one of the following options:");
+        System.out.println("1. View Offerings");
+        System.out.println("1. View Bookings");
+        System.out.println("2. View a Booking");
+        System.out.println("3. Make a Booking");
+        System.out.println("4. Cancel a Booking");
+        System.out.println("5. Logout");
+        System.out.println("--------------------------------------------------------------------------------\n");
+        return 6;
+    }
+
+    public int handleSelection(Scanner scanner) {
+        int choice = -1;
+        int min = 0;
+        int max = -1;
+        do {
+            max = printMenu();
+            choice = Utils.getSelection(scanner, min, max);
+        } while (choice < min || choice > max);
+        return choice;
+    }
+
+    public void process(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
+        boolean done = false;
+        while(!done){
+            int action = handleSelection(scanner);
+
+            switch (action) {
+                case 0: // View offerings
+                    viewOfferings(offerings);
+                    break;
+                case 1: // View bookings
+                    viewBookings(bookings);
+                    break;
+                case 2: // View a booking
+                    viewBooking(scanner, bookings);
+                    break;
+                case 3: // Make a Booking
+                    //makeBooking(scanner, bookings);
+                    break;
+                case 4: // Cancel Booking
+                    //cancelBooking(scanner, bookings);
+                    break;
+                case 5: // logout
+                    done = true;
+                    logout();
+                    break;
+                
+                default:
+                    break;
+            }       
+        }
     }
 
     @Override

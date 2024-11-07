@@ -1,12 +1,9 @@
 package application.src;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
-public class Representative extends User {
+public class Representative {
 
     private long id = -1;
-    private boolean active = true;
+    private boolean active = false;
     private long guardianId = -1;
     private long clientId = -1;
     private String relationship = null;
@@ -20,13 +17,6 @@ public class Representative extends User {
         this.relationship = relationship;
     }
 
-    
-    
-
-    @Override
-    public String toString() {
-        return name + ": " + phone;
-    }
     public long getId() {
         return id;
     }

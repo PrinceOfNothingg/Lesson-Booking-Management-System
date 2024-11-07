@@ -1,13 +1,16 @@
 package application.src;
 
+import java.util.List;
+import java.util.Scanner;
+
 public class User {
 
     protected long id = -1;
-    protected boolean active = true;
+    protected boolean active = false;
     protected String name = null;
     protected int age = -1;
     protected String phone = null;
-    protected String role = null;
+    protected String role = "guest";
 
     enum Type {CLIENT, GUARDIAN, INTRUCTOR, ADMIN, GUEST}
 
@@ -72,8 +75,12 @@ public class User {
         return this.name == null && this.phone == null && this.role == null;
     }
 
-    public void viewOfferings(){
-        throw new UnsupportedOperationException("Unimplemented method 'viewBookings'");
+    public void viewOfferings(OfferingRepository offerings){
+        List<Offering> result = offerings.getTaken(true);
+        if (result.isEmpty())
+            System.out.println("No offerings available.");
+        else
+            result.forEach(System.out::println);
     }
 
     User get() {
@@ -88,6 +95,47 @@ public class User {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
+
+    private int printMenu(){
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          Welcome!");
+        System.out.println("--------------------------------------------------------------------------------");
+        System.out.println("Please select one of the following options:");
+        System.out.println("1. View Offerings");
+        System.out.println("2. Quit to start menu.");
+        System.out.println("--------------------------------------------------------------------------------\n");
+        return 2;
+    }
+
+    public int handleSelection(Scanner scanner) {
+        int choice = -1;
+        int min = 0;
+        int max = -1;
+        do {
+            max = printMenu();
+            choice = Utils.getSelection(scanner, min, max);
+        } while (choice < min || choice > max);
+        return choice;
+    }
+
+    public void process(Scanner scanner, OfferingRepository offerings){
+        boolean done = false;
+        while(!done){
+            int action = handleSelection(scanner);
+
+            switch (action) {
+                case 0: // View offerings
+                    viewOfferings(offerings);
+                    break;
+                case 1: // exit
+                    done = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     public String toString() {
         return name + ": " + phone;
     }

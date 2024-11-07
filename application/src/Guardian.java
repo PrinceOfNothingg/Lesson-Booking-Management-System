@@ -36,7 +36,7 @@ public class Guardian extends User {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'cancelBooking'");
     }
-    @Override
+    
     public void viewOfferings(){
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'viewOfferings'");
