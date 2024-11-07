@@ -122,19 +122,6 @@ CREATE TABLE public.schedule (
 -- INSERT INTO schedule (start_date, end_date, start_t, end_t, time_slots, weekdays) VALUES 
 -- ('2024-11-04', '2024-12-31', '05:00:00', '22:00:00', '{0,1440}', '{sun,mon,tue,wed,thu,fri,sat}');
 
--- public.lesson definition
-
-DROP TABLE IF EXISTS public.lesson;
-
-CREATE TABLE public.lesson (
-	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
-	active bool NULL DEFAULT true,
-	"type" varchar NOT NULL,
-	mode bool NOT NULL DEFAULT false,
-	seats int4 NOT NULL DEFAULT 1,
-	CONSTRAINT lesson_pk PRIMARY KEY (id)
-);
-
 
 -- public.location_schedule definition
 
@@ -145,11 +132,11 @@ CREATE TABLE public.location_schedule (
 	active bool NULL DEFAULT true,
 	location_id int8 NOT NULL,
 	schedule_id int8 NOT NULL,
-	lesson_id int8 NOT NULL,
+	offering_id int8 NOT NULL,
 	CONSTRAINT location_schedule_pk PRIMARY KEY (id),
 	CONSTRAINT location_schedule_fk FOREIGN KEY (location_id) REFERENCES public.location(id),
 	CONSTRAINT location_schedule_fk_1 FOREIGN KEY (schedule_id) REFERENCES public.schedule(id),
-	CONSTRAINT location_schedule_fk_2 FOREIGN KEY (lesson_id) REFERENCES public.lesson(id)
+	CONSTRAINT location_schedule_fk_2 FOREIGN KEY (offering_id) REFERENCES public.offering(id)
 );
 
 
@@ -180,10 +167,10 @@ CREATE TABLE public.offering (
 	active bool NULL DEFAULT true,
 	"status" varchar NOT NULL DEFAULT 'non-available'::character varying,
 	taken bool NOT NULL DEFAULT false,
-	lesson_id int8 NOT NULL,
-	CONSTRAINT offering_pk PRIMARY KEY (id),
-	CONSTRAINT offering_fk FOREIGN KEY (lesson_id) REFERENCES public.lesson(id),
-	UNIQUE (lesson_id)
+	"type" varchar NOT NULL,
+	mode bool NOT NULL DEFAULT false,
+	seats int4 NOT NULL DEFAULT 1,
+	CONSTRAINT offering_pk PRIMARY KEY (id)
 );
 
 

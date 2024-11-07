@@ -1,1 +1,1 @@
-![Class diagram](https://github.com/user-attachments/assets/72eb3bb3-be06-4aa1-ab89-6cde7d896592)
+![Class diagram](https://github.com/DarkMed15/soen342-teamproject/blob/main/deliverables/assets/class_diagram.png)
