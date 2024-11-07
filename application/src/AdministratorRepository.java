@@ -114,10 +114,8 @@ public class AdministratorRepository {
             st.setInt(4, administrator.age);
             st.setString(3, administrator.phone);
             st.setString(5, administrator.role);
-            ResultSet rs = st.executeQuery();
+            st.executeQuery();
             System.out.println("DEBUG: " + st);
-            System.out.println("DEBUG: " + rs);
-            rs.close();
             st.close();
             success = true;
         } catch (SQLException e) {

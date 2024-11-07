@@ -105,7 +105,7 @@ public class ClientRepository {
     public boolean insert(Client client) {
         boolean success = false;
         try {
-            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\", dependant) values (?,?,?,?,?,?)";
+            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\", dependant) values (?,?,?,?,?::roleType,?)";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setString(2, client.name);
@@ -113,10 +113,8 @@ public class ClientRepository {
             st.setString(4, client.phone);
             st.setString(5, client.role);
             st.setBoolean(6, client.dependant);
-            ResultSet rs = st.executeQuery();
             System.out.println("DEBUG: " + st);
-            System.out.println("DEBUG: " + rs);
-            rs.close();
+            st.executeQuery();
             st.close();
             success = true;
         } catch (SQLException e) {

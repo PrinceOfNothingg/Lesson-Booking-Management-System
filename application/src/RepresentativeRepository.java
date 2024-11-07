@@ -52,9 +52,8 @@ public class RepresentativeRepository {
             st.setLong(2, guardian.getId());
             st.setLong(3, dependant.getId());
             st.setString(4, "child");
-            ResultSet rs = st.executeQuery();
+            st.executeQuery();
             System.out.println("DEBUG: " + st);
-            rs.close();
             st.close();
             success = true;
         } catch (SQLException e) {

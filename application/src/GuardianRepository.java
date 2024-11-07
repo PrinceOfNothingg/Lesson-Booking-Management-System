@@ -99,16 +99,15 @@ public class GuardianRepository {
     public boolean insert(Guardian guardian) {
         boolean success = false;
         try {
-            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\") values (?,?,?,?,?)";
+            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\") values (?,?,?,?,?::roleType)";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setString(2, guardian.name);
             st.setInt(3, guardian.age);
             st.setString(4, guardian.phone);
             st.setString(5, guardian.role);
-            ResultSet rs = st.executeQuery();
+            st.executeQuery();
             System.out.println("DEBUG: " + st);
-            rs.close();
             st.close();
             success = true;
         } catch (SQLException e) {

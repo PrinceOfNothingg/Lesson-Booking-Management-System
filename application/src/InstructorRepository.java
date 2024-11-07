@@ -126,7 +126,7 @@ public class InstructorRepository {
 
         boolean success = false;
         try {
-            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\", specializations, availabilities) values (?,?,?,?,?,?,?)";
+            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\", specializations, availabilities) values (?,?,?,?,?::roleType,?,?)";
             PreparedStatement st = conn.prepareStatement(query);
             specs = (Array) instructor.getSpecializations();
             avails = (Array) instructor.getAvailabilities();
@@ -138,10 +138,8 @@ public class InstructorRepository {
             st.setString(5, instructor.role);
             st.setArray(6, specs);
             st.setArray(7, avails);
-            ResultSet rs = st.executeQuery();
+            st.executeQuery();
             System.out.println("DEBUG: " + st);
-            System.out.println("DEBUG: " + rs);
-            rs.close();
             st.close();
             success = true;
         } catch (SQLException e) {
