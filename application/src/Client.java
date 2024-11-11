@@ -43,6 +43,7 @@ public class Client extends User {
     }
     
     public void makeBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
+        Booking booking;
         boolean done = false;
         while(!done){
             System.out.println("\n--------------------------------------------------------------------------------");
@@ -57,12 +58,18 @@ public class Client extends User {
             //TODO
             // check offering is valid
             // check offering schedule not conflicting
-            // create a booking/insert
-            // update offering seats, status
-            // confirm
-            
+            // get clients bookings > get schedules > compare offering schedule not overlaping
 
-            //System.out.println(booking);
+            bookings.insert(this, offering);
+            booking = bookings.getByOfferingId(offering);
+
+            
+            offering.setSeats(offering.getSeats() - 1);
+            if(offering.getSeats() == 0){
+                offering.setStatus("non-available");
+            }
+
+            System.out.println(booking);
         }
     }
 

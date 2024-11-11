@@ -53,10 +53,10 @@ public class Offering {
     public void setType(String type) {
         this.type = type;
     }
-    public boolean isMode() {
+    public boolean isGroup() {
         return mode;
     }
-    public void setMode(boolean mode) {
+    public void setGroup(boolean mode) {
         this.mode = mode;
     }
     public int getSeats() {

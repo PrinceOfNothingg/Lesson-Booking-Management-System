@@ -77,12 +77,12 @@ public class BookingRepository {
         return booking;
     }
 
-    public List<Booking> getByClientId(long id) {
+    public List<Booking> getByClientId(Client client) {
         ArrayList<Booking> bookings = new ArrayList<>();
         try {
             String query = "select b.id, b.active, b.status as bookingStatus, b.client_id, b.offering_id, o.status, o.taken, l.type, l.mode, l.seats from +"+table+" b join offering o on b.offering_id = o.id join lesson l on o.lesson_id = l.id where b.client_id = ? and b.active = true";
             PreparedStatement st = conn.prepareStatement(query);
-            st.setLong(1, id);
+            st.setLong(1, client.getId());
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
@@ -107,12 +107,12 @@ public class BookingRepository {
         return bookings;
     }
 
-    public Booking getByOfferingId(long id) {
+    public Booking getByOfferingId(Offering offering) {
         Booking booking = new Booking();
         try {
             String query = "select b.id, b.active, b.status as bookingStatus, b.client_id, b.offering_id, o.status, o.taken, l.type, l.mode, l.seats from +"+table+" b join offering o on b.offering_id = o.id join lesson l on o.lesson_id = l.id where b.offering_id = ? and b.active = true";
             PreparedStatement st = conn.prepareStatement(query);
-            st.setLong(1, id);
+            st.setLong(1, offering.getId());
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
@@ -135,5 +135,25 @@ public class BookingRepository {
         }
         
         return booking;
+    }
+
+    public boolean insert(Client client, Offering offering) {
+        boolean success = false;
+        try {
+            String query = "insert into "+ table +" (active, client_id, offering_id, \"status\") values (?,?,?,?)";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setBoolean(1, true);
+            st.setLong(2, client.getId());
+            st.setLong(3, offering.getId());
+            st.setString(4, "booked");
+            st.executeQuery();
+            System.out.println("DEBUG: " + st);
+            st.close();
+            success = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return success;
     }
 }

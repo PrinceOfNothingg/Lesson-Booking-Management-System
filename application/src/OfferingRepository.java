@@ -74,7 +74,7 @@ public class OfferingRepository {
     public List<Offering> getTaken(boolean taken) {
         ArrayList<Offering> offerings = new ArrayList<>();
         try {
-            String query = "select * from " + table + " where taken = ?";
+            String query = "select * from " + table + " where taken = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, taken);
             ResultSet rs = st.executeQuery();
@@ -97,5 +97,33 @@ public class OfferingRepository {
         }
         
         return offerings;
+    }
+
+    public Offering getByBookingId(long bookingId) {
+        Offering offering = new Offering();
+        try {
+            String query = "select * from " + table + " where booking_id = ? and active = true";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1, bookingId);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                offering = 
+                    new Offering(
+                    rs.getLong(1),
+                    rs.getBoolean(2),
+                    rs.getString(3),
+                    rs.getBoolean(4),
+                    rs.getString(3),
+                    rs.getBoolean(4),
+                    rs.getInt(5));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return offering;
     }
 }

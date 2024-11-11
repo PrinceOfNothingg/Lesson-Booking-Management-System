@@ -126,23 +126,6 @@ CREATE TABLE public.schedule (
 -- ('2024-11-04', '2024-12-31', '05:00:00', '22:00:00', '{0,1440}', '{sun,mon,tue,wed,thu,fri,sat}');
 
 
--- public.location_schedule definition
-
-DROP TABLE IF EXISTS public.location_schedule;
-
-CREATE TABLE public.location_schedule (
-	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
-	active bool NULL DEFAULT true,
-	location_id int8 NOT NULL,
-	schedule_id int8 NOT NULL,
-	offering_id int8 NOT NULL,
-	CONSTRAINT location_schedule_pk PRIMARY KEY (id),
-	CONSTRAINT location_schedule_fk FOREIGN KEY (location_id) REFERENCES public.location(id),
-	CONSTRAINT location_schedule_fk_1 FOREIGN KEY (schedule_id) REFERENCES public.schedule(id),
-	CONSTRAINT location_schedule_fk_2 FOREIGN KEY (offering_id) REFERENCES public.offering(id)
-);
-
-
 -- public."space" definition
 
 DROP TABLE IF EXISTS public."space";
@@ -151,11 +134,9 @@ CREATE TABLE public."space" (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	active bool NULL DEFAULT true,
 	"type" varchar NULL,
-	location_schedule_id int8 NULL,
 	location_id int8 NOT NULL,
 	schedule_id int8 NOT NULL,
 	CONSTRAINT space_pk PRIMARY KEY (id),
-	CONSTRAINT space_fk FOREIGN KEY (location_schedule_id) REFERENCES public.location_schedule(id),
 	CONSTRAINT space_fk_1 FOREIGN KEY (location_id) REFERENCES public.location(id),
 	CONSTRAINT space_fk_2 FOREIGN KEY (schedule_id) REFERENCES public.schedule(id)
 );
@@ -176,7 +157,21 @@ CREATE TABLE public.offering (
 	CONSTRAINT offering_pk PRIMARY KEY (id)
 );
 
+-- public.location_schedule definition
 
+DROP TABLE IF EXISTS public.location_schedule;
+
+CREATE TABLE public.location_schedule (
+	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	active bool NULL DEFAULT true,
+	location_id int8 NOT NULL,
+	schedule_id int8 NOT NULL,
+	offering_id int8 NOT NULL,
+	CONSTRAINT location_schedule_pk PRIMARY KEY (id),
+	CONSTRAINT location_schedule_fk FOREIGN KEY (location_id) REFERENCES public.location(id),
+	CONSTRAINT location_schedule_fk_1 FOREIGN KEY (schedule_id) REFERENCES public.schedule(id),
+	CONSTRAINT location_schedule_fk_2 FOREIGN KEY (offering_id) REFERENCES public.offering(id)
+);
 
 DROP TABLE IF EXISTS public.instructor_offering;
 
@@ -207,6 +202,63 @@ CREATE TABLE public.booking (
 	CONSTRAINT booking_fk_1 FOREIGN KEY (offering_id) REFERENCES public.offering(id)
 );
     
+-- FUNCTIONS
+
+CREATE OR REPLACE FUNCTION dates_overlap(int8 client_id, start_d date, end_d date)
+  RETURNS boolean
+  LANGUAGE plpgsql AS
+$$
+	declare
+
+	begin
+		select s.*
+		from schedule s
+		join location_schedule ls on s.id = ls.schedule_id 
+		join offering o on ls.offering_id = o.id 
+		join booking b on o.id = b.offering_id 
+		where b.client_id = client_id
+		and (s.start_date, s.end_date)
+		overlaps (start_d, end_d);
+	end;
+$$;
+
+CREATE OR REPLACE FUNCTION times_overlap(int8 client_id, start_t date, end_t date)
+  RETURNS boolean
+  LANGUAGE plpgsql AS
+$$
+	declare
+
+	begin
+		select s.*
+		from schedule s
+		join location_schedule ls on s.id = ls.schedule_id 
+		join offering o on ls.offering_id = o.id 
+		join booking b on o.id = b.offering_id 
+		where b.client_id = client_id
+		and (s.start_t, s.end_t)
+		overlaps (start_t, end_t);
+	end;
+$$;
+
+
+CREATE OR REPLACE FUNCTION weekdays_overlap(int8 client_id, start_d date, end_d date)
+  RETURNS boolean
+  LANGUAGE plpgsql AS
+$$
+	declare
+
+	begin
+		select s.*
+		from schedule s
+		join location_schedule ls on s.id = ls.schedule_id 
+		join offering o on ls.offering_id = o.id 
+		join booking b on o.id = b.offering_id 
+		where b.client_id = client_id
+		and (s.start_date, s.end_date)
+		overlaps (start_d, end_d);
+	end;
+$$;
+
 
 
 -- Test Data
@@ -269,11 +321,20 @@ INSERT INTO schedule (active, "start_date", end_date, start_t, end_t, time_slots
 INSERT INTO offering (active, "status", taken, "type", mode, seats) VALUES 
 (true, 'non-available', false, 'yoga', false, 1),
 (true, 'non-available', false, 'yoga', true, 16),
-(true, 'available', false, 'swimming', false, 0);
+(true, 'non-available', true, 'swimming', false, 0),
+(true, 'available', true, 'swimming', false, 1),
+(true, 'available', true, 'judo', true, 12);
 
+
+INSERT INTO location_schedule (active, location_id, schedule_id, offering_id) VALUES 
+(true, 1, 1, 3),
+(true, 1, 2, 4),
+(true, 1, 3, 5);
 
 INSERT INTO instructor_offering (active, instructor_id, offering_id) VALUES 
-(true, 1, 3);
+(true, 1, 3),
+(true, 1, 4),
+(true, 1, 5);
 
 INSERT INTO booking (active, client_id, offering_id, "status") VALUES 
 (true, 1, 3, 'booked');
