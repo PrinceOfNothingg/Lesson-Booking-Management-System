@@ -3,6 +3,8 @@ package application.src;
 import java.util.List;
 import java.util.Scanner;
 
+import org.json.simple.JSONObject;
+
 public class User {
 
     protected long id = -1;
@@ -137,6 +139,15 @@ public class User {
     }
 
     public String toString() {
-        return name + ": " + phone;
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("active",active);
+        json.put("name", name);
+        json.put("phone", phone);
+        json.put("age", age);
+
+        String string = json.toString();
+
+        return string;
     }
 }

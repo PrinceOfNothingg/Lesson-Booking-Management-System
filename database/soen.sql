@@ -15,8 +15,7 @@ CREATE TABLE public.users (
 	age int4 NOT NULL,
 	phone text NOT NULL,
 	"role" roleType NOT NULL DEFAULT 'guest',
-	CONSTRAINT user_pk PRIMARY KEY (id),
-	UNIQUE ("name", phone, "role")
+	CONSTRAINT user_pk PRIMARY KEY (id)
 );
 
 -- public.client definition
@@ -27,7 +26,8 @@ CREATE TABLE public.client (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	"role" roleType NOT NULL DEFAULT 'client',
 	dependant bool NULL DEFAULT false,
-	CONSTRAINT client_pk PRIMARY KEY (id)
+	CONSTRAINT client_pk PRIMARY KEY (id),
+	UNIQUE (phone)
 ) inherits (users);
 
 
@@ -38,7 +38,8 @@ DROP TABLE IF EXISTS public.administrator;
 CREATE TABLE public.administrator (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	"role" roleType NOT NULL DEFAULT 'admin',
-	CONSTRAINT administrator_pk PRIMARY KEY (id)
+	CONSTRAINT administrator_pk PRIMARY KEY (id),
+	UNIQUE (phone)
 ) inherits (users);
 
 
@@ -49,7 +50,8 @@ DROP TABLE IF EXISTS public.guardian;
 CREATE TABLE public.guardian (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	"role" roleType NOT NULL DEFAULT 'guardian',
-	CONSTRAINT guardian_pk PRIMARY KEY (id)
+	CONSTRAINT guardian_pk PRIMARY KEY (id),
+	UNIQUE (phone)
 ) inherits (users);
 
 
@@ -63,7 +65,8 @@ CREATE TABLE public.instructor (
 	"role" roleType NOT NULL DEFAULT 'instructor',
 	specializations _text NOT NULL,
 	availabilities _text NOT NULL,
-	CONSTRAINT instructor_pk PRIMARY KEY (id)
+	CONSTRAINT instructor_pk PRIMARY KEY (id),
+	UNIQUE (phone)
 ) inherits (users);
 
 
@@ -205,19 +208,72 @@ CREATE TABLE public.booking (
 );
     
 
--- ALTER SEQUENCE IF EXISTS public.administrator_id_seq OWNED BY public.administrator.id;
--- ALTER SEQUENCE IF EXISTS public.booking_id_seq OWNED BY public.booking.id;
--- ALTER SEQUENCE IF EXISTS public.client_id_seq OWNED BY public.client.id;
--- ALTER SEQUENCE IF EXISTS public.guardian_id_seq OWNED BY public.guardian.id;
--- ALTER SEQUENCE IF EXISTS public.instructor_id_seq OWNED BY public.instructor.id;
--- ALTER SEQUENCE IF EXISTS public.location_id_seq OWNED BY public."location".id;
--- ALTER SEQUENCE IF EXISTS public.location_schedule_id_seq OWNED BY public.location_schedule.id;
--- ALTER SEQUENCE IF EXISTS public.offering_id_seq OWNED BY public.offering.id;
--- ALTER SEQUENCE IF EXISTS public.representative_id_seq OWNED BY public.representative.id;
--- ALTER SEQUENCE IF EXISTS public.schedule_id_seq OWNED BY public.schedule.id;
--- ALTER SEQUENCE IF EXISTS public.space_id_seq OWNED BY public."space".id;
 
+-- Test Data
 
 INSERT INTO administrator ("name", phone, age, "role") VALUES 
-('kristi', '1111111', '88', 'admin'),
-('mehdi', '2222222', '88', 'admin');
+('kristi', '1', '88', 'admin'),
+('mehdi', '2', '88', 'admin');
+
+
+INSERT INTO client (active, "name", age, phone, "role", dependant) VALUES 
+(true, 'k', 20, '1', 'client', false),
+(true, 'k1', 20, '2', 'client', false),
+(true, 'k2', 12, '3', 'client', true),
+(true, 'k3', 14, '4', 'client', true),
+(true, 'm', 20, '5', 'client', false),
+(true, 'm1', 20, '6', 'client', false),
+(true, 'm2', 20, '7', 'client', true);
+
+
+INSERT INTO guardian (active, "name", age, phone, "role") VALUES 
+(true, 'gk', 20, '1', 'guardian'),
+(true, 'gm', 20, '2', 'guardian');
+
+
+INSERT INTO instructor (active, "name", age, phone, "role", specializations, availabilities) VALUES 
+(true, 'i1', 20, '1', 'instructor', '{gym, swimming, judo}', '{montreal, laval}'),
+(true, 'i2', 20, '2', 'instructor', '{yoga}', '{montreal}'),
+(true, 'i3', 20, '3', 'instructor', '{boxing, dance}', '{montreal, laval, brossard}');
+
+
+INSERT INTO representative (active, guardian_id, client_id, relationship) VALUES 
+(true, 1, 3, 'father'),
+(true, 1, 4, 'father'),
+(true, 2, 7, 'guardian');
+
+
+INSERT INTO "location" (active, "name", "address", city) VALUES 
+(true, 'A building room 1', '1000 St Catherine', 'montreal'),
+(true, 'B building room 2', '1001 St Catherine', 'montreal'),
+(true, 'C building room 3', '1002 St Catherine', 'montreal'),
+(true, 'A building room 1', '1000 street', 'laval'),
+(true, 'B building room 2', '1001 street', 'laval'),
+(true, 'C building room 3', '1002 street', 'laval'),
+(true, 'A building room 1', '1000 street', 'brossard'),
+(true, 'B building room 2', '1001 street', 'brossard'),
+(true, 'C building room 3', '1002 street', 'brossard');
+
+
+INSERT INTO schedule (active, "start_date", end_date, start_t, end_t, time_slots, weekdays) VALUES 
+(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"sun"}'),
+(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"mon"}'),
+(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"tue"}'),
+(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"wed"}'),
+(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"thu"}'),
+(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"fri"}'),
+(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"sat"}'),
+(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"sun", "mon", "tue", "wed", "thu", "fri", "sat"}');
+
+
+INSERT INTO offering (active, "status", taken, "type", mode, seats) VALUES 
+(true, 'non-available', false, 'yoga', false, 1),
+(true, 'non-available', false, 'yoga', true, 16),
+(true, 'available', false, 'swimming', false, 0);
+
+
+INSERT INTO instructor_offering (active, instructor_id, offering_id) VALUES 
+(true, 1, 3);
+
+INSERT INTO booking (active, client_id, offering_id, "status") VALUES 
+(true, 1, 3, 'booked');

@@ -136,6 +136,11 @@ public class Administrator extends User {
         return administrator;
     }
 
+    public void process(){
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'process'");
+    }
+
     @Override
     public String toString() {
         return name + ": " + phone;

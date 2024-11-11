@@ -2,6 +2,8 @@ package application.src;
 
 import java.util.Scanner;
 
+import org.json.simple.JSONObject;
+
 public class Client extends User {
 
     protected boolean dependant = false;
@@ -202,6 +204,16 @@ public class Client extends User {
 
     @Override
     public String toString() {
-        return name + ": " + phone;
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("active",active);
+        json.put("name", name);
+        json.put("phone", phone);
+        json.put("age", age);
+        json.put("dependant", dependant);
+
+        String string = json.toString();
+
+        return string;
     }
 }

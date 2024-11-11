@@ -120,7 +120,11 @@ public class Instructor extends User {
 
         return instructor;
     }
-
+    
+    public void process(){
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'process'");
+    }
 
     @Override
     public String toString() {

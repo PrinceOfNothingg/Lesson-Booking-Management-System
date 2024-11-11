@@ -3,9 +3,12 @@ package application.src;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 public class Guardian extends User {
 
-    private ArrayList<Guardian> dependants = new ArrayList<>();
+    private ArrayList<Client> dependants = new ArrayList<>();
 
     public Guardian(){}
     public Guardian(long id, boolean active, String name, int age, String phone, String role) {
@@ -13,10 +16,10 @@ public class Guardian extends User {
     }
 
 
-    public ArrayList<Guardian> getDependants() {
+    public ArrayList<Client> getDependants() {
         return dependants;
     }
-    public void setDependants(ArrayList<Guardian> dependants) {
+    public void setDependants(ArrayList<Client> dependants) {
         this.dependants = dependants;
     }
     
@@ -120,8 +123,22 @@ public class Guardian extends User {
         return children;
     }
 
+    public void process(){
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'process'");
+    }
+
     @Override
     public String toString() {
-        return name + ": " + phone;
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("active",active);
+        json.put("name", name);
+        json.put("phone", phone);
+        json.put("age", age);
+        json.put("dependants", dependants);
+        String string = json.toString();
+
+        return string;
     }
 }

@@ -1,6 +1,5 @@
 package application.src;
 
-import java.security.Guard;
 import java.util.Scanner;
 
 public class App extends Thread {
@@ -100,7 +99,6 @@ public class App extends Thread {
                 continue;
             }
 
-            boolean done = false;
             switch (user.getRole()) {
                 case "client":
                     client = (Client) user;
@@ -108,12 +106,15 @@ public class App extends Thread {
                     break;
                 case "guardian":
                     guardian = (Guardian) user;
+                    guardian.process();
                     break;
                 case "instructor":
                     instructor = (Instructor) user;
+                    instructor.process();
                     break;
                 case "admin":
                     administrator = (Administrator) user;
+                    instructor.process();
                     break;
                 case "guest":
                     user.process(scanner, offeringRepo);
