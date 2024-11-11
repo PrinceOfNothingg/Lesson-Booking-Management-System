@@ -204,56 +204,50 @@ CREATE TABLE public.booking (
     
 -- FUNCTIONS
 
-CREATE OR REPLACE FUNCTION dates_overlap(int8 client_id, start_d date, end_d date)
-  RETURNS boolean
+CREATE OR REPLACE FUNCTION dates_overlap(cid bigint, start_d date, end_d date)
+  RETURNS setof schedule
   LANGUAGE plpgsql AS
 $$
-	declare
-
-	begin
+	begin return query
 		select s.*
 		from schedule s
 		join location_schedule ls on s.id = ls.schedule_id 
 		join offering o on ls.offering_id = o.id 
 		join booking b on o.id = b.offering_id 
-		where b.client_id = client_id
+		where b.client_id = cid
 		and (s.start_date, s.end_date)
 		overlaps (start_d, end_d);
 	end;
 $$;
 
-CREATE OR REPLACE FUNCTION times_overlap(int8 client_id, start_t date, end_t date)
-  RETURNS boolean
+CREATE OR REPLACE FUNCTION times_overlap(cid bigint, start_t date, end_t date)
+  RETURNS setof schedule
   LANGUAGE plpgsql AS
 $$
-	declare
-
-	begin
+	begin return query
 		select s.*
 		from schedule s
 		join location_schedule ls on s.id = ls.schedule_id 
 		join offering o on ls.offering_id = o.id 
 		join booking b on o.id = b.offering_id 
-		where b.client_id = client_id
+		where b.client_id = cid
 		and (s.start_t, s.end_t)
 		overlaps (start_t, end_t);
 	end;
 $$;
 
 
-CREATE OR REPLACE FUNCTION weekdays_overlap(int8 client_id, start_d date, end_d date)
-  RETURNS boolean
+CREATE OR REPLACE FUNCTION weekdays_overlap(cid bigint, weekdays _day_of_week)
+  RETURNS setof schedule
   LANGUAGE plpgsql AS
 $$
-	declare
-
-	begin
+	begin return query
 		select s.*
 		from schedule s
 		join location_schedule ls on s.id = ls.schedule_id 
 		join offering o on ls.offering_id = o.id 
 		join booking b on o.id = b.offering_id 
-		where b.client_id = client_id
+		where b.client_id = cid
 		and (s.start_date, s.end_date)
 		overlaps (start_d, end_d);
 	end;

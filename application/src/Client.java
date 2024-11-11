@@ -24,7 +24,7 @@ public class Client extends User {
     
 
     public void viewBookings(BookingRepository bookings){
-        bookings.getByClientId(this.id).forEach(System.out::println);
+        bookings.getByClientId(this).forEach(System.out::println);
     }
 
     public void viewBooking(Scanner scanner, BookingRepository bookings){
@@ -63,19 +63,45 @@ public class Client extends User {
             bookings.insert(this, offering);
             booking = bookings.getByOfferingId(offering);
 
-            
             offering.setSeats(offering.getSeats() - 1);
             if(offering.getSeats() == 0){
                 offering.setStatus("non-available");
             }
 
+            offerings.update(offering);
+
             System.out.println(booking);
         }
     }
 
-    public void cancelBooking(BookingRepository bookings){
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'cancelBooking'");
+    public void cancelBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
+        boolean done = false;
+        while(!done){
+            System.out.println("\n--------------------------------------------------------------------------------");
+            System.out.println("                          Cancel a Booking" + this.name);
+            System.out.println("--------------------------------------------------------------------------------");
+            
+            int bookingId = Utils.getInt(scanner, "Please enter the id of a Booking (q to quit):");
+            if (bookingId == 0)
+                break;
+        
+            Booking booking = bookings.get(bookingId);
+
+            if(booking.getClientId() == id){
+                bookings.delete(this, booking);
+
+                Offering offering = offerings.get(booking.getOfferingId());
+                offering.setSeats(offering.getSeats()+1);
+                offering.setStatus("available");
+
+                offerings.update(offering);
+
+                System.out.println("Deleted booking " + booking);
+            }
+            else {
+                System.out.println("Invalid booking selected.");
+            }
+        }
     }
 
 
@@ -193,10 +219,10 @@ public class Client extends User {
                     viewBooking(scanner, bookings);
                     break;
                 case 3: // Make a Booking
-                    //makeBooking(scanner, bookings);
+                    //makeBooking(scanner, offerings, bookings);
                     break;
                 case 4: // Cancel Booking
-                    //cancelBooking(scanner, bookings);
+                    cancelBooking(scanner, offerings, bookings);
                     break;
                 case 5: // logout
                     done = true;

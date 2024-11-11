@@ -156,4 +156,22 @@ public class BookingRepository {
 
         return success;
     }
+
+    public boolean delete(Client client, Booking booking) {
+        boolean success = false;
+        try {
+            String query = "delete from "+ table +" where id = ? and client_id = ?";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1, booking.getId());
+            st.setLong(2, client.getId());
+            st.executeQuery();
+            System.out.println("DEBUG: " + st);
+            st.close();
+            success = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return success;
+    }
 }

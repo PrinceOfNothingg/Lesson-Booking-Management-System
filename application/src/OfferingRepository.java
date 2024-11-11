@@ -126,4 +126,23 @@ public class OfferingRepository {
         
         return offering;
     }
+
+    public Offering update(Offering offering) {
+        try {
+            String query = "update " + table + " set active = ?, taken = ?, status = ?, type = ?, mode = ?, seats = ? where id = ?";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setBoolean(1, offering.isActive());
+            st.setBoolean(2, offering.isTaken());
+            st.setString(3, offering.getStatus());
+            st.setString(4, offering.getType());
+            st.setBoolean(5, offering.isGroup());
+            st.setInt(6, offering.getSeats());
+            st.setLong(7, offering.getId());
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return offering;
+    }
 }
