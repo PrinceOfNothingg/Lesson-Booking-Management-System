@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class InstructorRepository {
@@ -20,17 +21,16 @@ public class InstructorRepository {
 
     public List<Instructor> get() {
         ArrayList<Instructor> instructors = new ArrayList<>();
-        ArrayList<String> specs = null;
-        ArrayList<String> avails = null;
+        String[] specs = null;
+        String[] avails = null;
         try {
             String query = "select * from " + table;
             PreparedStatement st = conn.prepareStatement(query);
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                specs = new ArrayList<>((ArrayList<String>)rs.getArray(7).getArray());
-                avails = new ArrayList<>((ArrayList<String>)rs.getArray(8).getArray());
-                System.out.println("DEBUG: " + rs);
+                specs = (String[])rs.getArray(7).getArray();
+                avails = (String[])rs.getArray(8).getArray();
                 instructors.add(
                     new Instructor(
                     rs.getLong(1),
@@ -39,8 +39,8 @@ public class InstructorRepository {
                     rs.getInt(4),
                     rs.getString(5),
                     rs.getString(6),
-                    specs,
-                    avails));
+                    new ArrayList<String>(Arrays.asList(specs)),
+                    new ArrayList<String>(Arrays.asList(avails))));
             }
             rs.close();
             st.close();
@@ -53,8 +53,8 @@ public class InstructorRepository {
 
     public Instructor get(long id) {
         Instructor instructor = new Instructor();
-        ArrayList<String> specs = null;
-        ArrayList<String> avails = null;
+        String[] specs = null;
+        String[] avails = null;
 
         try {
             String query = "select * from " + table + " where id = ? and active = true";
@@ -63,8 +63,8 @@ public class InstructorRepository {
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                specs = new ArrayList<>((ArrayList<String>)rs.getArray(7).getArray());
-                avails = new ArrayList<>((ArrayList<String>)rs.getArray(8).getArray());
+                specs = (String[])rs.getArray(7).getArray();
+                avails = (String[])rs.getArray(8).getArray();
                 System.out.println("DEBUG: " + rs);
                 instructor = new Instructor(
                                     rs.getLong(1),
@@ -73,8 +73,8 @@ public class InstructorRepository {
                                     rs.getInt(4),
                                     rs.getString(5),
                                     rs.getString(6),
-                                    specs,
-                                    avails);
+                                    new ArrayList<String>(Arrays.asList(specs)),
+                                    new ArrayList<String>(Arrays.asList(avails)));
             }
             rs.close();
             st.close();
@@ -87,8 +87,8 @@ public class InstructorRepository {
 
     public Instructor get(String name, String phone) {
         Instructor instructor = new Instructor();
-        ArrayList<String> specs = null;
-        ArrayList<String> avails = null;
+        String[] specs = null;
+        String[] avails = null;
         
         try {
             String query = "select * from " + table + " where name = ? and phone = ? and active = true";
@@ -99,8 +99,8 @@ public class InstructorRepository {
 
             while (rs.next()) {
                 System.out.println("DEBUG: " + rs);
-                specs = new ArrayList<>((ArrayList<String>)rs.getArray(7).getArray());
-                avails = new ArrayList<>((ArrayList<String>)rs.getArray(8).getArray());
+                specs = (String[])rs.getArray(7).getArray();
+                avails = (String[])rs.getArray(8).getArray();
                 instructor = new Instructor(
                                 rs.getLong(1),
                                 rs.getBoolean(2),
@@ -108,8 +108,8 @@ public class InstructorRepository {
                                 rs.getInt(4),
                                 rs.getString(5),
                                 rs.getString(6),
-                                specs,
-                                avails);
+                                new ArrayList<String>(Arrays.asList(specs)),
+                                new ArrayList<String>(Arrays.asList(avails)));
             }
             rs.close();
             st.close();

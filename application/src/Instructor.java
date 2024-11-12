@@ -3,6 +3,8 @@ package application.src;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import org.json.simple.JSONObject;
+
 public class Instructor extends User {
 
     private ArrayList<String> specializations = new ArrayList<>();
@@ -234,6 +236,17 @@ public class Instructor extends User {
 
     @Override
     public String toString() {
-        return name + ": " + phone;
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("active",active);
+        json.put("name", name);
+        json.put("phone", phone);
+        json.put("age", age);
+        json.put("specs", specializations);
+        json.put("avails", availabilities);
+
+        String string = json.toString();
+
+        return string;
     }
 }
