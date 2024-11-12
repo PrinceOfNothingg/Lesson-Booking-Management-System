@@ -204,35 +204,107 @@ public class Administrator extends User {
     }
 
     public void deleteBookings(BookingRepository bookings) {
-        throw new UnsupportedOperationException("Unimplemented method 'deleteBookings'");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the booking to delete:");
+        long id = scanner.nextLong();
+        Booking booking = bookings.get(id);
+        if (booking != null) {
+            bookings.delete(id);
+            System.out.println("Booking " + id + " has been deleted.");
+        } else {
+            System.out.println("Booking not found.");
+        }
     }
 
     public void deleteOfferings(OfferingRepository offerings) {
-        throw new UnsupportedOperationException("Unimplemented method 'deleteOfferings'");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the offering to delete:");
+        long id = scanner.nextLong();
+        Offering offering = offerings.get(id);
+        if (offering != null) {
+            offerings.delete(id);
+            System.out.println("Offering " + id + " has been deleted.");
+        } else {
+            System.out.println("Offering not found.");
+        }
     }
 
     public void deleteSchedules(ScheduleRepository schedules) {
-        throw new UnsupportedOperationException("Unimplemented method 'deleteSchedules'");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the schedule to delete:");
+        long id = scanner.nextLong();
+        Schedule schedule = schedules.get(id);
+        if (schedule != null) {
+            schedules.delete(id);
+            System.out.println("Schedule " + id + " has been deleted.");
+        } else {
+            System.out.println("Schedule not found.");
+        }
     }
 
     public void deleteLocations(LocationRepository locations) {
-        throw new UnsupportedOperationException("Unimplemented method 'deleteLocations'");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the location to delete:");
+        long id = scanner.nextLong();
+        Location location = locations.get(id);
+        if (location != null) {
+            locations.delete(id);
+            System.out.println("Location " + id + " has been deleted.");
+        } else {
+            System.out.println("Location not found.");
+        }
     }
 
     public void deleteClients(ClientRepository clients) {
-        throw new UnsupportedOperationException("Unimplemented method 'deleteClients'");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the client to delete:");
+        long id = scanner.nextLong();
+        Client client = clients.get(id);
+        if (client != null) {
+            clients.delete(id);
+            System.out.println("Client " + id + " has been deleted.");
+        } else {
+            System.out.println("Client not found.");
+        }
     }
 
     public void deleteGuardians(GuardianRepository guardians) {
-        throw new UnsupportedOperationException("Unimplemented method 'deleteGuardians'");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the guardian to delete:");
+        long id = scanner.nextLong();
+        Guardian guardian = guardians.get(id);
+        if (guardian != null) {
+            guardians.delete(id);
+            System.out.println("Guardian " + id + " has been deleted.");
+        } else {
+            System.out.println("Guardian not found.");
+        }
     }
 
     public void deleteInstructors(InstructorRepository instructors) {
-        throw new UnsupportedOperationException("Unimplemented method 'deleteInstructors'");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the instructor to delete:");
+        long id = scanner.nextLong();
+        Instructor instructor = instructors.get(id);
+        if (instructor != null) {
+            instructors.delete(id);
+            System.out.println("Instructor " + id + " has been deleted.");
+        } else {
+            System.out.println("Instructor not found.");
+        }
     }
 
     public void deleteAdmins(AdministratorRepository administrators) {
-        throw new UnsupportedOperationException("Unimplemented method 'deleteAdmins'");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the admin to delete:");
+        long id = scanner.nextLong();
+        Administrator admin = administrators.get(id);
+        if (admin != null) {
+            administrators.delete(id);
+            System.out.println("Admin " + id + " has been deleted.");
+        } else {
+            System.out.println("Admin not found.");
+        }
     }
 
     public static Administrator login(Scanner scanner, AdministratorRepository administrators) {
@@ -416,8 +488,8 @@ public class Administrator extends User {
                 // case 16:
                 // deleteBookings(bookings);
                 // break;
-                // case 17:
-                // deleteOfferings(offerings);
+                case 17:
+                 deleteOfferings(offerings);
                 // break;
                 // case 18:
                 // deleteSchedules(schedules);

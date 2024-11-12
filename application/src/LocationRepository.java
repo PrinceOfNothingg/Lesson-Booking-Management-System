@@ -190,4 +190,19 @@ public class LocationRepository {
 
         return id;
     }
+
+    public boolean delete(long id) {
+        boolean success = false;
+        try {
+            String query = "DELETE FROM " + table + " WHERE id = ?";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1, id);
+            int affectedRows = st.executeUpdate();
+            success = affectedRows > 0;
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
 }
