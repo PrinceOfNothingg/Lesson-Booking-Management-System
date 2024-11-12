@@ -1,14 +1,18 @@
 package application.src;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Utils {
 
     public static void printBanner(){
         System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("--------------------------Welcome to Activities Board!--------------------------");
+        System.out.println("-----------------------Welcome to the Activities Board!-------------------------");
         System.out.println("--------------------------------------------------------------------------------\n");
     }
 
@@ -131,6 +135,19 @@ public class Utils {
     public static String getPhone(Scanner scanner){
         return getString(scanner, "Enter your phone (q to exit, r to retry):");
     }
+
+    public static String getDate(Scanner scanner, String msg){
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("YYYY-MM-DD");
+        LocalDate date = LocalDate.parse(getString(scanner, msg), df);
+        return date.toString();
+    }
+
+    public static String getTime(Scanner scanner, String msg){
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("hh:mm:ss");
+        LocalTime time = LocalTime.parse(getString(scanner, msg), df);
+        return time.toString();
+    }
+
 
     public static int getAge(Scanner scanner){
         int age = 0;

@@ -10,15 +10,15 @@ public class Schedule {
 
     private long id = -1;
     private boolean active = false;
-    private Date startDate = null;
-    private Date endDate = null;
-    private Time startTime = null;
-    private Time endTime = null;
+    private String startDate = null;
+    private String endDate = null;
+    private String startTime = null;
+    private String endTime = null;
     private ArrayList<Integer> timeSlots = null;
     private String dow = null;
 
     protected Schedule() {}
-    protected Schedule(long id, boolean active, Date startDate, Date endDate, Time startTime, Time endTime, ArrayList<Integer> slots, String dow ) {
+    protected Schedule(long id, boolean active, String startDate, String endDate, String startTime, String endTime, ArrayList<Integer> slots, String dow ) {
         this.id = id;
         this.active = active;
         this.startDate = startDate;
@@ -45,28 +45,28 @@ public class Schedule {
         this.active = active;
     }
 
-    public Date getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
-    public void setStartDate(Date startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
-    public Date getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
-    public void setEndDate(Date endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
-    public Time getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
-    public void setStartTime(Time startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
-    public Time getEndTime() {
+    public String getEndTime() {
         return endTime;
     }
-    public void setEndTime(Time endTime) {
+    public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
     public ArrayList<Integer> getTimeSlots() {

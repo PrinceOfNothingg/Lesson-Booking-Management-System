@@ -74,10 +74,10 @@ public class User {
     }
 
     public boolean isEmpty() {
-        return this.name == null && this.phone == null && this.role == null;
+        return this.name == null && this.phone == null;
     }
 
-    public void viewOfferings(OfferingRepository offerings){
+    protected void viewOfferings(OfferingRepository offerings){
         List<Offering> result = offerings.getTaken(true);
         if (result.isEmpty())
             System.out.println("No offerings available.");
@@ -98,7 +98,7 @@ public class User {
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
 
-    private int printMenu(){
+    protected int printMenu(){
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          Welcome!");
         System.out.println("--------------------------------------------------------------------------------");
@@ -109,7 +109,7 @@ public class User {
         return 2;
     }
 
-    public int handleSelection(Scanner scanner) {
+    protected int handleSelection(Scanner scanner) {
         int choice = -1;
         int min = 0;
         int max = -1;

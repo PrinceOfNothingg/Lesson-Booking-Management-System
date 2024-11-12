@@ -28,15 +28,16 @@ public class Instructor extends User {
         this.availabilities = availabilities;
     }
    
-    public void viewOfferings(OfferingRepository offerings){
+    @Override
+    protected void viewOfferings(OfferingRepository offerings){
         offerings.getByInstructorId(this).forEach(System.out::println);
     }
 
-    public void viewAvailableOfferings(OfferingRepository offerings){
+    private void viewAvailableOfferings(OfferingRepository offerings){
         offerings.getTaken(false).forEach(System.out::println);
     }
 
-    public void takeOfferings(Scanner scanner, OfferingRepository offerings, LocationRepository locations, InstructorOfferingRepository instructorOfferings){
+    private void takeOfferings(Scanner scanner, OfferingRepository offerings, LocationRepository locations, InstructorOfferingRepository instructorOfferings){
         boolean done = false;
         while(!done){
             System.out.println("\n--------------------------------------------------------------------------------");
@@ -68,7 +69,7 @@ public class Instructor extends User {
         }
     }
 
-    public void removeOfferings(Scanner scanner, OfferingRepository offerings, InstructorOfferingRepository instructorOfferings){
+    private void removeOfferings(Scanner scanner, OfferingRepository offerings, InstructorOfferingRepository instructorOfferings){
         boolean done = false;
         while(!done){
             System.out.println("\n--------------------------------------------------------------------------------");
@@ -96,21 +97,6 @@ public class Instructor extends User {
         }
     }
 
-    @Override
-    User get() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'get'");
-    }
-    @Override
-    boolean update() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
-    }
-    @Override
-    boolean delete() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
-    }
 
     public static Instructor login(Scanner scanner, InstructorRepository instructors){
         Instructor instructor = null;
@@ -190,8 +176,8 @@ public class Instructor extends User {
         return instructor;
     }
     
-
-    private int printMenu(){
+    @Override
+    protected int printMenu(){
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          " + this.name);
         System.out.println("--------------------------------------------------------------------------------");
@@ -205,7 +191,8 @@ public class Instructor extends User {
         return 5;
     }
 
-    public int handleSelection(Scanner scanner) {
+    @Override
+    protected int handleSelection(Scanner scanner) {
         int choice = -1;
         int min = 0;
         int max = -1;

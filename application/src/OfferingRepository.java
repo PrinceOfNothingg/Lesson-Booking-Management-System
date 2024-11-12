@@ -2,9 +2,11 @@ package application.src;
 
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -171,5 +173,28 @@ public class OfferingRepository {
         }
         
         return offering;
+    }
+
+    public boolean insert(Offering offering) {
+        boolean success = false;
+        try {
+            String query = "insert into " + table + " (active, status, taken, type, mode, seats) values (?,?,?,?,?,?)";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setBoolean(1, offering.isActive());
+            st.setString(2, offering.getStatus());
+            st.setBoolean(3, offering.isTaken());
+            st.setString(4, offering.getType());
+            st.setBoolean(5, offering.isGroup());
+            st.setInt(6, offering.getSeats());
+
+            st.executeQuery();
+            System.out.println("DEBUG: " + st);
+            st.close();
+            success = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return success;
     }
 }

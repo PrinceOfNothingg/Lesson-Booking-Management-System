@@ -2,9 +2,11 @@ package application.src;
 
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -166,5 +168,25 @@ public class LocationRepository {
         }
         
         return location;
+    }
+
+    public boolean insert(Location location) {
+        boolean success = false;
+        try {
+            String query = "insert into "+ table +" (active, name, address, city)";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setBoolean(1, true);
+            st.setString(2, location.getName());
+            st.setString(3, location.getAddress());
+            st.setString(4, location.getCity());
+            st.executeQuery();
+            System.out.println("DEBUG: " + st);
+            st.close();
+            success = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return success;
     }
 }

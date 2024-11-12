@@ -23,11 +23,11 @@ public class Client extends User {
     }
     
 
-    public void viewBookings(BookingRepository bookings){
+    private void viewBookings(BookingRepository bookings){
         bookings.getByClientId(this).forEach(System.out::println);
     }
 
-    public void viewBooking(Scanner scanner, BookingRepository bookings){
+    private void viewBooking(Scanner scanner, BookingRepository bookings){
         boolean done = false;
         while(!done){
             System.out.println("\n--------------------------------------------------------------------------------");
@@ -42,7 +42,7 @@ public class Client extends User {
         }
     }
     
-    public void makeBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
+    private void makeBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
         throw new UnsupportedOperationException("Unimplemented method 'makeBooking'");
         
         // Booking booking;
@@ -76,7 +76,7 @@ public class Client extends User {
         // }
     }
 
-    public void cancelBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
+    private void cancelBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
         boolean done = false;
         while(!done){
             System.out.println("\n--------------------------------------------------------------------------------");
@@ -179,22 +179,24 @@ public class Client extends User {
         return client;
     }
 
-    private int printMenu(){
+    @Override
+    protected int printMenu(){
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          " + this.name);
         System.out.println("--------------------------------------------------------------------------------");
         System.out.println("Please select one of the following options:");
         System.out.println("1. View Offerings");
-        System.out.println("1. View Bookings");
-        System.out.println("2. View a Booking");
-        System.out.println("3. Make a Booking");
-        System.out.println("4. Cancel a Booking");
-        System.out.println("5. Logout");
+        System.out.println("2. View Bookings");
+        System.out.println("3. View Booking Details");
+        System.out.println("4. Make a Booking");
+        System.out.println("5. Cancel a Booking");
+        System.out.println("6. Logout");
         System.out.println("--------------------------------------------------------------------------------\n");
         return 6;
     }
 
-    public int handleSelection(Scanner scanner) {
+    @Override
+    protected int handleSelection(Scanner scanner) {
         int choice = -1;
         int min = 0;
         int max = -1;
