@@ -111,8 +111,8 @@ public class AdministratorRepository {
             PreparedStatement st = conn.prepareStatement(query);            
             st.setBoolean(1, true);
             st.setString(2, administrator.name);
-            st.setInt(4, administrator.age);
-            st.setString(3, administrator.phone);
+            st.setInt(3, administrator.age);
+            st.setString(4, administrator.phone);
             st.setString(5, administrator.role);
             st.executeQuery();
             System.out.println("DEBUG: " + st);

@@ -42,6 +42,32 @@ public class LocationScheduleRepository {
         return locationSchedules;
     }
 
+    public List<LocationSchedule> getByOfferingId(Offering offering) {
+        ArrayList<LocationSchedule> locationSchedules = new ArrayList<>();
+        try {
+            String query = "select * from " + table + "where offering_id = ? and active = true";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1,offering.getId());
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                locationSchedules.add(
+                    new LocationSchedule(
+                    rs.getLong(1),
+                    rs.getBoolean(2),
+                    rs.getLong(3),
+                    rs.getLong(4),
+                    rs.getLong(5)));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return locationSchedules;
+    }
+
 
     public boolean insert(LocationSchedule ls) {
         boolean success = false;

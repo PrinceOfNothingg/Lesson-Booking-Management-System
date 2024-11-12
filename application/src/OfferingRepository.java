@@ -31,9 +31,9 @@ public class OfferingRepository {
                     rs.getBoolean(2),
                     rs.getString(3),
                     rs.getBoolean(4),
-                    rs.getString(3),
-                    rs.getBoolean(4),
-                    rs.getInt(5)));
+                    rs.getString(5),
+                    rs.getBoolean(6),
+                    rs.getInt(7)));
             }
             rs.close();
             st.close();
@@ -58,9 +58,9 @@ public class OfferingRepository {
                     rs.getBoolean(2),
                     rs.getString(3),
                     rs.getBoolean(4),
-                    rs.getString(3),
-                    rs.getBoolean(4),
-                    rs.getInt(5));
+                    rs.getString(5),
+                    rs.getBoolean(6),
+                    rs.getInt(7));
             }
             rs.close();
             st.close();
@@ -86,9 +86,36 @@ public class OfferingRepository {
                     rs.getBoolean(2),
                     rs.getString(3),
                     rs.getBoolean(4),
+                    rs.getString(5),
+                    rs.getBoolean(6),
+                    rs.getInt(7)));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return offerings;
+    }
+
+    public List<Offering> getByInstructorId(Instructor instructor) {
+        ArrayList<Offering> offerings = new ArrayList<>();
+        try {
+            String query = "select o.* from " + table + " o join instructor_offering io on o.id = io.offering_id where io.instructor_id = ? and active = true";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1, instructor.getId());
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                offerings.add(new Offering(
+                    rs.getLong(1),
+                    rs.getBoolean(2),
                     rs.getString(3),
                     rs.getBoolean(4),
-                    rs.getInt(5)));
+                    rs.getString(5),
+                    rs.getBoolean(6),
+                    rs.getInt(7)));
             }
             rs.close();
             st.close();
@@ -114,9 +141,9 @@ public class OfferingRepository {
                     rs.getBoolean(2),
                     rs.getString(3),
                     rs.getBoolean(4),
-                    rs.getString(3),
-                    rs.getBoolean(4),
-                    rs.getInt(5));
+                    rs.getString(5),
+                    rs.getBoolean(6),
+                    rs.getInt(7));
             }
             rs.close();
             st.close();

@@ -43,35 +43,37 @@ public class Client extends User {
     }
     
     public void makeBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
-        Booking booking;
-        boolean done = false;
-        while(!done){
-            System.out.println("\n--------------------------------------------------------------------------------");
-            System.out.println("                          Make a Booking" + this.name);
-            System.out.println("--------------------------------------------------------------------------------");
+        throw new UnsupportedOperationException("Unimplemented method 'makeBooking'");
+        
+        // Booking booking;
+        // boolean done = false;
+        // while(!done){
+        //     System.out.println("\n--------------------------------------------------------------------------------");
+        //     System.out.println("                          Make a Booking" + this.name);
+        //     System.out.println("--------------------------------------------------------------------------------");
             
-            int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
-            if (offeringId == 0)
-                break;
-            Offering offering = offerings.get(offeringId);
+        //     int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
+        //     if (offeringId == 0)
+        //         break;
+        //     Offering offering = offerings.get(offeringId);
 
-            //TODO
-            // check offering is valid
-            // check offering schedule not conflicting
-            // get clients bookings > get schedules > compare offering schedule not overlaping
+        //     //TODO
+        //     // check offering is valid
+        //     // check offering schedule not conflicting
+        //     // get clients bookings > get schedules > compare offering schedule not overlaping
 
-            bookings.insert(this, offering);
-            booking = bookings.getByOfferingId(offering);
+        //     bookings.insert(this, offering);
+        //     booking = bookings.getByOfferingId(offering);
 
-            offering.setSeats(offering.getSeats() - 1);
-            if(offering.getSeats() == 0){
-                offering.setStatus("non-available");
-            }
+        //     offering.setSeats(offering.getSeats() - 1);
+        //     if(offering.getSeats() == 0){
+        //         offering.setStatus("non-available");
+        //     }
 
-            offerings.update(offering);
+        //     offerings.update(offering);
 
-            System.out.println(booking);
-        }
+        //     System.out.println(booking);
+        // }
     }
 
     public void cancelBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
@@ -106,7 +108,7 @@ public class Client extends User {
 
 
     public static Client login(Scanner scanner, ClientRepository clients){
-        Client client = new Client();
+        Client client = null;
         String username;
         String phone;
 
@@ -219,7 +221,7 @@ public class Client extends User {
                     viewBooking(scanner, bookings);
                     break;
                 case 3: // Make a Booking
-                    //makeBooking(scanner, offerings, bookings);
+                    makeBooking(scanner, offerings, bookings);
                     break;
                 case 4: // Cancel Booking
                     cancelBooking(scanner, offerings, bookings);

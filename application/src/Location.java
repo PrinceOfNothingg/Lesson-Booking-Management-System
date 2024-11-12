@@ -1,5 +1,7 @@
 package application.src;
 
+import org.json.simple.JSONObject;
+
 public class Location {
 
     private long id = -1;
@@ -61,6 +63,15 @@ public class Location {
     }
 
     public String toString() {
-        return name + ": " + city;
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("active",active);
+        json.put("name", name);
+        json.put("city", city);
+        json.put("address", address);
+
+        String string = json.toString();
+
+        return string;
     }
 }

@@ -79,34 +79,4 @@ public class ScheduleRepository {
         
         return schedule;
     }
-
-    public Schedule getByClientID(long clientId) {
-        Schedule schedule = new Schedule();
-        ArrayList<Integer> slots = null;
-        try {
-            String query = "select * from " + table + " where id = ? and active = true";
-            PreparedStatement st = conn.prepareStatement(query);
-            st.setLong(1, id);
-            ResultSet rs = st.executeQuery();
-
-            while (rs.next()) {
-                slots = new ArrayList<>((ArrayList<Integer>)rs.getArray(7).getArray());
-                schedule = new Schedule(
-                        rs.getLong(1),
-                        rs.getBoolean(2),
-                        rs.getDate(3),
-                        rs.getDate(4),
-                        rs.getTime(5),
-                        rs.getTime(6),
-                        slots,
-                        rs.getString(8));
-            }dfgj
-            rs.close();
-            st.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        
-        return schedule;
-    }
 }

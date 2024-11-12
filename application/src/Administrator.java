@@ -3,6 +3,8 @@ package application.src;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import org.json.simple.JSONObject;
+
 public class Administrator extends User {
 
     public Administrator(){}
@@ -79,15 +81,17 @@ public class Administrator extends User {
     }
 
     public static Administrator login(Scanner scanner, AdministratorRepository administrators){
-        Administrator administrator;
+        Administrator administrator = null;
         String username;
         String phone;
         while(true){
-            System.out.println("Enter your username:");
-            username = scanner.nextLine();
+            username = Utils.getUserName(scanner);
+            if(username.isEmpty())
+                break;
 
-            System.out.println("Enter your phone:");
-            phone = scanner.nextLine();
+            phone = Utils.getPhone(scanner);
+            if(phone.isEmpty())
+                break;
 
             administrator = administrators.get(username, phone);
 
@@ -143,6 +147,15 @@ public class Administrator extends User {
 
     @Override
     public String toString() {
-        return name + ": " + phone;
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("active",active);
+        json.put("name", name);
+        json.put("phone", phone);
+        json.put("age", age);
+
+        String string = json.toString();
+
+        return string;
     }
 }

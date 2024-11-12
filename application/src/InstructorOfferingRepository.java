@@ -41,6 +41,31 @@ public class InstructorOfferingRepository {
         return instructorOfferings;
     }
 
+    public InstructorOffering getByOfferingId(Offering offering) {
+        InstructorOffering instructorOffering = new InstructorOffering();
+        try {
+            String query = "select * from " + table + "where offering_id = ? and active = true";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1,offering.getId());
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                instructorOffering = 
+                    new InstructorOffering(
+                    rs.getLong(1),
+                    rs.getBoolean(2),
+                    rs.getLong(3),
+                    rs.getLong(4));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return instructorOffering;
+    }
+
 
     public boolean insert(Instructor instructor, Offering offering) {
         boolean success = false;
@@ -50,6 +75,24 @@ public class InstructorOfferingRepository {
             st.setBoolean(1, true);
             st.setLong(2, instructor.getId());
             st.setLong(3, offering.getId());
+            st.executeQuery();
+            System.out.println("DEBUG: " + st);
+            st.close();
+            success = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return success;
+    }
+
+    public boolean delete(Instructor instructor, Offering offering) {
+        boolean success = false;
+        try {
+            String query = "delete from "+ table +" where instructor_id = ? and offering_id = ?";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1, instructor.getId());
+            st.setLong(2, offering.getId());
             st.executeQuery();
             System.out.println("DEBUG: " + st);
             st.close();

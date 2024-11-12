@@ -46,7 +46,7 @@ public class Guardian extends User {
     }
 
     public static Guardian login(Scanner scanner, GuardianRepository guardians){
-        Guardian guardian = new Guardian();
+        Guardian guardian = null;
         String username;
         String phone;
         while(true){
