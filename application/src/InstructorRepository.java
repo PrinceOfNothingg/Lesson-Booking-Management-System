@@ -120,13 +120,13 @@ public class InstructorRepository {
         return instructor;
     }
 
-    public boolean insert(Instructor instructor) {
+    public long insert(Instructor instructor) {
         Array specs = null;
         Array avails = null;
 
-        boolean success = false;
+        long id = 0;
         try {
-            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\", specializations, availabilities) values (?,?,?,?,?::roleType,?,?)";
+            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\", specializations, availabilities) values (?,?,?,?,?::roleType,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             specs = (Array) instructor.getSpecializations();
             avails = (Array) instructor.getAvailabilities();
@@ -138,15 +138,16 @@ public class InstructorRepository {
             st.setString(5, instructor.role);
             st.setArray(6, specs);
             st.setArray(7, avails);
-            st.executeQuery();
+            ResultSet rs = st.executeQuery();
+            id = rs.getLong(1);
             System.out.println("DEBUG: " + st);
+            rs.close();
             st.close();
-            success = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         
-        return success;
+        return id;
     }
 
 }

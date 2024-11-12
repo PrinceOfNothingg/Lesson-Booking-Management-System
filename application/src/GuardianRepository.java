@@ -96,24 +96,25 @@ public class GuardianRepository {
         return guardian;
     }
 
-    public boolean insert(Guardian guardian) {
-        boolean success = false;
+    public long insert(Guardian guardian) {
+        long id = 0;
         try {
-            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\") values (?,?,?,?,?::roleType)";
+            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\") values (?,?,?,?,?::roleType) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setString(2, guardian.name);
             st.setInt(3, guardian.age);
             st.setString(4, guardian.phone);
             st.setString(5, guardian.role);
-            st.executeQuery();
+            ResultSet rs = st.executeQuery();
+            id = rs.getLong(1);
             System.out.println("DEBUG: " + st);
+            rs.close();
             st.close();
-            success = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         
-        return success;
+        return id;
     }
 }

@@ -170,23 +170,24 @@ public class LocationRepository {
         return location;
     }
 
-    public boolean insert(Location location) {
-        boolean success = false;
+    public long insert(Location location) {
+        long id = 0;
         try {
-            String query = "insert into "+ table +" (active, name, address, city)";
+            String query = "insert into "+ table +" (active, name, address, city) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setString(2, location.getName());
             st.setString(3, location.getAddress());
             st.setString(4, location.getCity());
-            st.executeQuery();
+            ResultSet rs = st.executeQuery();
+            id = rs.getLong(1);
             System.out.println("DEBUG: " + st);
+            rs.close();
             st.close();
-            success = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return success;
+        return id;
     }
 }

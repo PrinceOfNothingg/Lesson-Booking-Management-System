@@ -175,10 +175,10 @@ public class OfferingRepository {
         return offering;
     }
 
-    public boolean insert(Offering offering) {
-        boolean success = false;
+    public long insert(Offering offering) {
+        long id = 0;
         try {
-            String query = "insert into " + table + " (active, status, taken, type, mode, seats) values (?,?,?,?,?,?)";
+            String query = "insert into " + table + " (active, status, taken, type, mode, seats) values (?,?,?,?,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, offering.isActive());
             st.setString(2, offering.getStatus());
@@ -186,15 +186,15 @@ public class OfferingRepository {
             st.setString(4, offering.getType());
             st.setBoolean(5, offering.isGroup());
             st.setInt(6, offering.getSeats());
-
-            st.executeQuery();
+            ResultSet rs = st.executeQuery();
+            id = rs.getLong(1);
             System.out.println("DEBUG: " + st);
+            rs.close();
             st.close();
-            success = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return success;
+        return id;
     }
 }

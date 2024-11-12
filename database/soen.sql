@@ -170,7 +170,8 @@ CREATE TABLE public.location_schedule (
 	CONSTRAINT location_schedule_pk PRIMARY KEY (id),
 	CONSTRAINT location_schedule_fk FOREIGN KEY (location_id) REFERENCES public.location(id),
 	CONSTRAINT location_schedule_fk_1 FOREIGN KEY (schedule_id) REFERENCES public.schedule(id),
-	CONSTRAINT location_schedule_fk_2 FOREIGN KEY (offering_id) REFERENCES public.offering(id)
+	CONSTRAINT location_schedule_fk_2 FOREIGN KEY (offering_id) REFERENCES public.offering(id),
+	UNIQUE (offering_id)
 );
 
 DROP TABLE IF EXISTS public.instructor_offering;

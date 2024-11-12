@@ -51,7 +51,8 @@ public class Administrator extends User {
         throw new UnsupportedOperationException("Unimplemented method 'createBookings'");
     }
 
-    public void createOfferings(Scanner scanner, OfferingRepository offerings, ScheduleRepository schedules, LocationRepository locations) {
+    public void createOfferings(Scanner scanner, OfferingRepository offerings, ScheduleRepository schedules,
+            LocationRepository locations, LocationScheduleRepository locationSchedules) {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          Create an Offering" + this.name);
         System.out.println("--------------------------------------------------------------------------------");
@@ -61,29 +62,40 @@ public class Administrator extends User {
             createSchedules(scanner, schedules);
         }
 
+        viewSchedules(schedules);
+        long id = Utils.getInt(scanner, "Enter the schedule id:");
+        Schedule schedule = schedules.get(id);
+
         // create location
         val = Utils.getString(scanner, "Create a new location? y/n (q to quit):");
         if (!val.isEmpty() || val.equalsIgnoreCase("y")) {
             createLocations(scanner, locations);
         }
 
+        viewLocations(locations);
+        id = Utils.getInt(scanner, "Enter the location id:");
+        Location location = locations.get(id);
+
         Offering offering = new Offering();
         offering.setActive(true);
         offering.setTaken(false);
         offering.setStatus("non-available");
-        offering.setType("gym");
+
+        String type = Utils.getString(scanner, "Enter offering lesson type (q to quit):");
+        offering.setType(type);
 
         val = Utils.getString(scanner, "Make an Offering private/group/both? (q to quit):");
-        if (val.isEmpty()) {
 
-        }
-        else if (val.equalsIgnoreCase("both") || val.equalsIgnoreCase("private")) {
+        if (val.equalsIgnoreCase("both") || val.equalsIgnoreCase("private")) {
             offering.setGroup(false);
             offering.setSeats(1);
-            offerings.insert(offering);
+            id = offerings.insert(offering);
+            offering = offerings.get(id);
+
+            LocationSchedule ls = new LocationSchedule(0, true, location.getId(), schedule.getId(), offering.getId());
+            locationSchedules.insert(ls);
             System.out.println("Offering " + offering + " has been created.");
         }
-
         if (val.equalsIgnoreCase("both") || val.equalsIgnoreCase("group")) {
             int value = Utils.getInt(scanner, "How many participants? (q to quit):");
             if (value == 0) {
@@ -91,7 +103,11 @@ public class Administrator extends User {
             } else {
                 offering.setGroup(true);
                 offering.setSeats(value);
-                offerings.insert(offering);
+                id = offerings.insert(offering);
+                offering = offerings.get(id);
+                LocationSchedule ls = new LocationSchedule(0, true, location.getId(), schedule.getId(),
+                        offering.getId());
+                locationSchedules.insert(ls);
 
                 System.out.println("Offering " + offering + " has been created.");
             }
@@ -106,19 +122,20 @@ public class Administrator extends User {
             System.out.println("--------------------------------------------------------------------------------");
 
             String startDate = Utils.getDate(scanner, "Please enter the start date 'YYYY-MM-DD':");
-            if(startDate.isEmpty())
+            if (startDate.isEmpty())
                 break;
             String endDate = Utils.getDate(scanner, "Please enter the end date 'YYYY-MM-DD':");
-            if(endDate.isEmpty())
+            if (endDate.isEmpty())
                 break;
             String startTime = Utils.getTime(scanner, "Please enter the start time 'hh:mm:ss':");
-            if(startTime.isEmpty())
+            if (startTime.isEmpty())
                 break;
             String endTime = Utils.getTime(scanner, "Please enter the end time 'hh:mm:ss':");
-            if(endTime.isEmpty())
+            if (endTime.isEmpty())
                 break;
-            String dow = Utils.getString(scanner,"Please enter the array of days of the week '{sun, mon, tue, wed, thu, fri, sat}':");
-            if(dow.isEmpty())
+            String dow = Utils.getString(scanner,
+                    "Please enter the array of days of the week '{sun, mon, tue, wed, thu, fri, sat}':");
+            if (dow.isEmpty())
                 break;
 
             Schedule schedule = new Schedule(0, true, startDate, endDate, startTime, endTime, null, dow);
@@ -141,13 +158,13 @@ public class Administrator extends User {
             System.out.println("--------------------------------------------------------------------------------");
 
             String name = Utils.getString(scanner, "Please enter location name:");
-            if(name.isEmpty())
+            if (name.isEmpty())
                 break;
             String address = Utils.getString(scanner, "Please enter location address:");
-            if(address.isEmpty())
+            if (address.isEmpty())
                 break;
             String city = Utils.getString(scanner, "Please enter location city:");
-            if(city.isEmpty())
+            if (city.isEmpty())
                 break;
 
             Location location = new Location(0, true, name, address, city);
@@ -193,6 +210,7 @@ public class Administrator extends User {
     public void deleteOfferings(OfferingRepository offerings) {
         throw new UnsupportedOperationException("Unimplemented method 'deleteOfferings'");
     }
+
     public void deleteSchedules(ScheduleRepository schedules) {
         throw new UnsupportedOperationException("Unimplemented method 'deleteSchedules'");
     }
@@ -212,6 +230,7 @@ public class Administrator extends User {
     public void deleteInstructors(InstructorRepository instructors) {
         throw new UnsupportedOperationException("Unimplemented method 'deleteInstructors'");
     }
+
     public void deleteAdmins(AdministratorRepository administrators) {
         throw new UnsupportedOperationException("Unimplemented method 'deleteAdmins'");
     }
@@ -289,57 +308,58 @@ public class Administrator extends User {
 
     @Override
     protected int printMenu() {
-            System.out.println("\n--------------------------------------------------------------------------------");
-            System.out.println("                          " + this.name);
-            System.out.println("--------------------------------------------------------------------------------");
-            System.out.println("Please select one of the following options:");
-            System.out.println("1. View Bookings");
-            System.out.println("2. View Offerings");
-            System.out.println("3. View Schedules");
-            System.out.println("4. View Locations");
-            System.out.println("5. View Clients");
-            System.out.println("6. View Guardians");
-            System.out.println("7. View Instructors");
-            System.out.println("8. View Admins");
-    
-            System.out.println("9. Create Booking");
-            System.out.println("10. Create Offering");
-            System.out.println("11. Create Schedule");
-            System.out.println("12. Create Location");
-            System.out.println("13. Create Client");
-            System.out.println("14. Create Guardian");
-            System.out.println("15. Create Instructor");
-            System.out.println("16. Create Admin");
-    
-            System.out.println("17. Delete Booking");
-            System.out.println("18. Delete Offering");
-            System.out.println("19. Delete Schedule");
-            System.out.println("20. Delete Location");
-            System.out.println("21. Delete Client");
-            System.out.println("22. Delete Guardian");
-            System.out.println("23. Delete Instructor");
-            System.out.println("24. Delete Admin");
-    
-            System.out.println("25. Logout");
-            System.out.println("--------------------------------------------------------------------------------\n");
-            return 25;
-        }
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          " + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
+        System.out.println("Please select one of the following options:");
+        System.out.println("1. View Bookings");
+        System.out.println("2. View Offerings");
+        System.out.println("3. View Schedules");
+        System.out.println("4. View Locations");
+        System.out.println("5. View Clients");
+        System.out.println("6. View Guardians");
+        System.out.println("7. View Instructors");
+        System.out.println("8. View Admins");
+
+        System.out.println("9. Create Booking");
+        System.out.println("10. Create Offering");
+        System.out.println("11. Create Schedule");
+        System.out.println("12. Create Location");
+        System.out.println("13. Create Client");
+        System.out.println("14. Create Guardian");
+        System.out.println("15. Create Instructor");
+        System.out.println("16. Create Admin");
+
+        System.out.println("17. Delete Booking");
+        System.out.println("18. Delete Offering");
+        System.out.println("19. Delete Schedule");
+        System.out.println("20. Delete Location");
+        System.out.println("21. Delete Client");
+        System.out.println("22. Delete Guardian");
+        System.out.println("23. Delete Instructor");
+        System.out.println("24. Delete Admin");
+
+        System.out.println("25. Logout");
+        System.out.println("--------------------------------------------------------------------------------\n");
+        return 25;
+    }
 
     @Override
     protected int handleSelection(Scanner scanner) {
-            int choice = -1;
-            int min = 0;
-            int max = -1;
-            do {
-                max = printMenu();
-                choice = Utils.getSelection(scanner, min, max);
-            } while (choice < min || choice > max);
-            return choice;
-        }
+        int choice = -1;
+        int min = 0;
+        int max = -1;
+        do {
+            max = printMenu();
+            choice = Utils.getSelection(scanner, min, max);
+        } while (choice < min || choice > max);
+        return choice;
+    }
 
     public void process(Scanner scanner, BookingRepository bookings, OfferingRepository offerings,
             ScheduleRepository schedules, LocationRepository locations, ClientRepository clients,
-            GuardianRepository guardians, InstructorRepository instructors, AdministratorRepository administrators) {
+            GuardianRepository guardians, InstructorRepository instructors, AdministratorRepository administrators,
+            LocationScheduleRepository locationSchedules) {
         boolean done = false;
         while (!done) {
             int action = handleSelection(scanner);
@@ -373,7 +393,7 @@ public class Administrator extends User {
                     createBookings(bookings);
                     break;
                 case 9:
-                    createOfferings(scanner, offerings, schedules, locations);
+                    createOfferings(scanner, offerings, schedules, locations, locationSchedules);
                     break;
                 case 10:
                     createSchedules(scanner, schedules);
@@ -382,41 +402,41 @@ public class Administrator extends User {
                     createLocations(scanner, locations);
                     break;
                 // case 12:
-                //     createClients(clients);
-                //     break;
+                // createClients(clients);
+                // break;
                 // case 13:
-                //     createGuardians(guardians);
-                //     break;
+                // createGuardians(guardians);
+                // break;
                 // case 14:
-                //     createInstructors(instructors);
-                //     break;
+                // createInstructors(instructors);
+                // break;
                 // case 15:
-                //     createAdmins(administrators);
-                //     break;
+                // createAdmins(administrators);
+                // break;
                 // case 16:
-                //     deleteBookings(bookings);
-                //     break;
+                // deleteBookings(bookings);
+                // break;
                 // case 17:
-                //     deleteOfferings(offerings);
-                //     break;
+                // deleteOfferings(offerings);
+                // break;
                 // case 18:
-                //     deleteSchedules(schedules);
-                //     break;
+                // deleteSchedules(schedules);
+                // break;
                 // case 19:
-                //     deleteLocations(locations);
-                //     break;
+                // deleteLocations(locations);
+                // break;
                 // case 20:
-                //     deleteClients(clients);
-                //     break;
+                // deleteClients(clients);
+                // break;
                 // case 21:
-                //     deleteGuardians(guardians);
-                //     break;
+                // deleteGuardians(guardians);
+                // break;
                 // case 22:
-                //     deleteInstructors(instructors);
-                //     break;
+                // deleteInstructors(instructors);
+                // break;
                 // case 23:
-                //     deleteAdmins(administrators);
-                //     break;
+                // deleteAdmins(administrators);
+                // break;
                 case 24: // logout
                     done = true;
                     logout();

@@ -117,10 +117,10 @@ public class ScheduleRepository {
         return schedule;
     }
 
-    public boolean insert(Schedule schedule) {
-        boolean success = false;
+    public long insert(Schedule schedule) {
+        long id = 0;
         try {
-            String query = "insert into "+ table +" (active, start_date, end_date, start_t, end_t, time_slots, weekdays) values (?,?,?,?,?,?,?::_day_of_week)";
+            String query = "insert into "+ table +" (active, start_date, end_date, start_t, end_t, time_slots, weekdays) values (?,?,?,?,?,?,?::_day_of_week) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setDate(2, Date.valueOf(schedule.getStartDate()));
@@ -129,15 +129,15 @@ public class ScheduleRepository {
             st.setTime(5, Time.valueOf(schedule.getEndTime()));
             st.setArray(6, null);
             st.setString(7, schedule.getDow());
-
-            st.executeQuery();
+            ResultSet rs = st.executeQuery();
+            id = rs.getLong(1);
             System.out.println("DEBUG: " + st);
+            rs.close();
             st.close();
-            success = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return success;
+        return id;
     }
 }

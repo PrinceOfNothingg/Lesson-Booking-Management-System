@@ -69,23 +69,24 @@ public class LocationScheduleRepository {
     }
 
 
-    public boolean insert(LocationSchedule ls) {
-        boolean success = false;
+    public long insert(LocationSchedule ls) {
+        long id = 0;
         try {
-            String query = "insert into "+ table +" (active, location_id, schedule_id, lesson_id) values (?,?,?,?)";
+            String query = "insert into "+ table +" (active, location_id, schedule_id, lesson_id) values (?,?,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setLong(2, ls.getLocationId());
             st.setLong(3, ls.getScheduleId());
-            st.setLong(4, ls.getLessonId());
-            st.executeQuery();
+            st.setLong(4, ls.getOfferingId());
+            ResultSet rs = st.executeQuery();
+            id = rs.getLong(1);
             System.out.println("DEBUG: " + st);
+            rs.close();
             st.close();
-            success = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return success;
+        return id;
     }
 }

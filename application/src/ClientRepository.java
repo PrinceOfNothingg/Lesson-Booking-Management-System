@@ -102,10 +102,10 @@ public class ClientRepository {
         return client;
     }
 
-    public boolean insert(Client client) {
-        boolean success = false;
+    public long insert(Client client) {
+        long id = 0;
         try {
-            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\", dependant) values (?,?,?,?,?::roleType,?)";
+            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\", dependant) values (?,?,?,?,?::roleType,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setString(2, client.name);
@@ -113,15 +113,16 @@ public class ClientRepository {
             st.setString(4, client.phone);
             st.setString(5, client.role);
             st.setBoolean(6, client.dependant);
+            ResultSet rs = st.executeQuery();
+            id = rs.getLong(1);
             System.out.println("DEBUG: " + st);
-            st.executeQuery();
+            rs.close();
             st.close();
-            success = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         
-        return success;
+        return id;
     }
 
 }

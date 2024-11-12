@@ -43,23 +43,24 @@ public class RepresentativeRepository {
     }
 
 
-    public boolean insert(Guardian guardian, Client dependant) {
-        boolean success = false;
+    public long insert(Guardian guardian, Client dependant) {
+        long id = 0;
         try {
-            String query = "insert into "+ table +" (active, representative_id, client_id, relationshp) values (?,?,?,?)";
+            String query = "insert into "+ table +" (active, representative_id, client_id, relationshp) values (?,?,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setLong(2, guardian.getId());
             st.setLong(3, dependant.getId());
             st.setString(4, "child");
-            st.executeQuery();
+            ResultSet rs = st.executeQuery();
+            id = rs.getLong(1);
             System.out.println("DEBUG: " + st);
+            rs.close();
             st.close();
-            success = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return success;
+        return id;
     }
 }

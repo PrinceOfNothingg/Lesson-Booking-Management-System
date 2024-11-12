@@ -9,17 +9,17 @@ public class LocationSchedule {
     private boolean active = false;
     private long locationId = -1;
     private long scheduleId = -1;
-    private long lessonId = -1;
+    private long offeringId = -1;
 
     
 
     public LocationSchedule(){}
-    public LocationSchedule(long id, boolean active, long locationId, long scheduleId, long lessonId) {
+    public LocationSchedule(long id, boolean active, long locationId, long scheduleId, long offeringId) {
         this.id = id;
         this.active = active;
         this.locationId = locationId;
         this.scheduleId = scheduleId;
-        this.lessonId = lessonId;
+        this.offeringId = offeringId;
     }
     
     
@@ -47,10 +47,10 @@ public class LocationSchedule {
     public void setScheduleId(long scheduleId) {
         this.scheduleId = scheduleId;
     }
-    public long getLessonId() {
-        return lessonId;
+    public long getOfferingId() {
+        return offeringId;
     }
-    public void setLessonId(long lessonId) {
-        this.lessonId = lessonId;
+    public void setOfferingId(long offeringId) {
+        this.offeringId = offeringId;
     }
 }

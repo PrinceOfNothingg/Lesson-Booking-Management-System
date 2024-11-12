@@ -67,23 +67,24 @@ public class InstructorOfferingRepository {
     }
 
 
-    public boolean insert(Instructor instructor, Offering offering) {
-        boolean success = false;
+    public long insert(Instructor instructor, Offering offering) {
+        long id = 0;
         try {
-            String query = "insert into "+ table +" (active, instructor_id, offering_id) values (?,?,?)";
+            String query = "insert into "+ table +" (active, instructor_id, offering_id) values (?,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setLong(2, instructor.getId());
             st.setLong(3, offering.getId());
-            st.executeQuery();
+            ResultSet rs = st.executeQuery();
+            id = rs.getLong(1);
             System.out.println("DEBUG: " + st);
+            rs.close();
             st.close();
-            success = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return success;
+        return id;
     }
 
     public boolean delete(Instructor instructor, Offering offering) {

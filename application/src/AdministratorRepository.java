@@ -104,24 +104,25 @@ public class AdministratorRepository {
         return administrator;
     }
 
-    public boolean insert(Administrator administrator) {
-        boolean success = false;
+    public long insert(Administrator administrator) {
+        long id = 0;
         try {
-            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\") values (?,?,?,?,?)";
+            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\") values (?,?,?,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);            
             st.setBoolean(1, true);
             st.setString(2, administrator.name);
             st.setInt(3, administrator.age);
             st.setString(4, administrator.phone);
             st.setString(5, administrator.role);
-            st.executeQuery();
+            ResultSet rs = st.executeQuery();
+            id = rs.getLong(1);
             System.out.println("DEBUG: " + st);
+            rs.close();
             st.close();
-            success = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         
-        return success;
+        return id;
     }
 }

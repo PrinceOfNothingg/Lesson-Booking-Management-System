@@ -114,7 +114,7 @@ public class App extends Thread {
                     break;
                 case "admin":
                     administrator = (Administrator) user;
-                    administrator.process(scanner, bookingRepo, offeringRepo, scheduleRepo, locationRepo, clientRepo, guardianRepo, instructorRepo, administratorRepo);
+                    administrator.process(scanner, bookingRepo, offeringRepo, scheduleRepo, locationRepo, clientRepo, guardianRepo, instructorRepo, administratorRepo, locationScheduleRepo);
                     break;
                 case "guest":
                     user.process(scanner, offeringRepo);

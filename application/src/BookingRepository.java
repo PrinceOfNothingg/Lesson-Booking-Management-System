@@ -137,24 +137,25 @@ public class BookingRepository {
         return booking;
     }
 
-    public boolean insert(Client client, Offering offering) {
-        boolean success = false;
+    public long insert(Client client, Offering offering) {
+        long id = 0;
         try {
-            String query = "insert into "+ table +" (active, client_id, offering_id, \"status\") values (?,?,?,?)";
+            String query = "insert into "+ table +" (active, client_id, offering_id, \"status\") values (?,?,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setLong(2, client.getId());
             st.setLong(3, offering.getId());
             st.setString(4, "booked");
-            st.executeQuery();
+            ResultSet rs = st.executeQuery();
+            id = rs.getLong(1);
             System.out.println("DEBUG: " + st);
+            rs.close();
             st.close();
-            success = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return success;
+        return id;
     }
 
     public boolean delete(Client client, Booking booking) {
