@@ -205,9 +205,9 @@ public class Utils {
             }
 
             System.out.println(specs);
-            System.out.println("Are the above values correct? (q to exit, r to retry):");
+            System.out.println("Are the above values correct? y/n (q to exit):");
             input = scanner.nextLine().trim();
-            if(input.equalsIgnoreCase("q")){
+            if(input.equalsIgnoreCase("q") || input.equalsIgnoreCase("y")){
                 break;
             }
         }

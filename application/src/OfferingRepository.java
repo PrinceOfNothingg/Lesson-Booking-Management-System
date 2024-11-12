@@ -198,18 +198,19 @@ public class OfferingRepository {
         return id;
     }
 
-    public boolean delete(long id) {
+    public boolean delete(Offering offering) {
         boolean success = false;
         try {
-            String query = "DELETE FROM " + table + " WHERE id = ?";
+            String query = "delete from " + table + " where id = ?";
             PreparedStatement st = conn.prepareStatement(query);
-            st.setLong(1, id);
-            int affectedRows = st.executeUpdate();
-            success = affectedRows > 0;
+            st.setLong(1, offering.getId());
+            System.out.println("DEBUG: " + st);
             st.close();
+            success = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return success;
     }
 }

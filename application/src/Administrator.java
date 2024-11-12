@@ -1,9 +1,12 @@
 package application.src;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.json.simple.JSONObject;
+import org.postgresql.util.PGobject;
 
 public class Administrator extends User {
 
@@ -51,8 +54,7 @@ public class Administrator extends User {
         throw new UnsupportedOperationException("Unimplemented method 'createBookings'");
     }
 
-    public void createOfferings(Scanner scanner, OfferingRepository offerings, ScheduleRepository schedules,
-            LocationRepository locations, LocationScheduleRepository locationSchedules) {
+    public void createOfferings(Scanner scanner, OfferingRepository offerings, ScheduleRepository schedules, LocationRepository locations, LocationScheduleRepository locationSchedules) {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          Create an Offering" + this.name);
         System.out.println("--------------------------------------------------------------------------------");
@@ -92,9 +94,29 @@ public class Administrator extends User {
             id = offerings.insert(offering);
             offering = offerings.get(id);
 
-            LocationSchedule ls = new LocationSchedule(0, true, location.getId(), schedule.getId(), offering.getId());
-            locationSchedules.insert(ls);
-            System.out.println("Offering " + offering + " has been created.");
+            // schedules are guaranteed to be unique timeranges by db on insert
+            // check if anything is already scheduled at the same time and location
+            boolean overlap = false;
+            List<Schedule> occupied = schedules.getByLocationId(location, offering);
+            for (Schedule sch : occupied) {
+                if(sch.getId() == schedule.getId()){
+                    System.out.println("Desired schedule at location is already reserved.");
+                    System.out.println(location);
+                    System.out.println(sch);
+                    overlap = true;
+                    break;
+                }
+            }
+            if(!overlap){
+                LocationSchedule ls = new LocationSchedule(0, true, location.getId(), schedule.getId(), offering.getId());
+                id = locationSchedules.insert(ls);
+                if(id == 0){
+                    System.out.println("Failed to add schedule to offering");
+                    offerings.delete(offering);
+                }
+                else 
+                    System.out.println("Offering " + offering + " has been created.");
+            }
         }
         if (val.equalsIgnoreCase("both") || val.equalsIgnoreCase("group")) {
             int value = Utils.getInt(scanner, "How many participants? (q to quit):");
@@ -105,11 +127,15 @@ public class Administrator extends User {
                 offering.setSeats(value);
                 id = offerings.insert(offering);
                 offering = offerings.get(id);
-                LocationSchedule ls = new LocationSchedule(0, true, location.getId(), schedule.getId(),
-                        offering.getId());
-                locationSchedules.insert(ls);
 
-                System.out.println("Offering " + offering + " has been created.");
+                LocationSchedule ls = new LocationSchedule(0, true, location.getId(), schedule.getId(), offering.getId());
+                id = locationSchedules.insert(ls);
+                if(id == 0){
+                    System.out.println("Failed to add schedule to offering");
+                    offerings.delete(offering);
+                }
+                else 
+                    System.out.println("Offering " + offering + " has been created.");
             }
         }
     }
@@ -121,27 +147,26 @@ public class Administrator extends User {
             System.out.println("                          Create a schedule" + this.name);
             System.out.println("--------------------------------------------------------------------------------");
 
-            String startDate = Utils.getDate(scanner, "Please enter the start date 'YYYY-MM-DD':");
-            if (startDate.isEmpty())
+            String start = Utils.getDate(scanner, "Please enter the start time 'YYYY-MM-DD hh:mm:ss':");
+            if (start.isEmpty())
                 break;
-            String endDate = Utils.getDate(scanner, "Please enter the end date 'YYYY-MM-DD':");
-            if (endDate.isEmpty())
+            String end = Utils.getDate(scanner, "Please enter the end time 'YYYY-MM-DD hh:mm:ss':");
+            if (end.isEmpty())
                 break;
-            String startTime = Utils.getTime(scanner, "Please enter the start time 'hh:mm:ss':");
-            if (startTime.isEmpty())
+            
+            String sDow = Utils.getString(scanner,"Please enter days of the week as space seperated list 'sun mon tue wed thu fri sat':");
+            if (sDow.isEmpty())
                 break;
-            String endTime = Utils.getTime(scanner, "Please enter the end time 'hh:mm:ss':");
-            if (endTime.isEmpty())
-                break;
-            String dow = Utils.getString(scanner,
-                    "Please enter the array of days of the week '{sun, mon, tue, wed, thu, fri, sat}':");
-            if (dow.isEmpty())
-                break;
+            List<String> weekdays = new ArrayList<>();
 
-            Schedule schedule = new Schedule(0, true, startDate, endDate, startTime, endTime, null, dow);
+            Schedule schedule = new Schedule(0, true, "["+start+", "+end+")", weekdays);
 
-            schedules.insert(schedule);
-            schedule = schedules.get(startDate, endDate, startTime, endTime, dow);
+            long id = schedules.insert(schedule);
+            if(id == 0){
+                System.out.println("Schedule not created due to error or overlap");
+                continue;
+            }
+            schedule = schedules.get(id);
 
             System.out.println("Schedule " + schedule + " has been created.");
 
@@ -187,20 +212,36 @@ public class Administrator extends User {
         }
     }
 
-    public void createClients(ClientRepository clients) {
-        throw new UnsupportedOperationException("Unimplemented method 'createClients'");
+    public void createClients(Scanner scanner, ClientRepository clients) {
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          Create a Client" + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
+
+        Client.register(scanner, clients);
     }
 
-    public void createGuardians(GuardianRepository guardians) {
-        throw new UnsupportedOperationException("Unimplemented method 'createGuardians'");
+    public void createGuardians(Scanner scanner, GuardianRepository guardians, ClientRepository clients, RepresentativeRepository representatives) {
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          Create a Guardian" + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
+
+        Guardian.register(scanner, guardians, clients, representatives);
     }
 
-    public void createInstructors(InstructorRepository instructors) {
-        throw new UnsupportedOperationException("Unimplemented method 'createInstructors'");
+    public void createInstructors(Scanner scanner, InstructorRepository instructors) {
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          Create an Instructor" + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
+
+        Instructor.register(scanner, instructors);
     }
 
-    public void createAdmins(AdministratorRepository administrators) {
-        throw new UnsupportedOperationException("Unimplemented method 'createAdmins'");
+    public void createAdmins(Scanner scanner, AdministratorRepository administrators) {
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          Create an Instructor" + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
+
+        Administrator.register(scanner, administrators);
     }
 
     public void deleteBookings(BookingRepository bookings) {

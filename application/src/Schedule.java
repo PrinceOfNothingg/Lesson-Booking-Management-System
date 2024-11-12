@@ -3,6 +3,9 @@ package application.src;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.json.simple.JSONObject;
 
 public class Schedule {
 
@@ -10,86 +13,53 @@ public class Schedule {
 
     private long id = -1;
     private boolean active = false;
-    private String startDate = null;
-    private String endDate = null;
-    private String startTime = null;
-    private String endTime = null;
-    private ArrayList<Integer> timeSlots = null;
-    private String dow = null;
+    private String slot = null;
+    private List<String> dow = null;
 
     protected Schedule() {}
-    protected Schedule(long id, boolean active, String startDate, String endDate, String startTime, String endTime, ArrayList<Integer> slots, String dow ) {
+    protected Schedule(long id, boolean active, String slot, List<String> dow ) {
         this.id = id;
         this.active = active;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.timeSlots = slots;
+        this.slot = slot;
         this.dow = dow;
     }
+
 
     public long getId() {
         return id;
     }
-
-    public boolean isActive() {
-        return active;
-    }
-
     public void setId(long id) {
         this.id = id;
     }
-   
+    public boolean isActive() {
+        return active;
+    }
     public void setActive(boolean active) {
         this.active = active;
     }
-
-    public String getStartDate() {
-        return startDate;
+    public String getSlot() {
+        return slot;
     }
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
+    public void setSlot(String slot) {
+        this.slot = slot;
     }
-    public String getEndDate() {
-        return endDate;
-    }
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
-    }
-    public String getStartTime() {
-        return startTime;
-    }
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-    public String getEndTime() {
-        return endTime;
-    }
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
-    public ArrayList<Integer> getTimeSlots() {
-        return timeSlots;
-    }
-    public void setTimeSlots(ArrayList<Integer> timeSlots) {
-        this.timeSlots = timeSlots;
-    }
-    public String getDow() {
+    public List<String> getDow() {
         return dow;
     }
-    public void setDow(String dow) {
+    public void setDow(List<String> dow) {
         this.dow = dow;
     }
 
     public boolean isEmpty() {
-        return this.startDate == null && 
-                this.startTime == null &&
-                this.endDate == null &&
-                this.endTime == null;
+        return this.slot == null && this.dow == null;
     }
 
     public String toString() {
-        return "On"+ dow +" from "+ startTime + " to " + endTime + " from " + startDate +" "+endDate;
+       JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("active", active);
+        json.put("slot", slot);
+        json.put("dow", dow);
+        return json.toString();
     }
 }

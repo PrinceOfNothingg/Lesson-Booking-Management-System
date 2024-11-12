@@ -106,25 +106,17 @@ CREATE TYPE day_of_week AS enum (
     'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'
 );
 
-
 -- public.schedule definition
 DROP TABLE IF EXISTS public.schedule;
 
 CREATE TABLE public.schedule (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	active bool NULL DEFAULT true,
-	"start_date" date NULL,
-	end_date date NULL,
-	start_t time NULL,
-	end_t time NULL,
-	time_slots _int8 NOT NULL,
-	weekdays _day_of_week NOT NULL,
-	CONSTRAINT schedule_pk PRIMARY KEY (id)
+	slot tsrange NOT NULL,
+	weekdays _day_of_week NULL,
+	CONSTRAINT schedule_pk PRIMARY KEY (id),
+	EXCLUDE USING GIST (slot WITH &&)
 );
-
--- INSERT INTO schedule (start_date, end_date, start_t, end_t, time_slots, weekdays) VALUES 
--- ('2024-11-04', '2024-12-31', '05:00:00', '22:00:00', '{0,1440}', '{sun,mon,tue,wed,thu,fri,sat}');
-
 
 -- public."space" definition
 
@@ -157,6 +149,7 @@ CREATE TABLE public.offering (
 	CONSTRAINT offering_pk PRIMARY KEY (id)
 );
 
+
 -- public.location_schedule definition
 
 DROP TABLE IF EXISTS public.location_schedule;
@@ -171,7 +164,8 @@ CREATE TABLE public.location_schedule (
 	CONSTRAINT location_schedule_fk FOREIGN KEY (location_id) REFERENCES public.location(id),
 	CONSTRAINT location_schedule_fk_1 FOREIGN KEY (schedule_id) REFERENCES public.schedule(id),
 	CONSTRAINT location_schedule_fk_2 FOREIGN KEY (offering_id) REFERENCES public.offering(id),
-	UNIQUE (offering_id)
+	UNIQUE (offering_id),
+	UNIQUE (location_id, schedule_id)
 );
 
 DROP TABLE IF EXISTS public.instructor_offering;
@@ -205,7 +199,7 @@ CREATE TABLE public.booking (
     
 -- FUNCTIONS
 
-CREATE OR REPLACE FUNCTION dates_overlap(cid bigint, start_d date, end_d date)
+CREATE OR REPLACE FUNCTION dates_overlap(cid bigint, startDate date, endDate date)
   RETURNS setof schedule
   LANGUAGE plpgsql AS
 $$
@@ -216,27 +210,9 @@ $$
 		join offering o on ls.offering_id = o.id 
 		join booking b on o.id = b.offering_id 
 		where b.client_id = cid
-		and (s.start_date, s.end_date)
-		overlaps (start_d, end_d);
+		and (s.start_date, s.end_date) overlaps (startDate, endDate);
 	end;
 $$;
-
-CREATE OR REPLACE FUNCTION times_overlap(cid bigint, start_t date, end_t date)
-  RETURNS setof schedule
-  LANGUAGE plpgsql AS
-$$
-	begin return query
-		select s.*
-		from schedule s
-		join location_schedule ls on s.id = ls.schedule_id 
-		join offering o on ls.offering_id = o.id 
-		join booking b on o.id = b.offering_id 
-		where b.client_id = cid
-		and (s.start_t, s.end_t)
-		overlaps (start_t, end_t);
-	end;
-$$;
-
 
 CREATE OR REPLACE FUNCTION weekdays_overlap(cid bigint, weekdays _day_of_week)
   RETURNS setof schedule
@@ -249,11 +225,9 @@ $$
 		join offering o on ls.offering_id = o.id 
 		join booking b on o.id = b.offering_id 
 		where b.client_id = cid
-		and (s.start_date, s.end_date)
-		overlaps (start_d, end_d);
+		and weekdays && s.weekdays;
 	end;
 $$;
-
 
 
 -- Test Data
@@ -302,15 +276,25 @@ INSERT INTO "location" (active, "name", "address", city) VALUES
 (true, 'C building room 3', '1002 street', 'brossard');
 
 
-INSERT INTO schedule (active, "start_date", end_date, start_t, end_t, time_slots, weekdays) VALUES 
-(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"sun"}'),
-(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"mon"}'),
-(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"tue"}'),
-(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"wed"}'),
-(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"thu"}'),
-(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"fri"}'),
-(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"sat"}'),
-(true, '2024-09-01', '2024-12-31', '00:00:00', '23:59:59', '{}', '{"sun", "mon", "tue", "wed", "thu", "fri", "sat"}');
+INSERT INTO schedule (active, slot, weekdays) VALUES 
+(true, '[2024-11-01 05:00:00, 2024-11-01 06:00:00)', '{"sun"}'),
+(true, '[2024-11-01 06:00:00, 2024-11-01 07:00:00)', '{"sun"}'),
+(true, '[2024-11-01 07:00:00, 2024-11-01 08:00:00)', '{"sun"}'),
+(true, '[2024-11-01 08:00:00, 2024-11-01 09:00:00)', '{"sun"}'),
+(true, '[2024-11-01 09:00:00, 2024-11-01 10:00:00)', '{"sun"}'),
+(true, '[2024-11-01 10:00:00, 2024-11-01 11:00:00)', '{"sun"}'),
+(true, '[2024-11-01 11:00:00, 2024-11-01 12:00:00)', '{"sun"}'),
+(true, '[2024-11-01 12:00:00, 2024-11-01 13:00:00)', '{"sun"}'),
+(true, '[2024-11-01 13:00:00, 2024-11-01 14:00:00)', '{"sun"}'),
+(true, '[2024-11-01 14:00:00, 2024-11-01 15:00:00)', '{"sun"}'),
+(true, '[2024-11-01 15:00:00, 2024-11-01 16:00:00)', '{"sun"}'),
+(true, '[2024-11-01 16:00:00, 2024-11-01 17:00:00)', '{"sun"}'),
+(true, '[2024-11-01 17:00:00, 2024-11-01 18:00:00)', '{"sun"}'),
+(true, '[2024-11-01 18:00:00, 2024-11-01 19:00:00)', '{"sun"}'),
+(true, '[2024-11-01 19:00:00, 2024-11-01 20:00:00)', '{"sun"}'),
+(true, '[2024-11-01 20:00:00, 2024-11-01 21:00:00)', '{"sun"}'),
+(true, '[2024-11-01 21:00:00, 2024-11-01 22:00:00)', '{"sun"}');
+
 
 
 INSERT INTO offering (active, "status", taken, "type", mode, seats) VALUES 

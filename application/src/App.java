@@ -106,7 +106,7 @@ public class App extends Thread {
                     break;
                 case "guardian":
                     guardian = (Guardian) user;
-                    guardian.process();
+                    guardian.process(scanner, offeringRepo);
                     break;
                 case "instructor":
                     instructor = (Instructor) user;
