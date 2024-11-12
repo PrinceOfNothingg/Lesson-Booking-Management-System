@@ -186,6 +186,27 @@ public class Utils {
         return value;
     }
 
+    public static long getLong(Scanner scanner, String msg){
+        long value = 0;
+        String input;
+        boolean done = false;
+
+        while(!done){
+            System.out.println(msg);
+            input = scanner.nextLine().trim();
+            System.out.println(input);
+            if(input.equalsIgnoreCase("q"))
+                break;
+            else if(input.equalsIgnoreCase("r"))
+                continue;
+
+            value = Long.parseLong(input);
+            done = true;
+        }
+
+        return value;
+    }
+
     public static ArrayList<String> getStringArrayList(Scanner scanner, String msg) {
         ArrayList<String> specs = new ArrayList<>();
         scanner.useDelimiter(" ");

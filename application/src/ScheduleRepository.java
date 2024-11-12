@@ -2,13 +2,10 @@ package application.src;
 
 import org.postgresql.util.PGobject;
 
-import java.sql.Array;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +33,7 @@ public class ScheduleRepository {
                     new Schedule(
                     rs.getLong(1),
                     rs.getBoolean(2),
-                    tsrange.toString(),
-                    (List<String>)rs.getArray(4).getArray()));
+                    tsrange.toString()));
             }
             rs.close();
             st.close();
@@ -64,8 +60,7 @@ public class ScheduleRepository {
                 schedule = new Schedule(
                     rs.getLong(1),
                     rs.getBoolean(2),
-                    tsrange.toString(),
-                    (List<String>)rs.getArray(4).getArray());
+                    tsrange.toString());
             }
             rs.close();
             st.close();
@@ -93,9 +88,8 @@ public class ScheduleRepository {
                     new Schedule(
                     rs.getLong(1),
                     rs.getBoolean(2),
-                    tsrange.toString(),
-                    (List<String>)rs.getArray(4).getArray()));
-            }
+                    tsrange.toString()));    
+                }
             rs.close();
             st.close();
         } catch (SQLException e) {
@@ -117,7 +111,6 @@ public class ScheduleRepository {
 
             st.setBoolean(1, true);
             st.setObject(2, tsrange);
-            st.setArray(3, (Array)schedule.getDow());
             
             ResultSet rs = st.executeQuery();
             id = rs.getLong(1);
@@ -137,6 +130,21 @@ public class ScheduleRepository {
             String query = "DELETE FROM " + table + " WHERE id = ?";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, id);
+            int affectedRows = st.executeUpdate();
+            success = affectedRows > 0;
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
+
+    public boolean delete(Schedule schedule) {
+        boolean success = false;
+        try {
+            String query = "DELETE FROM " + table + " WHERE id = ?";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1, schedule.getId());
             int affectedRows = st.executeUpdate();
             success = affectedRows > 0;
             st.close();

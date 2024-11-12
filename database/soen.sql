@@ -113,9 +113,13 @@ CREATE TABLE public.schedule (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	active bool NULL DEFAULT true,
 	slot tsrange NOT NULL,
-	weekdays _day_of_week NULL,
+	-- start_t timestamp NOT NULL,
+	-- end_t timestamp NOT NULL,
+	-- weekdays _day_of_week NULL,
 	CONSTRAINT schedule_pk PRIMARY KEY (id),
+	CONSTRAINT slot_less_than_a_day CHECK (upper(slot) - lower(slot) < '1 day'::interval),
 	EXCLUDE USING GIST (slot WITH &&)
+	-- EXCLUDE USING gist (tsrange(start_t, end_t) WITH &&)
 );
 
 -- public."space" definition
@@ -164,7 +168,9 @@ CREATE TABLE public.location_schedule (
 	CONSTRAINT location_schedule_fk FOREIGN KEY (location_id) REFERENCES public.location(id),
 	CONSTRAINT location_schedule_fk_1 FOREIGN KEY (schedule_id) REFERENCES public.schedule(id),
 	CONSTRAINT location_schedule_fk_2 FOREIGN KEY (offering_id) REFERENCES public.offering(id),
-	UNIQUE (offering_id),
+	-- UNIQUE (offering_id), doesn't have to be unique; if each schedule is unique
+	-- have multiple location-schedules to not have to check for overlapping weekdays etc
+	-- 1 schedule_id == 1 unique schedule
 	UNIQUE (location_id, schedule_id)
 );
 
@@ -276,24 +282,24 @@ INSERT INTO "location" (active, "name", "address", city) VALUES
 (true, 'C building room 3', '1002 street', 'brossard');
 
 
-INSERT INTO schedule (active, slot, weekdays) VALUES 
-(true, '[2024-11-01 05:00:00, 2024-11-01 06:00:00)', '{"sun"}'),
-(true, '[2024-11-01 06:00:00, 2024-11-01 07:00:00)', '{"sun"}'),
-(true, '[2024-11-01 07:00:00, 2024-11-01 08:00:00)', '{"sun"}'),
-(true, '[2024-11-01 08:00:00, 2024-11-01 09:00:00)', '{"sun"}'),
-(true, '[2024-11-01 09:00:00, 2024-11-01 10:00:00)', '{"sun"}'),
-(true, '[2024-11-01 10:00:00, 2024-11-01 11:00:00)', '{"sun"}'),
-(true, '[2024-11-01 11:00:00, 2024-11-01 12:00:00)', '{"sun"}'),
-(true, '[2024-11-01 12:00:00, 2024-11-01 13:00:00)', '{"sun"}'),
-(true, '[2024-11-01 13:00:00, 2024-11-01 14:00:00)', '{"sun"}'),
-(true, '[2024-11-01 14:00:00, 2024-11-01 15:00:00)', '{"sun"}'),
-(true, '[2024-11-01 15:00:00, 2024-11-01 16:00:00)', '{"sun"}'),
-(true, '[2024-11-01 16:00:00, 2024-11-01 17:00:00)', '{"sun"}'),
-(true, '[2024-11-01 17:00:00, 2024-11-01 18:00:00)', '{"sun"}'),
-(true, '[2024-11-01 18:00:00, 2024-11-01 19:00:00)', '{"sun"}'),
-(true, '[2024-11-01 19:00:00, 2024-11-01 20:00:00)', '{"sun"}'),
-(true, '[2024-11-01 20:00:00, 2024-11-01 21:00:00)', '{"sun"}'),
-(true, '[2024-11-01 21:00:00, 2024-11-01 22:00:00)', '{"sun"}');
+INSERT INTO schedule (active, slot) VALUES 
+(true, '[2024-11-01 05:00:00, 2024-11-01 06:00:00)'),
+(true, '[2024-11-01 06:00:00, 2024-11-01 07:00:00)'),
+(true, '[2024-11-01 07:00:00, 2024-11-01 08:00:00)'),
+(true, '[2024-11-01 08:00:00, 2024-11-01 09:00:00)'),
+(true, '[2024-11-01 09:00:00, 2024-11-01 10:00:00)'),
+(true, '[2024-11-01 10:00:00, 2024-11-01 11:00:00)'),
+(true, '[2024-11-01 11:00:00, 2024-11-01 12:00:00)'),
+(true, '[2024-11-01 12:00:00, 2024-11-01 13:00:00)'),
+(true, '[2024-11-01 13:00:00, 2024-11-01 14:00:00)'),
+(true, '[2024-11-01 14:00:00, 2024-11-01 15:00:00)'),
+(true, '[2024-11-01 15:00:00, 2024-11-01 16:00:00)'),
+(true, '[2024-11-01 16:00:00, 2024-11-01 17:00:00)'),
+(true, '[2024-11-01 17:00:00, 2024-11-01 18:00:00)'),
+(true, '[2024-11-01 18:00:00, 2024-11-01 19:00:00)'),
+(true, '[2024-11-01 19:00:00, 2024-11-01 20:00:00)'),
+(true, '[2024-11-01 20:00:00, 2024-11-01 21:00:00)'),
+(true, '[2024-11-01 21:00:00, 2024-11-01 22:00:00)');
 
 
 
