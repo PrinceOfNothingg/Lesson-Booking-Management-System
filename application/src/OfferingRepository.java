@@ -2,11 +2,9 @@ package application.src;
 
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,12 +126,12 @@ public class OfferingRepository {
         return offerings;
     }
 
-    public Offering getByBookingId(long bookingId) {
+    public Offering getByBookingId(Booking booking) {
         Offering offering = new Offering();
         try {
             String query = "select * from " + table + " where booking_id = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
-            st.setLong(1, bookingId);
+            st.setLong(1, booking.getId());
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
@@ -154,6 +152,33 @@ public class OfferingRepository {
         }
         
         return offering;
+    }
+
+    public ArrayList<Offering> getByClientId(Client client) {
+        ArrayList<Offering> offerings = new ArrayList<>();
+        try {
+            String query = "select o.* from " + table + "o join booking b on o.id = b.offering_id where b.client_id = ? and active = true";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1, client.getId());
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                offerings.add(new Offering(
+                    rs.getLong(1),
+                    rs.getBoolean(2),
+                    rs.getString(3),
+                    rs.getBoolean(4),
+                    rs.getString(5),
+                    rs.getBoolean(6),
+                    rs.getInt(7)));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return offerings;
     }
 
     public Offering update(Offering offering) {

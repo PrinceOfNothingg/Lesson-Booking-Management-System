@@ -1,6 +1,7 @@
 package application.src;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.json.simple.JSONObject;
@@ -39,7 +40,7 @@ public class Instructor extends User {
         offerings.getTaken(false).forEach(System.out::println);
     }
 
-    private void takeOfferings(Scanner scanner, OfferingRepository offerings, LocationRepository locations, InstructorOfferingRepository instructorOfferings){
+    private void takeOfferings(Scanner scanner, OfferingRepository offerings, LocationRepository locations, ScheduleRepository schedules, InstructorOfferingRepository instructorOfferings){
         boolean done = false;
         while(!done){
             System.out.println("\n--------------------------------------------------------------------------------");
@@ -58,6 +59,35 @@ public class Instructor extends User {
             }
             if(!getAvailabilities().contains(locations.getByOfferingId(offering).getCity())){
                 System.out.println("\nInstructor availabilitiess do not match offering.");
+                break;
+            }
+
+            List<Offering> offeringList = offerings.getByInstructorId(this);
+            List<Location> locationList = new ArrayList<>();
+            List<List<Schedule>> scheduleListList = new ArrayList<>();
+            for (Offering o : offeringList) {
+                locationList.add(locations.getByOfferingId(o));
+                scheduleListList.add(schedules.getByOfferingId(o));
+            }
+
+            Location curLocation = locations.getByOfferingId(offering);
+            List<Schedule> curScheduleList = schedules.getByOfferingId(offering);
+            boolean bookingConflict = false;
+            for (Location location : locationList) {
+                if (location.getName().equalsIgnoreCase(curLocation.getName()) &&
+                location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
+                location.getCity().equalsIgnoreCase(curLocation.getCity())
+                )
+                {
+                    if (scheduleListList.contains(curScheduleList)){
+                        bookingConflict = true;
+                        break;
+                    }
+                }
+            }
+
+            if(bookingConflict){
+                System.out.println("Another offering at that location and time already exists.");
                 break;
             }
 
@@ -205,7 +235,7 @@ public class Instructor extends User {
         return choice;
     }
 
-    public void process(Scanner scanner, OfferingRepository offerings, LocationRepository locations, InstructorOfferingRepository instructorOfferings){
+    public void process(Scanner scanner, OfferingRepository offerings, LocationRepository locations, ScheduleRepository schedules, InstructorOfferingRepository instructorOfferings){
         boolean done = false;
         while(!done){
             int action = handleSelection(scanner);
@@ -218,7 +248,7 @@ public class Instructor extends User {
                     viewOfferings(offerings);
                     break;
                 case 2: // take offerings
-                    takeOfferings(scanner, offerings, locations, instructorOfferings);
+                    takeOfferings(scanner, offerings, locations, schedules, instructorOfferings);
                     break;
                 case 3: // remove offering
                     removeOfferings(scanner, offerings, instructorOfferings);

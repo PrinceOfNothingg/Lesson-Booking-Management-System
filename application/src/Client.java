@@ -1,5 +1,7 @@
 package application.src;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.json.simple.JSONObject;
@@ -8,9 +10,11 @@ public class Client extends User {
 
     protected boolean dependant = false;
 
-    public Client(){}
+    public Client() {
+    }
+
     public Client(long id, boolean active, String name, int age, String phone, String role, boolean dependant) {
-        super( id, active, name, age, phone, role);
+        super(id, active, name, age, phone, role);
         this.dependant = dependant;
     }
 
@@ -21,112 +25,138 @@ public class Client extends User {
     public void setDependant(boolean dependant) {
         this.dependant = dependant;
     }
-    
 
-    private void viewBookings(BookingRepository bookings){
+    private void viewBookings(BookingRepository bookings) {
         bookings.getByClientId(this).forEach(System.out::println);
     }
 
-    private void viewBooking(Scanner scanner, BookingRepository bookings){
+    private void viewBooking(Scanner scanner, BookingRepository bookings, OfferingRepository offerings,
+            LocationRepository locations, ScheduleRepository schedules) {
         boolean done = false;
-        while(!done){
+        while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
             System.out.println("                          View Booking Details" + this.name);
             System.out.println("--------------------------------------------------------------------------------");
-            
+
             int bookingId = Utils.getInt(scanner, "Please enter the id of a booking (q to quit):");
             if (bookingId == 0)
                 break;
             Booking booking = bookings.get(bookingId);
+            Offering offering = offerings.getByBookingId(booking);
+            List<Schedule> scheduleList = schedules.getByOfferingId(offering);
+            Location location = locations.getByOfferingId(offering);
             System.out.println(booking);
+            scheduleList.forEach(System.out::println);
+            System.out.println(location);
         }
     }
-    
-    private void makeBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
-        throw new UnsupportedOperationException("Unimplemented method 'makeBooking'");
-        
-        // Booking booking;
-        // boolean done = false;
-        // while(!done){
-        //     System.out.println("\n--------------------------------------------------------------------------------");
-        //     System.out.println("                          Make a Booking" + this.name);
-        //     System.out.println("--------------------------------------------------------------------------------");
-            
-        //     int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
-        //     if (offeringId == 0)
-        //         break;
-        //     Offering offering = offerings.get(offeringId);
 
-        //     //TODO
-        //     // check offering is valid
-        //     // check offering schedule not conflicting
-        //     // get clients bookings > get schedules > compare offering schedule not overlaping
+    private void makeBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings, LocationRepository locations, ScheduleRepository schedules) {
 
-        //     bookings.insert(this, offering);
-        //     booking = bookings.getByOfferingId(offering);
-
-        //     offering.setSeats(offering.getSeats() - 1);
-        //     if(offering.getSeats() == 0){
-        //         offering.setStatus("non-available");
-        //     }
-
-        //     offerings.update(offering);
-
-        //     System.out.println(booking);
-        // }
-    }
-
-    private void cancelBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
+        Booking booking;
         boolean done = false;
         while(!done){
             System.out.println("\n--------------------------------------------------------------------------------");
+            System.out.println("                        Make a Booking" + this.name);
+            System.out.println("--------------------------------------------------------------------------------");
+
+            int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
+            if (offeringId == 0)
+                break;
+            
+            Offering offering = offerings.get(offeringId);
+            List<Offering> offeringList = offerings.getByClientId(this);
+            List<Location> locationList = new ArrayList<>();
+            List<List<Schedule>> scheduleListList = new ArrayList<>();
+            for (Offering o : offeringList) {
+                locationList.add(locations.getByOfferingId(o));
+                scheduleListList.add(schedules.getByOfferingId(o));
+            }
+
+            Location curLocation = locations.getByOfferingId(offering);
+            List<Schedule> curScheduleList = schedules.getByOfferingId(offering);
+            boolean bookingConflict = false;
+            for (Location location : locationList) {
+                if (location.getName().equalsIgnoreCase(curLocation.getName()) &&
+                location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
+                location.getCity().equalsIgnoreCase(curLocation.getCity())
+                )
+                {
+                    if (scheduleListList.contains(curScheduleList)){
+                        bookingConflict = true;
+                        break;
+                    }
+                }
+            }
+
+            if(bookingConflict){
+                System.out.println("Another booking at that location and time already exists.");
+                break;
+            }
+
+            long id = bookings.insert(this, offering);
+            booking = bookings.get(id);
+
+
+            offering.setSeats(offering.getSeats() - 1);
+            if(offering.getSeats() == 0){
+                offering.setStatus("non-available");
+            }
+
+            offerings.update(offering);
+
+            System.out.println(booking);
+        }
+    }
+
+    private void cancelBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings) {
+        boolean done = false;
+        while (!done) {
+            System.out.println("\n--------------------------------------------------------------------------------");
             System.out.println("                          Cancel a Booking" + this.name);
             System.out.println("--------------------------------------------------------------------------------");
-            
+
             int bookingId = Utils.getInt(scanner, "Please enter the id of a Booking (q to quit):");
             if (bookingId == 0)
                 break;
-        
+
             Booking booking = bookings.get(bookingId);
 
-            if(booking.getClientId() == id){
+            if (booking.getClientId() == id) {
                 bookings.delete(this, booking);
 
                 Offering offering = offerings.get(booking.getOfferingId());
-                offering.setSeats(offering.getSeats()+1);
+                offering.setSeats(offering.getSeats() + 1);
                 offering.setStatus("available");
 
                 offerings.update(offering);
 
                 System.out.println("Deleted booking " + booking);
-            }
-            else {
+            } else {
                 System.out.println("Invalid booking selected.");
             }
         }
     }
 
-
-    public static Client login(Scanner scanner, ClientRepository clients){
+    public static Client login(Scanner scanner, ClientRepository clients) {
         Client client = null;
         String username;
         String phone;
 
-        while(true){
+        while (true) {
             username = Utils.getUserName(scanner);
-            if(username.isEmpty())
+            if (username.isEmpty())
                 break;
 
             phone = Utils.getPhone(scanner);
-            if(phone.isEmpty())
+            if (phone.isEmpty())
                 break;
 
             client = clients.get(username, phone);
 
-            if(client.isEmpty()){
+            if (client.isEmpty()) {
                 System.out.println("Invalid credentials.");
-            }
-            else {
+            } else {
                 System.out.println("Login Successful.");
                 break;
             }
@@ -134,7 +164,8 @@ public class Client extends User {
 
         return client;
     }
-    public Client logout(){
+
+    public Client logout() {
         Client client = new Client();
         this.id = client.id;
         this.active = client.active;
@@ -145,33 +176,32 @@ public class Client extends User {
         this.dependant = client.dependant;
         return client;
     }
-    
-    public static Client register(Scanner scanner, ClientRepository clients){
+
+    public static Client register(Scanner scanner, ClientRepository clients) {
         Client client = new Client();
         String username;
         String phone;
-        while(true){
+        while (true) {
             username = Utils.getUserName(scanner);
-            if(username.isEmpty())
+            if (username.isEmpty())
                 break;
 
             phone = Utils.getPhone(scanner);
-            if(phone.isEmpty())
+            if (phone.isEmpty())
                 break;
 
             int age = Utils.getAge(scanner);
-            if(age < 18)
+            if (age < 18)
                 break;
 
             client = clients.get(username, phone);
 
-            if(client.isEmpty()){
+            if (client.isEmpty()) {
                 client = new Client(0, true, username, age, phone, "client", false);
                 clients.insert(client);
                 client = clients.get(username, phone);
                 break;
-            }
-            else {
+            } else {
                 System.out.println("User already exists.");
             }
         }
@@ -180,7 +210,7 @@ public class Client extends User {
     }
 
     @Override
-    protected int printMenu(){
+    protected int printMenu() {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          " + this.name);
         System.out.println("--------------------------------------------------------------------------------");
@@ -207,9 +237,9 @@ public class Client extends User {
         return choice;
     }
 
-    public void process(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
+    public void process(Scanner scanner, OfferingRepository offerings, BookingRepository bookings, LocationRepository locations, ScheduleRepository schedules) {
         boolean done = false;
-        while(!done){
+        while (!done) {
             int action = handleSelection(scanner);
 
             switch (action) {
@@ -220,10 +250,10 @@ public class Client extends User {
                     viewBookings(bookings);
                     break;
                 case 2: // View a booking
-                    viewBooking(scanner, bookings);
+                    viewBooking(scanner, bookings, offerings, locations, schedules);
                     break;
                 case 3: // Make a Booking
-                    makeBooking(scanner, offerings, bookings);
+                    makeBooking(scanner, offerings, bookings, locations, schedules);
                     break;
                 case 4: // Cancel Booking
                     cancelBooking(scanner, offerings, bookings);
@@ -232,10 +262,10 @@ public class Client extends User {
                     done = true;
                     logout();
                     break;
-                
+
                 default:
                     break;
-            }       
+            }
         }
     }
 
@@ -243,7 +273,7 @@ public class Client extends User {
     public String toString() {
         JSONObject json = new JSONObject();
         json.put("id", id);
-        json.put("active",active);
+        json.put("active", active);
         json.put("name", name);
         json.put("phone", phone);
         json.put("age", age);

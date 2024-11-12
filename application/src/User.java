@@ -85,19 +85,6 @@ public class User {
             result.forEach(System.out::println);
     }
 
-    User get() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'get'");
-    }
-    boolean update() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
-    }
-    boolean delete() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
-    }
-
     protected int printMenu(){
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          Welcome!");

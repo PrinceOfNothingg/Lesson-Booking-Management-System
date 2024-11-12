@@ -6,27 +6,20 @@ public class Application {
 
     public static void main(String[] args) {
         App app = new App();
-        Server server = new Server();
-
-        server.setName("Server");
         app.setName("App");
-
-        server.start();
-        app.start();
 
         
         Database psql = new Database();
         try {
+            System.out.println("Testing DB conection.");
             psql.test();
             psql.close();
+            System.out.println("Testing done.");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        // ClientRepository clients = new ClientRepository(new Database());
-        // clients.get().forEach(System.out::println);
-        // System.out.println(clients.get(1));
-
+        app.start();
     }
 }

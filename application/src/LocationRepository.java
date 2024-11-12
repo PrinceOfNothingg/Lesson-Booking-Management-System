@@ -173,7 +173,7 @@ public class LocationRepository {
     public long insert(Location location) {
         long id = 0;
         try {
-            String query = "insert into "+ table +" (active, name, address, city) returning id";
+            String query = "insert into "+ table +" (active, name, address, city) values (?,?,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setString(2, location.getName());
@@ -194,9 +194,24 @@ public class LocationRepository {
     public boolean delete(long id) {
         boolean success = false;
         try {
-            String query = "DELETE FROM " + table + " WHERE id = ?";
+            String query = "delete from " + table + " where id = ?";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, id);
+            int affectedRows = st.executeUpdate();
+            success = affectedRows > 0;
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
+
+    public boolean delete(Location location) {
+        boolean success = false;
+        try {
+            String query = "delete from " + table + " where id = ?";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1, location.getId());
             int affectedRows = st.executeUpdate();
             success = affectedRows > 0;
             st.close();

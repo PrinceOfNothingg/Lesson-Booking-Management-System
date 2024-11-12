@@ -1,6 +1,7 @@
 package application.src;
 
 
+import java.security.Guard;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -100,6 +101,34 @@ public class ClientRepository {
         }
         
         return client;
+    }
+
+    public ArrayList<Client> getByGuardianId(Guardian guardian) {
+        ArrayList<Client> clients = new ArrayList<>();
+        try {
+            String query = "select c.* from " + table + "c join representative rp on c.id = rp.client_id where rp.representative_id = ? and active = true";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1, guardian.getId());
+            ResultSet rs = st.executeQuery();
+            System.out.println("DEBUG: " + st);
+
+            while (rs.next()) {
+                clients.add(new Client(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                rs.getString(3),
+                                rs.getInt(4),
+                                rs.getString(5),
+                                rs.getString(6),
+                                rs.getBoolean(7)));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return clients;
     }
 
     public long insert(Client client) {

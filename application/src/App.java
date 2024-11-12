@@ -102,7 +102,7 @@ public class App extends Thread {
             switch (user.getRole()) {
                 case "client":
                     client = (Client) user;
-                    client.process(scanner, offeringRepo, bookingRepo);
+                    client.process(scanner, offeringRepo, bookingRepo, locationRepo, scheduleRepo);
                     break;
                 case "guardian":
                     guardian = (Guardian) user;
@@ -110,11 +110,11 @@ public class App extends Thread {
                     break;
                 case "instructor":
                     instructor = (Instructor) user;
-                    instructor.process(scanner, offeringRepo, locationRepo, instructorOfferingRepo);
+                    instructor.process(scanner, offeringRepo, locationRepo, scheduleRepo, instructorOfferingRepo);
                     break;
                 case "admin":
                     administrator = (Administrator) user;
-                    administrator.process(scanner, bookingRepo, offeringRepo, scheduleRepo, locationRepo, clientRepo, guardianRepo, instructorRepo, administratorRepo, locationScheduleRepo);
+                    administrator.process(scanner, bookingRepo, offeringRepo, scheduleRepo, locationRepo, clientRepo, guardianRepo, instructorRepo, administratorRepo, locationScheduleRepo, representativeRepo);
                     break;
                 case "guest":
                     user.process(scanner, offeringRepo);

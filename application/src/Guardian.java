@@ -1,6 +1,7 @@
 package application.src;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import org.json.simple.JSONObject;
 
@@ -22,7 +23,7 @@ public class Guardian extends User {
         this.dependants = dependants;
     }
 
-    public void makeBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings) {
+    public void makeBooking(Scanner scanner, ClientRepository clients, OfferingRepository offerings, BookingRepository bookings, LocationRepository locations, ScheduleRepository schedules) {
         boolean done = false;
         while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
@@ -36,9 +37,8 @@ public class Guardian extends User {
                 continue;
             }
 
-            Client dependant = dependants.get(dependantIndex);
+            Client dependant = clients.get(dependantIndex);
 
-             // enter ID of offering to book.
             int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
             if (offeringId == 0) break;
 
@@ -48,6 +48,35 @@ public class Guardian extends User {
                 continue;
             }
 
+            List<Offering> offeringList = offerings.getByClientId(dependant);
+            List<Location> locationList = new ArrayList<>();
+            List<List<Schedule>> scheduleListList = new ArrayList<>();
+            for (Offering o : offeringList) {
+                locationList.add(locations.getByOfferingId(o));
+                scheduleListList.add(schedules.getByOfferingId(o));
+            }
+
+            Location curLocation = locations.getByOfferingId(offering);
+            List<Schedule> curScheduleList = schedules.getByOfferingId(offering);
+            boolean bookingConflict = false;
+            for (Location location : locationList) {
+                if (location.getName().equalsIgnoreCase(curLocation.getName()) &&
+                location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
+                location.getCity().equalsIgnoreCase(curLocation.getCity())
+                )
+                {
+                    if (scheduleListList.contains(curScheduleList)){
+                        bookingConflict = true;
+                        break;
+                    }
+                }
+            }
+
+            if(bookingConflict){
+                System.out.println("Another booking at that location and time already exists.");
+                break;
+            }
+
             // Check offering availability
             if (offering.getSeats() > 0) {
                 bookings.insert(dependant, offering);
@@ -55,6 +84,7 @@ public class Guardian extends User {
                 if (offering.getSeats() == 0) {
                     offering.setStatus("non-available");
                 }
+                offerings.update(offering);
                 System.out.println("Booking successfully made for " + dependant.getName());
             } else {
                 System.out.println("No seats available for this offering.");
@@ -73,7 +103,7 @@ public class Guardian extends User {
         }
     }
 
-    public void viewBookingDetails(Scanner scanner, BookingRepository bookings) {
+    public void viewBookingDetails(Scanner scanner, BookingRepository bookings, OfferingRepository offerings, LocationRepository locations, ScheduleRepository schedules) {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          View Booking Details for Dependants");
         System.out.println("--------------------------------------------------------------------------------");
@@ -86,20 +116,23 @@ public class Guardian extends User {
             if (bookingId == 0) break;
 
             Booking booking = bookings.get(bookingId);
-            if (booking != null) {
-                System.out.println(booking);
-            } else {
-                System.out.println("Booking not found.");
-            }
+            Offering offering = offerings.getByBookingId(booking);
+            List<Schedule> scheduleList = schedules.getByOfferingId(offering);
+            Location location = locations.getByOfferingId(offering);
+
+            System.out.println(booking);
+            scheduleList.forEach(System.out::println);
+            System.out.println(location);
         }
     }
 
-    public void cancelBooking(Scanner scanner, BookingRepository bookings) {
+    public void cancelBooking(Scanner scanner, ClientRepository clients, BookingRepository bookings, OfferingRepository offerings) {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          Cancel Booking for Dependants");
         System.out.println("--------------------------------------------------------------------------------");
 
-        for (Client dependant : dependants) {
+        this.dependants = clients.getByGuardianId(this);
+        for (Client dependant : this.dependants) {
             System.out.println("Select a booking to cancel for " + dependant.getName() + ":");
             bookings.getByClientId(dependant).forEach(System.out::println);
 
@@ -108,8 +141,14 @@ public class Guardian extends User {
             if (bookingId == 0) break;
 
             Booking booking = bookings.get(bookingId);
-            if (booking != null) {
+            if (booking != null && booking.getClientId() == dependant.getId()) {
                 bookings.delete(dependant, booking);
+
+                Offering offering = offerings.get(booking.getOfferingId());
+                offering.setSeats(offering.getSeats() + 1);
+                offering.setStatus("available");
+
+                offerings.update(offering);
                 System.out.println("Booking canceled for " + dependant.getName());
             } else {
                 System.out.println("Booking not found.");
@@ -122,7 +161,6 @@ public class Guardian extends User {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          View Available Offerings");
         System.out.println("--------------------------------------------------------------------------------");
-        
         offerings.get().forEach(System.out::println);
     }
 
@@ -239,7 +277,7 @@ public class Guardian extends User {
         return choice;
     }
 
-    public void process(Scanner scanner, OfferingRepository offerings, BookingRepository bookings){
+    public void process(Scanner scanner, ClientRepository clients, OfferingRepository offerings, BookingRepository bookings, LocationRepository locations, ScheduleRepository schedules){
         boolean done = false;
         while(!done){
             int action = handleSelection(scanner);
@@ -252,13 +290,13 @@ public class Guardian extends User {
                     viewBookings(bookings);
                     break;
                 case 2: // View a booking
-                    viewBookingDetails(scanner, bookings);
+                    viewBookingDetails(scanner, bookings, offerings, locations, schedules);
                     break;
                 case 3: // Make a Booking
-                    makeBooking(scanner, offerings, bookings);
+                    makeBooking(scanner, clients, offerings, bookings, locations, schedules);
                     break;
                 case 4: // Cancel Booking
-                    cancelBooking(scanner, bookings);
+                    cancelBooking(scanner, clients, bookings, offerings);
                     break;
                 case 5: // logout
                     done = true;

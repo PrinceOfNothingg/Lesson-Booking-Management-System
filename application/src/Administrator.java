@@ -1,17 +1,14 @@
 package application.src;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import org.json.simple.JSONObject;
-import org.postgresql.util.PGobject;
 
 public class Administrator extends User {
 
-    public Administrator() {
-    }
+    public Administrator() {}
 
     public Administrator(long id, boolean active, String name, int age, String phone, String role) {
         super(id, active, name, age, phone, role);
@@ -30,7 +27,7 @@ public class Administrator extends User {
         schedules.get().forEach(System.out::println);
     }
 
-    public void viewLocations(LocationRepository locations) {
+    public void viewLocations(LocationRepository locations){
         locations.get().forEach(System.out::println);
     }
 
@@ -66,8 +63,15 @@ public class Administrator extends User {
         }
 
         viewSchedules(schedules);
-        long id = Utils.getInt(scanner, "Enter the schedule id:");
-        Schedule schedule = schedules.get(id);
+        System.out.println("Enter 1 or more schedule ids to associate with offering:");
+        List<Schedule> scheduleList = new ArrayList<>();
+
+        while (true) {
+            long id = Utils.getInt(scanner, "Enter a schedule id (q to quit):");
+            if (id == 0)
+                break;
+            scheduleList.add(schedules.get(id));
+        }
 
         // create location
         val = Utils.getString(scanner, "Create a new location? y/n (q to quit):");
@@ -95,26 +99,14 @@ public class Administrator extends User {
             id = offerings.insert(offering);
             offering = offerings.get(id);
 
-            // schedules are guaranteed to be unique timeranges by db on insert
-            // check if anything is already scheduled at the same time and location
-            boolean overlap = false;
-            List<Schedule> occupied = schedules.getByLocationId(location, offering);
-            for (Schedule sch : occupied) {
-                if (sch.getId() == schedule.getId()) {
-                    System.out.println("Desired schedule at location is already reserved.");
-                    System.out.println(location);
-                    System.out.println(sch);
-                    overlap = true;
-                    break;
-                }
-            }
-            if (!overlap) {
+            for (Schedule schedule : scheduleList) {
                 LocationSchedule ls = new LocationSchedule(0, true, location.getId(), schedule.getId(),
                         offering.getId());
                 id = locationSchedules.insert(ls);
                 if (id == 0) {
-                    System.out.println("Failed to add schedule to offering");
+                    System.out.println("Failed to add schedule " + schedule + "to offering");
                     offerings.delete(offering);
+                    break;
                 } else
                     System.out.println("Offering " + offering + " has been created.");
             }
@@ -129,14 +121,17 @@ public class Administrator extends User {
                 id = offerings.insert(offering);
                 offering = offerings.get(id);
 
-                LocationSchedule ls = new LocationSchedule(0, true, location.getId(), schedule.getId(),
-                        offering.getId());
-                id = locationSchedules.insert(ls);
-                if (id == 0) {
-                    System.out.println("Failed to add schedule to offering");
-                    offerings.delete(offering);
-                } else
-                    System.out.println("Offering " + offering + " has been created.");
+                for (Schedule schedule : scheduleList) {
+                    LocationSchedule ls = new LocationSchedule(0, true, location.getId(), schedule.getId(),
+                            offering.getId());
+                    id = locationSchedules.insert(ls);
+                    if (id == 0) {
+                        System.out.println("Failed to add schedule " + schedule + " to offering");
+                        offerings.delete(offering);
+                        break;
+                    } else
+                        System.out.println("Offering " + offering + " has been created.");
+                }
             }
         }
     }
@@ -242,7 +237,7 @@ public class Administrator extends User {
     }
 
     public void deleteBookings(Scanner scanner, BookingRepository bookings) {
-        //TODO update offering after
+        // TODO update offering after
 
         long id = Utils.getLong(scanner, "Enter the ID of the booking to delete:");
         Booking booking = bookings.get(id);
@@ -255,7 +250,7 @@ public class Administrator extends User {
     }
 
     public void deleteOfferings(Scanner scanner, OfferingRepository offerings) {
-        //TODO delete location_schedules associated first
+        // TODO delete location_schedules associated first
         long id = Utils.getLong(scanner, "Enter the ID of the offering to delete:");
         Offering offering = offerings.get(id);
         if (offering != null) {
@@ -267,7 +262,7 @@ public class Administrator extends User {
     }
 
     public void deleteSchedules(Scanner scanner, ScheduleRepository schedules) {
-        //TODO delete location_schedules associated first
+        // TODO delete location_schedules associated first
         long id = Utils.getLong(scanner, "Enter the ID of the schedule to delete:");
         Schedule schedule = schedules.get(id);
         if (schedule != null) {
@@ -279,7 +274,7 @@ public class Administrator extends User {
     }
 
     public void deleteLocations(Scanner scanner, LocationRepository locations) {
-        //TODO delete location_schedules associated first
+        // TODO delete location_schedules associated first
         long id = Utils.getLong(scanner, "Enter the ID of the location to delete:");
         Location location = locations.get(id);
         if (location != null) {
@@ -291,7 +286,7 @@ public class Administrator extends User {
     }
 
     public void deleteClients(Scanner scanner, ClientRepository clients) {
-        //TODO delete bookings first
+        // TODO delete bookings first
         long id = Utils.getLong(scanner, "Enter the ID of the client to delete:");
         Client client = clients.get(id);
         if (client != null) {
@@ -303,7 +298,7 @@ public class Administrator extends User {
     }
 
     public void deleteGuardians(Scanner scanner, GuardianRepository guardians) {
-        //TODO delete dependants first
+        // TODO delete dependants first
         long id = Utils.getLong(scanner, "Enter the ID of the guardian to delete:");
         Guardian guardian = guardians.get(id);
         if (guardian != null) {
@@ -315,7 +310,7 @@ public class Administrator extends User {
     }
 
     public void deleteInstructors(Scanner scanner, InstructorRepository instructors) {
-        //TODO remove all offerings first
+        // TODO remove all offerings first
         long id = Utils.getLong(scanner, "Enter the ID of the instructor to delete:");
         Instructor instructor = instructors.get(id);
         if (instructor != null) {
@@ -329,14 +324,11 @@ public class Administrator extends User {
     public void deleteAdmins(Scanner scanner, AdministratorRepository administrators) {
         long id = Utils.getLong(scanner, "Enter the ID of the admin to delete:");
 
-        if(id == 0){
+        if (id == 0) {
             System.out.println("Invalid id entered.");
-        }
-        else if(id == this.id){
+        } else if (id == this.id) {
             System.out.println("Cannot delete self.");
-        }
-        else 
-        {
+        } else {
             Administrator admin = administrators.get(id);
             if (admin != null && !admin.isEmpty()) {
                 administrators.delete(id);

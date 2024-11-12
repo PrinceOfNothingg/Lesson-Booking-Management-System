@@ -71,13 +71,39 @@ public class ScheduleRepository {
         return schedule;
     }
 
-    public List<Schedule> getByLocationId(Location location, Offering offering) {
+    public List<Schedule> getByLocationId(Location location) {
         ArrayList<Schedule> schedules = new ArrayList<>();
         try {
             String query = "select s.* from " + table + "s join location_schedule ls on s.id = ls.schedule_id where ls.location_id = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, location.getId());
-            st.setLong(2, offering.getId());
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                PGobject tsrange = new PGobject();
+                tsrange.setType("tsrange");
+                tsrange = (PGobject)rs.getObject("tsrangeType");
+                schedules.add(
+                    new Schedule(
+                    rs.getLong(1),
+                    rs.getBoolean(2),
+                    tsrange.toString()));    
+                }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return schedules;
+    }
+
+    public List<Schedule> getByOfferingId(Offering offering) {
+        ArrayList<Schedule> schedules = new ArrayList<>();
+        try {
+            String query = "select s.* from " + table + "s join location_schedule ls on s.id = ls.schedule_id where ls.offering_id = ? and active = true";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1, offering.getId());
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
@@ -102,7 +128,7 @@ public class ScheduleRepository {
     public long insert(Schedule schedule) {
         long id = 0;
         try {
-            String query = "insert into "+ table +" (active, slot, weekdays) values (?,?,?::_day_of_week) returning id";
+            String query = "insert into "+ table +" (active, slot) values (?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
 
             PGobject tsrange = new PGobject();
