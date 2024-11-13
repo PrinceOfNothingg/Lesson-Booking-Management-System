@@ -45,6 +45,26 @@ Contract: removeOffering
 
 Operation: removeOffering (offering)
 
+Cross References: Use case: Remove Offerings from instructor
+
+Preconditions:
+
+- User is authenticated
+- User must have permissions the remove offerings (instructor)
+- Offering must be associated to instructor
+
+Postconditions:
+
+- Association between Offering and Instructor is deleted
+- If it has clients associated with it, the system deletes the client-offering(booking) association.
+- Offering status and seats are updated
+
+---
+
+Contract: deleteOffering
+
+Operation: deleteOffering (offering)
+
 Cross References: Use case: Delete Offerings
 
 Preconditions:
@@ -54,12 +74,9 @@ Preconditions:
 
 Postconditions:
 
-- Association between lesson and offering is deleted.
-- Schedule is deleted
-- Lesson is deleted
-- If it has clients associated with it, the system deletes the client-offering association.
-- If it has an instructor associated with it, the system deletes the instructor-offering association.
-- Instance of offering is deleted from the system.
+- Association between Offering and Instructor is deleted
+- If it has clients associated with it, the system deletes the client-offering(booking) association.
+- Offering is deleted
 
 ---
 
@@ -74,6 +91,9 @@ Preconditions:
 - User is authenticated.
 - User is an instructor.
 - Offering must exist in the system and must not be associated with another instructor.
+- Instructor specialization match Offering type
+- Instructor availability match Offering location
+- Instructor must not have another offering schedule at the same location and time slot.
 
 Postconditions:
 

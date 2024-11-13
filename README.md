@@ -31,11 +31,8 @@ git clone git@github.com:DarkMed15/soen342-teamproject.git project
 
 ```sh
 # create the database from your terminal by running the sql file
-psql -U postgres
-
-> CREATE USER soen;
-> CREATE DATABASE soendb OWNER soen;
-
+psql -U postgres -c "CREATE USER soen"
+psql -U postgres -c "CREATE DATABASE soendb OWNER soen"
 psql -U soen -d soendb < database/soen.sql
 ```
 

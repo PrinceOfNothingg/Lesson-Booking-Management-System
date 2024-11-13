@@ -82,15 +82,27 @@ public class User {
         return this.name == null && this.phone == null;
     }
 
-    protected void viewOfferings(OfferingRepository offerings) {
+    protected void viewOfferings(InstructorRepository instructors, OfferingRepository offerings, LocationRepository locations, ScheduleRepository schedules) {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                              View Offerings!");
         System.out.println("--------------------------------------------------------------------------------");
-        List<Offering> result = offerings.getTaken(true);
-        if (result.isEmpty())
+        
+        List<Offering> offeringList = offerings.get();
+        if (offeringList.isEmpty())
             System.out.println("No offerings available.");
-        else
-            result.forEach(System.out::println);
+        else {
+            for (Offering offering : offeringList) {
+                Instructor instructor = instructors.getByOfferingId(offering);
+                List<Schedule> scheduleList = schedules.getByOfferingId(offering);
+                Location location = locations.getByOfferingId(offering);
+
+                System.out.println(offering);
+                System.out.println(instructor);
+                System.out.println(location);
+                scheduleList.forEach(System.out::println);
+                System.out.println("--------------------------------------------------------------------------------");
+            }
+        }
     }
 
     protected int printMenu() {
@@ -115,14 +127,14 @@ public class User {
         return choice;
     }
 
-    public void process(Scanner scanner, OfferingRepository offerings) {
+    public void process(Scanner scanner, InstructorRepository instructors, OfferingRepository offerings, LocationRepository locations, ScheduleRepository schedules) {
         boolean done = false;
         while (!done) {
             int action = handleSelection(scanner);
 
             switch (action) {
                 case 0: // View offerings
-                    viewOfferings(offerings);
+                    viewOfferings(instructors, offerings, locations, schedules);
                     break;
                 case 1: // exit
                     done = true;

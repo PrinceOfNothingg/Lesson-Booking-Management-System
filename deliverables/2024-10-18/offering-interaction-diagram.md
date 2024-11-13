@@ -1,9 +1,5 @@
 # Offerings Interacion Diagrams
 
-## View Offering
-
-![image](https://github.com/DarkMed15/soen342-teamproject/blob/main/deliverables/assets/view_offering_interaction_diagram.png)
-
 ## Create Offering
 
 ![image](https://github.com/DarkMed15/soen342-teamproject/blob/main/deliverables/assets/create_offering_interaction_diagram.png)

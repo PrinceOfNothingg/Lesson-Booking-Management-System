@@ -196,9 +196,9 @@ DROP TABLE IF EXISTS public.booking;
 CREATE TABLE public.booking (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	active bool NULL DEFAULT true,
+	"status" varchar NULL,
 	client_id int8 NOT NULL,
 	offering_id int8 NOT NULL,
-	"status" varchar NULL,
 	CONSTRAINT booking_pk PRIMARY KEY (id),
 	CONSTRAINT booking_fk FOREIGN KEY (client_id) REFERENCES public.client(id) ON DELETE CASCADE,
 	CONSTRAINT booking_fk_1 FOREIGN KEY (offering_id) REFERENCES public.offering(id) ON DELETE CASCADE

@@ -22,7 +22,6 @@ public class Administrator extends User {
         bookings.get().forEach(System.out::println);
     }
 
-    @Override
     public void viewOfferings(OfferingRepository offerings) {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          View Offerings " + this.name);
@@ -72,84 +71,82 @@ public class Administrator extends User {
         administrators.get().forEach(System.out::println);
     }
 
-    public void createBookings(Scanner scanner, ClientRepository clients, OfferingRepository offerings, BookingRepository bookings,
+    public void createBooking(Scanner scanner, ClientRepository clients, OfferingRepository offerings, BookingRepository bookings,
     LocationRepository locations, ScheduleRepository schedules) {
         Booking booking;
-        boolean done = false;
-        while (!done) {
-            System.out.println("\n--------------------------------------------------------------------------------");
-            System.out.println("                        Make a Booking" + this.name);
-            System.out.println("--------------------------------------------------------------------------------");
+        
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                        Make a Booking" + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
 
-            long clientId = Utils.getLong(scanner, "Please enter the id of the Client (q to quit):");
-            if (clientId == 0)
-                break;
+        long clientId = Utils.getLong(scanner, "Please enter the id of the Client (q to quit):");
+        if (clientId == 0)
+            return;
 
-            long offeringId = Utils.getLong(scanner, "Please enter the id of an Offering (q to quit):");
-            if (offeringId == 0)
-                break;
+        long offeringId = Utils.getLong(scanner, "Please enter the id of an Offering (q to quit):");
+        if (offeringId == 0)
+            return;
 
-            Offering offering = offerings.get(offeringId);
-            Client client = clients.get(clientId);
-            List<Offering> offeringList = offerings.getByClientId(client);
-            List<Location> locationList = new ArrayList<>();
-            List<List<Schedule>> scheduleListList = new ArrayList<>();
-            for (Offering o : offeringList) {
-                locationList.add(locations.getByOfferingId(o));
-                scheduleListList.add(schedules.getByOfferingId(o));
-            }
+        Offering offering = offerings.get(offeringId);
+        Client client = clients.get(clientId);
+        List<Offering> offeringList = offerings.getByClientId(client);
+        List<Location> locationList = new ArrayList<>();
+        List<List<Schedule>> scheduleListList = new ArrayList<>();
+        for (Offering o : offeringList) {
+            locationList.add(locations.getByOfferingId(o));
+            scheduleListList.add(schedules.getByOfferingId(o));
+        }
 
-            Location curLocation = locations.getByOfferingId(offering);
-            List<Schedule> curScheduleList = schedules.getByOfferingId(offering);
-            boolean bookingConflict = false;
-            for (Location location : locationList) {
-                if (location.getName().equalsIgnoreCase(curLocation.getName()) &&
-                        location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
-                        location.getCity().equalsIgnoreCase(curLocation.getCity())) {
-                    if (scheduleListList.contains(curScheduleList)) {
-                        bookingConflict = true;
-                        break;
-                    }
+        Location curLocation = locations.getByOfferingId(offering);
+        List<Schedule> curScheduleList = schedules.getByOfferingId(offering);
+        boolean bookingConflict = false;
+        for (Location location : locationList) {
+            if (location.getName().equalsIgnoreCase(curLocation.getName()) &&
+                    location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
+                    location.getCity().equalsIgnoreCase(curLocation.getCity())) {
+                if (scheduleListList.contains(curScheduleList)) {
+                    bookingConflict = true;
+                    break;
                 }
             }
-
-            if (bookingConflict) {
-                System.out.println("Another booking at that location and time already exists.");
-                break;
-            }
-
-            long id = bookings.insert(client, offering);
-            booking = bookings.get(id);
-
-            offering.setSeats(offering.getSeats() - 1);
-            if (offering.getSeats() == 0) {
-                offering.setStatus("non-available");
-            }
-
-            offerings.update(offering);
-
-            System.out.println(booking);
         }
+
+        if (bookingConflict) {
+            System.out.println("Another booking at that location and time already exists.");
+            return;
+        }
+
+        long id = bookings.insert(client, offering);
+        booking = bookings.get(id);
+
+        offering.setSeats(offering.getSeats() - 1);
+        if (offering.getSeats() == 0) {
+            offering.setStatus("non-available");
+        }
+
+        offerings.update(offering);
+
+        System.out.println(booking);
     }
 
-    public void createOfferings(Scanner scanner, OfferingRepository offerings, ScheduleRepository schedules,
+    public void createOffering(Scanner scanner, OfferingRepository offerings, ScheduleRepository schedules,
             LocationRepository locations, LocationScheduleRepository locationSchedules) {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          Create an Offering " + this.name);
         System.out.println("--------------------------------------------------------------------------------");
 
-        String val = Utils.getString(scanner, "Create a new Schedule? y/n (q to quit):");
+        String val = Utils.getString(scanner, "\nCreate a new Schedule? y/n (q to quit):");
         if (!val.isEmpty() || val.equalsIgnoreCase("y")) {
             createSchedules(scanner, schedules);
         }
 
         viewSchedules(schedules);
-        System.out.println("Enter 1 or more schedule ids to associate with offering:");
+        System.out.println("\nEnter schedule ids 1-by-1 to associate with offering:");
         List<Schedule> scheduleList = new ArrayList<>();
 
         long id = 0;
         while (true) {
-            id = Utils.getInt(scanner, "Enter a schedule id (q to quit):");
+            id = Utils.getInt(scanner, "\nEnter a schedule id (q to quit):");
             if (id == 0)
                 break;
             scheduleList.add(schedules.get(id));
@@ -192,7 +189,8 @@ public class Administrator extends User {
                     System.out.println("Failed to add schedule " + schedule + "to offering");
                     offerings.delete(offering);
                     break;
-                } else
+                } 
+                else
                     System.out.println("Offering " + offering + " has been created.");
             }
         }
@@ -623,10 +621,10 @@ public class Administrator extends User {
                     viewAdmins(administrators);
                     break;
                 case 8:
-                    createBookings(scanner, clients, offerings, bookings, locations, schedules);
+                    createBooking(scanner, clients, offerings, bookings, locations, schedules);
                     break;
                 case 9:
-                    createOfferings(scanner, offerings, schedules, locations, locationSchedules);
+                    createOffering(scanner, offerings, schedules, locations, locationSchedules);
                     break;
                 case 10:
                     createSchedules(scanner, schedules);

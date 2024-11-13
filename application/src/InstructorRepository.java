@@ -84,6 +84,40 @@ public class InstructorRepository {
         return instructor;
     }
 
+    public Instructor getByOfferingId(Offering offering) {
+        Instructor instructor = new Instructor();
+        String[] specs = null;
+        String[] avails = null;
+
+        try {
+            String query = "select i.* from " + table + " i join instructor_offering io on i.id = io.instructor_id join offering o on o.id = io.offering_id where o.id = ? and i.active = true";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1, offering.getId());
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                specs = (String[]) rs.getArray(7).getArray();
+                avails = (String[]) rs.getArray(8).getArray();
+                System.out.println("DEBUG: " + rs);
+                instructor = new Instructor(
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        rs.getString(6),
+                        new ArrayList<String>(Arrays.asList(specs)),
+                        new ArrayList<String>(Arrays.asList(avails)));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return instructor;
+    }
+
     public Instructor get(String name, String phone) {
         Instructor instructor = new Instructor();
         String[] specs = null;

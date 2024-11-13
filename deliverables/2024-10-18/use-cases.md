@@ -17,6 +17,7 @@
    <td>Preconditions
    </td>
    <td>Client is not registered
+   <p> name and phone are a unique combination
    </td>
   </tr>
   <tr>
@@ -50,13 +51,13 @@ System validates
 <p>
 System creates client account
 <p>
-System displays account page
+System displays client account page
    </td>
   </tr>
   <tr>
    <td>Extensions (alt. flows)
    </td>
-   <td>If the account already exists, display an error.
+   <td>If the account already exists ({name,phone} not unique), display an error.
    </td>
   </tr>
 </table>
@@ -78,6 +79,7 @@ System displays account page
    <td>Preconditions
    </td>
    <td>Instructor is not registered
+   <p>name and phone are a unique combination
    </td>
   </tr>
   <tr>
@@ -105,8 +107,8 @@ System displays account page
 <p>
 Actor enters information:
 <br>- unique name and phone
-<br>- specializations from list of spec. options
-<br>- availabilities from list of location options
+<br>- specializations
+<br>- availabilities
 <p>
 Actor submits request
 <p>
@@ -114,7 +116,7 @@ System validates
 <p>
 System creates instructor account
 <p>
-System displays account page
+System displays instructor account page
    </td>
   </tr>
   <tr>
@@ -206,11 +208,12 @@ System displays homepage
   <tr>
    <td>PostConditions
    </td>
-   <td>- System deletes associated bookings
-<p>
-- System deletes associations between instructor and offerings
-<p>
-- System deletes the account
+   <td>- If any, system deletes association between bookings and client
+<p>- If any, System deletes associations between guardian and clients
+<p>-- System updates dependant clients to inactive
+<p>- If any, System deletes associations between instructor and offerings
+<p>-- System updates offerings status to non-available
+<p>- System deletes the account
    </td>
   </tr>
   <tr>
@@ -220,11 +223,9 @@ System displays homepage
 <p>
 System retrieves and displays all accounts
 <p>
-Actor selects a client or instructor account
+Actor selects an account
 <p>
 Actor deletes account
-<p>
-System prompts for confirmation
 <p>
 System deletes selected account and related resources
    </td>
@@ -232,7 +233,7 @@ System deletes selected account and related resources
   <tr>
    <td>Extensions (alt. flows)
    </td>
-   <td>If actor cancels at prompt, the system does not delete the account, and returns to the account management page.
+   <td>
    </td>
   </tr>
 </table>
@@ -254,30 +255,23 @@ System deletes selected account and related resources
    <td>Preconditions
    </td>
    <td>Administrator is authenticated
-<p>
-Space/Location exists.
-<p>
-Location+Schedule+lesson type is unique and does not already exist.
+<p>Location exists.
+<p>Schedule exists.
+<p>{Location,Schedule} is unique and is not already assigned to another offering.
    </td>
   </tr>
   <tr>
    <td>PostConditions
    </td>
    <td>LocationSchedule is created
-<p>
-Lesson(s) is created
-<p>
-Association between lesson(s) and locationSchedule(s) is created
-<p>
-Offering(s) is created (private/group/both)
-<p>
-Association between offering(s) and lesson is created
+<p>Offering(s) is created
+<p>Association between offering(s) and locationSchedule(s) is created
    </td>
   </tr>
   <tr>
    <td>Inputs
    </td>
-   <td>location, schedule, lesson, lessonFormat(group,private,both), LessonType(swimming, yoga, soccer…)
+   <td>location, schedule, format(group,private,both), LessonType(swimming, yoga, soccer…), seats
    </td>
   </tr>
   <tr>
@@ -290,28 +284,17 @@ Association between offering(s) and lesson is created
    <td>Main Success Scenario
    </td>
    <td>Actor visits offerings management page
-<p>
-System retrieves and displays all offerings
-<p>
-Actor selects create offering
-<p>
-System displays offering creation page
-<p>
-Actor enters information
-<p>
-Actor submits form
-<p>
-System validates information
-<p>
-System creates a private and/or group offering
+<p>Actor selects create offering
+<p>Actor enters data
+<p>Actor submits
+<p>System validates data
+<p>System creates an offering based on entered data
    </td>
   </tr>
   <tr>
    <td>Extensions (alt. flows)
    </td>
-   <td>If the location-schedule for that space doesn’t exist, display an error.
-<p>
-If the lesson location-schedule is not unique, display an error.
+   <td>
    </td>
   </tr>
 </table>
@@ -338,45 +321,76 @@ If the lesson location-schedule is not unique, display an error.
   <tr>
    <td>PostConditions
    </td>
-   <td>Association between lesson and locationSchedule is deleted
-<p>
-LocationSchedule is deleted
-<p>
-Association between Lesson and Offering is deleted.
-<p>
-Lesson is deleted
-<p>
-Association between offering and instructor is deleted.
-<p>
-Association between offering and clients (booking) is deleted.
-<p>
-Offering is deleted.
+   <td>Association between offering and locationSchedule is deleted
+<p>LocationSchedule is deleted
+<p>Association between offering and instructor is deleted.
+<p>Association between offering and clients (booking) is deleted.
+<p>Offering is deleted.
    </td>
   </tr>
   <tr>
    <td>Main Success Scenario
    </td>
    <td>Actor visits offerings management page
-<p>
-System retrieves and displays all offerings
-<p>
-Actor selects offering
-<p>
-Actors selects delete
-<p>
-Actor submits
-<p>
-System prompts for confirmation
-<p>
-Actor confirms
-<p>
-System deletes offering
+<p>System retrieves and displays all offerings
+<p>Actor selects offering
+<p>Actors selects delete
+<p>Actor submits
+<p>System deletes offering
    </td>
   </tr>
   <tr>
    <td>Extensions (alt. flows)
    </td>
-   <td>If actor cancels, the system does not delete the offering, and returns to the offering management page
+   <td>
+   </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+   <td>
+   </td>
+   <td>Remove Offerings from instructor
+   </td>
+  </tr>
+  <tr>
+   <td>Primary Actor
+   </td>
+   <td>Instructor
+   </td>
+  </tr>
+  <tr>
+   <td>Preconditions
+   </td>
+   <td>Instructor is authenticated
+<p>Offering must be associated to instructor
+   </td>
+  </tr>
+  <tr>
+   <td>PostConditions
+   </td>
+   <td>
+<p>Association between offering and instructor is deleted.
+<p>Association between offering and clients (booking) is deleted.
+<p>Offering status and seats are updated
+   </td>
+  </tr>
+  <tr>
+   <td>Main Success Scenario
+   </td>
+   <td>Actor visits offerings management page
+<p>System retrieves and displays all offerings
+<p>Actor selects offering
+<p>Actors selects remove
+<p>Actor submits
+<p>System deletes offering
+   </td>
+  </tr>
+  <tr>
+   <td>Extensions (alt. flows)
+   </td>
+   <td>
    </td>
   </tr>
 </table>
@@ -398,38 +412,28 @@ System deletes offering
    <td>Preconditions
    </td>
    <td>Instructor is authenticated
-<p>
-Instructor specialization match Offering/Lesson type
-<p>
-Instructor availability match Offering/Lesson location
-<p>
-Instance of offering exists
+<p>Instructor specialization match Offering type
+<p>Instructor availability match Offering location
+<p>Instance of offering exists
+<p>Instructor has not already taken an offering at the same time and location.
    </td>
   </tr>
   <tr>
    <td>PostConditions
    </td>
    <td>Association between instructor and offering is created.
-<p>
-Offering status is updated to available.
+<p>Offering status is updated to available.
    </td>
   </tr>
   <tr>
    <td>Main Success Scenario
    </td>
    <td>Actor visits offerings page
-<p>
-System retrieves and displays all offerings
-<p>
-Actor selects offering(s) to take on
-<p>
-Actor submits
-<p>
-System prompts for confirmation
-<p>
-Actor confirms
-<p>
-System adds offerings to instructor
+<p>System retrieves and displays all offerings
+<p>Actor selects offering(s) to take on
+<p>Actor submits
+<p>Actor confirms
+<p>System checks uniqueness, then adds offerings to instructor
    </td>
   </tr>
   <tr>
@@ -500,8 +504,7 @@ System retrieves and displays all offerings (available, non-available) that have
    <td>Preconditions
    </td>
    <td>Actor is authenticated.
-<p>
-There exist Offering(s) with an association to an instructor
+<p>There exist Offering(s) with an association to an instructor
    </td>
   </tr>
   <tr>
@@ -555,8 +558,7 @@ System retrieves and displays all offerings (available, non-available) that have
    <td>Main Success Scenario
    </td>
    <td>Actor visits offering page
-<p>
-System retrieves and displays all offerings made available by organization.
+<p>System retrieves and displays all offerings not taken that have been made available by organization.
    </td>
   </tr>
   <tr>

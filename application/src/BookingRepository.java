@@ -19,24 +19,17 @@ public class BookingRepository {
     public List<Booking> get() {
         ArrayList<Booking> bookings = new ArrayList<>();
         try {
-            String query = "select b.id, b.active, b.status as bookingStatus, b.client_id, b.offering_id, o.status, o.taken, o.type, o.mode, o.seats from "
-                    + table + " b join offering o on b.offering_id = o.id where b.active = true";
+            String query = "select * from " + table;
             PreparedStatement st = conn.prepareStatement(query);
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                bookings.add(
-                        new Booking(
-                                rs.getLong(1),
-                                rs.getBoolean(2),
-                                rs.getString(3),
-                                rs.getLong(4),
-                                rs.getLong(5),
-                                rs.getString(6),
-                                rs.getBoolean(7),
-                                rs.getString(8),
-                                rs.getBoolean(9),
-                                rs.getInt(10)));
+                bookings.add(new Booking(
+                            rs.getLong(1),
+                            rs.getBoolean(2),
+                            rs.getString(3),
+                            rs.getLong(4),
+                            rs.getLong(5)));
             }
             rs.close();
             st.close();
@@ -50,7 +43,7 @@ public class BookingRepository {
     public Booking get(long id) {
         Booking booking = new Booking();
         try {
-            String query = "select b.id, b.active, b.status as bookingStatus, b.client_id, b.offering_id, o.status, o.taken, o.type, o.mode, o.seats from "
+            String query = "select b.* from "
                     + table + " b join offering o on b.offering_id = o.id where b.id = ? and b.active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, id);
@@ -62,12 +55,7 @@ public class BookingRepository {
                         rs.getBoolean(2),
                         rs.getString(3),
                         rs.getLong(4),
-                        rs.getLong(5),
-                        rs.getString(6),
-                        rs.getBoolean(7),
-                        rs.getString(8),
-                        rs.getBoolean(9),
-                        rs.getInt(10));
+                        rs.getLong(5));
             }
             rs.close();
             st.close();
@@ -81,7 +69,7 @@ public class BookingRepository {
     public List<Booking> getByClientId(Client client) {
         ArrayList<Booking> bookings = new ArrayList<>();
         try {
-            String query = "select b.id, b.active, b.status as bookingStatus, b.client_id, b.offering_id, o.status, o.taken, o.type, o.mode, o.seats from "
+            String query = "select b.* from "
                     + table + " b join offering o on b.offering_id = o.id where b.client_id = ? and b.active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, client.getId());
@@ -93,12 +81,7 @@ public class BookingRepository {
                         rs.getBoolean(2),
                         rs.getString(3),
                         rs.getLong(4),
-                        rs.getLong(5),
-                        rs.getString(6),
-                        rs.getBoolean(7),
-                        rs.getString(8),
-                        rs.getBoolean(9),
-                        rs.getInt(10)));
+                        rs.getLong(5)));
             }
             rs.close();
             st.close();
@@ -112,7 +95,7 @@ public class BookingRepository {
     public Booking getByOfferingId(Offering offering) {
         Booking booking = new Booking();
         try {
-            String query = "select b.id, b.active, b.status as bookingStatus, b.client_id, b.offering_id, o.status, o.taken, o.type, o.mode, o.seats from "
+            String query = "select b.* from "
                     + table + " b join offering o on b.offering_id = o.id where b.offering_id = ? and b.active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, offering.getId());
@@ -124,12 +107,7 @@ public class BookingRepository {
                         rs.getBoolean(2),
                         rs.getString(3),
                         rs.getLong(4),
-                        rs.getLong(5),
-                        rs.getString(6),
-                        rs.getBoolean(7),
-                        rs.getString(8),
-                        rs.getBoolean(9),
-                        rs.getInt(10));
+                        rs.getLong(5));
             }
             rs.close();
             st.close();

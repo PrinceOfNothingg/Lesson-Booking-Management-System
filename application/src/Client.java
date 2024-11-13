@@ -30,7 +30,8 @@ public class Client extends User {
         bookings.getByClientId(this).forEach(System.out::println);
     }
 
-    private void viewBooking(Scanner scanner, BookingRepository bookings, OfferingRepository offerings,
+    private void viewBookingDetails(Scanner scanner, ClientRepository clients, InstructorRepository instructors,
+            BookingRepository bookings, OfferingRepository offerings,
             LocationRepository locations, ScheduleRepository schedules) {
         boolean done = false;
         while (!done) {
@@ -41,13 +42,22 @@ public class Client extends User {
             int bookingId = Utils.getInt(scanner, "Please enter the id of a booking (q to quit):");
             if (bookingId == 0)
                 break;
+            
             Booking booking = bookings.get(bookingId);
             Offering offering = offerings.getByBookingId(booking);
+            Client client = clients.get(booking.getClientId());
+            Instructor instructor = instructors.getByOfferingId(offering);
             List<Schedule> scheduleList = schedules.getByOfferingId(offering);
             Location location = locations.getByOfferingId(offering);
+
             System.out.println(booking);
-            scheduleList.forEach(System.out::println);
+            System.out.println(offering);
+            System.out.println(client);
+            System.out.println(instructor);
             System.out.println(location);
+            scheduleList.forEach(System.out::println);
+            System.out.println("--------------------------------------------------------------------------------");
+
         }
     }
 
@@ -235,7 +245,7 @@ public class Client extends User {
         return choice;
     }
 
-    public void process(Scanner scanner, OfferingRepository offerings, BookingRepository bookings,
+    public void process(Scanner scanner, ClientRepository clients, InstructorRepository instructors, OfferingRepository offerings, BookingRepository bookings,
             LocationRepository locations, ScheduleRepository schedules) {
         boolean done = false;
         while (!done) {
@@ -243,13 +253,13 @@ public class Client extends User {
 
             switch (action) {
                 case 0: // View offerings
-                    viewOfferings(offerings);
+                    viewOfferings(instructors, offerings, locations, schedules);
                     break;
                 case 1: // View bookings
                     viewBookings(bookings);
                     break;
                 case 2: // View a booking
-                    viewBooking(scanner, bookings, offerings, locations, schedules);
+                    viewBookingDetails(scanner, clients, instructors, bookings, offerings, locations, schedules);
                     break;
                 case 3: // Make a Booking
                     makeBooking(scanner, offerings, bookings, locations, schedules);

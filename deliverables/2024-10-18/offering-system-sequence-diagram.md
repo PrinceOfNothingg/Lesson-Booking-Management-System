@@ -29,6 +29,10 @@ else is registered client
 |||
   system --> actor : display available & non-available offerings associated to an instructor
 |||
+else is registered guardian
+|||
+  system --> actor : display available & non-available offerings associated to an instructor
+|||
 else is registered instructor
 |||
   system --> actor : display offerings not associated to an instructor
@@ -57,30 +61,19 @@ title Create Offerings System Sequence Diagram
 
 skinparam sequenceMessageAlign center
 
-
-actor -> system : beginMakeOfferingSession()
-|||
 actor -> system : makeOffering(location, schedule, format, type)
 
-
-system -> system : validate()
+system -> system : check not exists(offering at same location & schedule)
+system -> system : offering.taken=false
 
 alt success
-  system -> system : lesson : createLesson(location, schedule, format, type)
-  system -> system : createOffering(lesson)
-  system --> actor : confirmation
+  system -> system : createOffering(location, schedule, format, type)
   system --> actor : display offering
-|||
-else location daytime slot not available
-|||
-  system --> actor : error
 |||
 else location daytime slot not unique
 |||
   system --> actor : error
 end
-
-actor -> system : endMakeOfferingSession()
 
 @enduml
 ```
@@ -106,30 +99,17 @@ title Delete Offerings System Sequence Diagram
 skinparam sequenceMessageAlign center
 
 actor -> system : removeOffering(offering)
-system --> actor : prompt()
-|||
-alt confirm
-|||
-actor -> system : confirm()
-else cancel
-|||
-system --> actor : exit and display offerings
-end
-
-|||
-system -> system : delete(lesson)
-|||
 
 alt if client associated
-  system -> system : delete(client-offering)
+  system -> system : deleteBooking(client)
 |||
 else if instructor associated
 |||
-  system -> system : delete(instructor-offering)
+  system -> system : deleteInstructorOffering(instructor)
 |||
 end
 
-system -> system : delete(offering)
+system -> system : offering.delete()
 system --> actor : confirmation
 @enduml
 ```
@@ -157,18 +137,16 @@ skinparam sequenceMessageAlign center
 |||
 actor -> system : takeOffering(offering)
 |||
-system --> actor : prompt()
-|||
-actor -> system : confirm()
+system -> system : not exists(offering at same location and time slot)
 
 alt success
-  system -> system : add(instructor, offering)
-  system -> actor : confirmation
+system -> system : createInstructorOffering(instructor, offering)
+system -> system : offering.taken=true
+system -> system : offering.status="available"
+system -> actor : confirmation
 |||
-else cancel
-|||
-  system -> actor : exit and display offerings
-|||
+else not unique
+system -> actor : error
 end
 @enduml
 ```

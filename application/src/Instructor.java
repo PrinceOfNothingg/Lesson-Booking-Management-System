@@ -37,13 +37,38 @@ public class Instructor extends User {
         this.availabilities = availabilities;
     }
 
-    @Override
-    protected void viewOfferings(OfferingRepository offerings) {
-        offerings.getByInstructorId(this).forEach(System.out::println);
+    protected void viewOfferings(OfferingRepository offerings, LocationRepository locations, ScheduleRepository schedules) {
+        List<Offering> offeringList = offerings.getByInstructorId(this);
+        if (offeringList.isEmpty())
+            System.out.println("No offerings available.");
+        else {
+            for (Offering offering : offeringList) {
+            List<Schedule> scheduleList = schedules.getByOfferingId(offering);
+            Location location = locations.getByOfferingId(offering);
+
+            System.out.println(offering);
+            System.out.println(location);
+            scheduleList.forEach(System.out::println);
+            System.out.println("--------------------------------------------------------------------------------");
+            }
+        }
     }
 
-    private void viewAvailableOfferings(OfferingRepository offerings) {
-        offerings.getTaken(false).forEach(System.out::println);
+    private void viewAvailableOfferings(OfferingRepository offerings, LocationRepository locations, ScheduleRepository schedules) {
+        List<Offering> offeringList = offerings.getTaken(false);
+        if (offeringList.isEmpty())
+            System.out.println("No offerings available.");
+        else {
+            for (Offering offering : offeringList) {
+            List<Schedule> scheduleList = schedules.getByOfferingId(offering);
+            Location location = locations.getByOfferingId(offering);
+
+            System.out.println(offering);
+            System.out.println(location);
+            scheduleList.forEach(System.out::println);
+            System.out.println("--------------------------------------------------------------------------------");
+            }
+        }
     }
 
     private void takeOfferings(Scanner scanner, OfferingRepository offerings, LocationRepository locations,
@@ -237,7 +262,7 @@ public class Instructor extends User {
         return choice;
     }
 
-    public void process(Scanner scanner, OfferingRepository offerings, LocationRepository locations,
+    public void process(Scanner scanner, InstructorRepository instructors, OfferingRepository offerings, LocationRepository locations,
             ScheduleRepository schedules, InstructorOfferingRepository instructorOfferings) {
         boolean done = false;
         while (!done) {
@@ -245,10 +270,10 @@ public class Instructor extends User {
 
             switch (action) {
                 case 0: // View offerings not taken
-                    viewAvailableOfferings(offerings);
+                    viewAvailableOfferings(offerings, locations, schedules);
                     break;
                 case 1: // View my offerings
-                    viewOfferings(offerings);
+                    viewOfferings(offerings, locations, schedules);
                     break;
                 case 2: // take offerings
                     takeOfferings(scanner, offerings, locations, schedules, instructorOfferings);

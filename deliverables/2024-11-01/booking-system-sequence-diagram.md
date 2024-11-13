@@ -45,8 +45,6 @@ Create Booking plantUml Code
 @startuml
 participant "__:Client__" as actor
 participant "__:System__" as system
-participant "__:System__" as system
-
 
 title Create Booking System Sequence Diagram
 skinparam sequenceMessageAlign center
@@ -55,23 +53,13 @@ actor -> system : getOfferings()
 |||
 system --> actor : offerings
 |||
-actor -> system : makeBooking(offering)
+actor -> system : makeBooking(client, offering)
 |||
-system --> actor : prompt
-|||
-alt confirms
-system --> system : lock offering
-system --> system : booking := create(offering, client)
-system --> system : update and unlock offering
+system --> system : not exists(booking at same location and time slot)
 
+system --> system : booking := createBooking(client, offering)
+system --> system : offering.status="non-available"
 system --> actor : confirmation
-else cancels
-|||
-system --> system : unlock offering
-system --> actor : show offerings
-
-end
-
 @enduml
 ```
 
@@ -98,19 +86,17 @@ actor -> system : getbookings(client)
 |||
 system --> actor : client bookings
 |||
-actor -> system : cancelBooking(bookings)
-system --> actor : prompt
+actor -> system : cancelBooking(client, bookings)
 |||
-alt confirms
-loop 
+loop for booking : bookings
+system --> system : delete(booking, offering)
+system --> system : delete(booking, client)
 system --> system : delete(booking)
-end
-system --> actor : confirmation
-|||
-else cancels
-system --> actor : show bookings
+system --> system : offering.update(seats, status)
 
 end
+system --> actor : confirmation
+
 @enduml
 ```
 

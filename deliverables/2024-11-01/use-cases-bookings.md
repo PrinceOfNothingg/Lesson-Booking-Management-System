@@ -19,7 +19,7 @@
    <td>User is a client
 <p>Client is authenticated
 <p>Offering(s) with available seats exist.
-<p>Client does not have another booking for the same schedule.
+<p>Client does not have another booking at the same location for the same schedule.
    </td>
   </tr>
   <tr>
@@ -28,10 +28,8 @@
    <td>Booking is created.
 <p>Association between booking and offering is created.
 <p>Association between booking and client is created.
-<p>System updates private offering(s) status to non-available.
-<p>System updates group offerings’ number of seats available. 
-<p>System updates group offerings’, when full, to non-available. 
-
+<p>System updates offerings’ number of seats available.
+<p>System updates offerings’ status, when full, to non-available.
    </td>
   </tr>
   <tr>
@@ -41,19 +39,16 @@
 <p>System retrieves and displays offerings
 <p>Actor selects 1 or more offerings
 <p>Actor submits selection
-<p>System prompts for submit confirmation
-<p>Actor confirms
 <p>System locks seat for selected offering(s) temporarily
 <p>System creates booking(s)
 <p>System updates offering status, seats, and unlocks for selected offering(s)
 <p>System outputs confirmation message
-
    </td>
   </tr>
   <tr>
    <td>Extensions (alt. flows)
    </td>
-   <td>If canceled, the system unlocks the offering(s) and returns to the offering page.
+   <td>
    </td>
   </tr>
 </table>
@@ -94,7 +89,7 @@ System retrieves and displays bookings
 <p>
 Actor selects a booking
 <p>
-System displays booking details
+System displays booking details (client, location, schedule, offering, instructor)
    </td>
   </tr>
   <tr>
@@ -121,9 +116,9 @@ System displays booking details
   <tr>
    <td>Preconditions
    </td>
-   <td>Is registered and authenticated
-<p>
-Booking(s) exist
+   <td>Client Is registered and authenticated
+<p>Booking(s) exist
+<p>Booking(s) is associated to Client
    </td>
   </tr>
   <tr>
@@ -131,16 +126,10 @@ Booking(s) exist
    </td>
    <td>
 <p>Association between booking and client is deleted.
-<p>
-Association between booking and offering is deleted.
-<p>
-Booking is deleted
-<p>
-Private offering is made available.
-<p>
-Group offerings’ number of seats is updated.
-<p>
-Non-available group offerings are made available.
+<p>Association between booking and offering is deleted.
+<p>Booking is deleted
+<p>offerings’ number of seats is updated.
+<p>offering is made available.
    </td>
   </tr>
   <tr>
@@ -150,12 +139,9 @@ Non-available group offerings are made available.
 <p>Actor visits bookings page
 <p>System retrieves and displays bookings
 <p>Actor selects a booking
-<p>Actor submits cancel request
-<p>System prompts for submit confirmation
-<p>Actor confirms
-<p>System attempts to cancel booking
+<p>Actor submits request
+<p>System cancels booking
 <p>System outputs confirmation message
-
    </td>
   </tr>
   <tr>

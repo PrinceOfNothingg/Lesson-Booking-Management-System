@@ -4,11 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.Scanner;
 
 public class Utils {
+
+    private Utils(){}
 
     public static int printStartMenu() {
         System.out.println("\n--------------------------------------------------------------------------------");
@@ -57,8 +57,8 @@ public class Utils {
             try {
                 choice = Integer.parseInt(scanner.nextLine());
 
-                if (choice < min || choice > max) {
-                    System.out.println("Please select between " + min + " and " + max + ".");
+                if (choice < min + 1 || choice > max) {
+                    System.out.println("Please select between " + (min+1) + " and " + max + ".");
                 } else {
                     break;
                 }
@@ -66,7 +66,7 @@ public class Utils {
                 System.out.println("Invalid option.");
             }
         }
-        return choice - 1; // because we use it in a switch statement
+        return choice - 1;
     }
 
     public static int handleStartSelection(Scanner scanner) {
@@ -110,7 +110,7 @@ public class Utils {
         while (!done) {
             System.out.println(msg);
             input = scanner.nextLine().trim();
-            System.out.println(input);
+
             if (input.equalsIgnoreCase("q"))
                 break;
             else if (input.equalsIgnoreCase("r"))
@@ -155,7 +155,7 @@ public class Utils {
 
         while (true) {
             age = getInt(scanner, "Enter your age (q to exit, r to retry):");
-            System.out.println(age);
+
             if (age < 18) {
                 System.out.println("Invalid age");
             } else {
@@ -174,7 +174,7 @@ public class Utils {
         while (!done) {
             System.out.println(msg);
             input = scanner.nextLine().trim();
-            System.out.println(input);
+
             if (input.equalsIgnoreCase("q"))
                 break;
             else if (input.equalsIgnoreCase("r"))
@@ -195,7 +195,7 @@ public class Utils {
         while (!done) {
             System.out.println(msg);
             input = scanner.nextLine().trim();
-            System.out.println(input);
+
             if (input.equalsIgnoreCase("q"))
                 break;
             else if (input.equalsIgnoreCase("r"))
