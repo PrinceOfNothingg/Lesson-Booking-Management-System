@@ -83,6 +83,9 @@ public class User {
     }
 
     protected void viewOfferings(OfferingRepository offerings) {
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                              View Offerings!");
+        System.out.println("--------------------------------------------------------------------------------");
         List<Offering> result = offerings.getTaken(true);
         if (result.isEmpty())
             System.out.println("No offerings available.");
@@ -92,7 +95,7 @@ public class User {
 
     protected int printMenu() {
         System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("                          Welcome!");
+        System.out.println("                                 Welcome!");
         System.out.println("--------------------------------------------------------------------------------");
         System.out.println("Please select one of the following options:");
         System.out.println("1. View Offerings");

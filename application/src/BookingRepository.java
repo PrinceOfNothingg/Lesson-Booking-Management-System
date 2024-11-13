@@ -151,7 +151,9 @@ public class BookingRepository {
             st.setLong(3, offering.getId());
             st.setString(4, "booked");
             ResultSet rs = st.executeQuery();
-            id = rs.getLong(1);
+            while (rs.next()) {
+                id = rs.getLong(1);
+            }
             System.out.println("DEBUG: " + st);
             rs.close();
             st.close();

@@ -43,7 +43,7 @@ public class InstructorOfferingRepository {
     public InstructorOffering getByOfferingId(Offering offering) {
         InstructorOffering instructorOffering = new InstructorOffering();
         try {
-            String query = "select * from " + table + "where offering_id = ? and active = true";
+            String query = "select * from " + table + " where offering_id = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, offering.getId());
             ResultSet rs = st.executeQuery();
@@ -73,7 +73,9 @@ public class InstructorOfferingRepository {
             st.setLong(2, instructor.getId());
             st.setLong(3, offering.getId());
             ResultSet rs = st.executeQuery();
-            id = rs.getLong(1);
+            while (rs.next()) {
+                id = rs.getLong(1);
+            }
             System.out.println("DEBUG: " + st);
             rs.close();
             st.close();

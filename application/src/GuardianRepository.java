@@ -107,7 +107,9 @@ public class GuardianRepository {
             st.setString(4, guardian.phone);
             st.setString(5, guardian.role);
             ResultSet rs = st.executeQuery();
-            id = rs.getLong(1);
+            while (rs.next()) {
+                id = rs.getLong(1);
+            }
             System.out.println("DEBUG: " + st);
             rs.close();
             st.close();

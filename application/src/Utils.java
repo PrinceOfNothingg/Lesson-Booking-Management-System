@@ -10,15 +10,9 @@ import java.util.Scanner;
 
 public class Utils {
 
-    public static void printBanner() {
-        System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("-----------------------Welcome to the Activities Board!-------------------------");
-        System.out.println("--------------------------------------------------------------------------------\n");
-    }
-
     public static int printStartMenu() {
         System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("--------------------------           Start            --------------------------");
+        System.out.println("-----------------------Welcome to the Activities Board!-------------------------");
         System.out.println("--------------------------------------------------------------------------------");
         System.out.println("Please select one of the following options:");
         System.out.println("1. Log in");

@@ -23,7 +23,6 @@ public class App extends Thread {
 
     public void run() {
 
-        Utils.printBanner();
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 

@@ -75,7 +75,7 @@ public class ScheduleRepository {
         ArrayList<Schedule> schedules = new ArrayList<>();
         try {
             String query = "select s.* from " + table
-                    + "s join location_schedule ls on s.id = ls.schedule_id where ls.location_id = ? and active = true";
+                    + " s join location_schedule ls on s.id = ls.schedule_id where ls.location_id = ? and s.active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, location.getId());
             ResultSet rs = st.executeQuery();
@@ -103,7 +103,7 @@ public class ScheduleRepository {
         ArrayList<Schedule> schedules = new ArrayList<>();
         try {
             String query = "select s.* from " + table
-                    + "s join location_schedule ls on s.id = ls.schedule_id where ls.offering_id = ? and active = true";
+                    + " s join location_schedule ls on s.id = ls.schedule_id where ls.offering_id = ? and s.active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, offering.getId());
             ResultSet rs = st.executeQuery();
@@ -141,7 +141,9 @@ public class ScheduleRepository {
             st.setObject(2, tsrange);
 
             ResultSet rs = st.executeQuery();
-            id = rs.getLong(1);
+            while (rs.next()) {
+                id = rs.getLong(1);
+            }
             System.out.println("DEBUG: " + st);
             rs.close();
             st.close();

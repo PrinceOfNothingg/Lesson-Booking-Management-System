@@ -52,7 +52,9 @@ public class RepresentativeRepository {
             st.setLong(3, dependant.getId());
             st.setString(4, "child");
             ResultSet rs = st.executeQuery();
-            id = rs.getLong(1);
+            while (rs.next()) {
+                id = rs.getLong(1);
+            }
             System.out.println("DEBUG: " + st);
             rs.close();
             st.close();

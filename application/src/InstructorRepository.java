@@ -139,7 +139,9 @@ public class InstructorRepository {
             st.setArray(6, specs);
             st.setArray(7, avails);
             ResultSet rs = st.executeQuery();
-            id = rs.getLong(1);
+            while (rs.next()) {
+                id = rs.getLong(1);
+            }
             System.out.println("DEBUG: " + st);
             rs.close();
             st.close();

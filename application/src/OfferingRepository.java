@@ -102,7 +102,7 @@ public class OfferingRepository {
         ArrayList<Offering> offerings = new ArrayList<>();
         try {
             String query = "select o.* from " + table
-                    + " o join instructor_offering io on o.id = io.offering_id where io.instructor_id = ? and active = true";
+                    + " o join instructor_offering io on o.id = io.offering_id where io.instructor_id = ? and o.active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, instructor.getId());
             ResultSet rs = st.executeQuery();
@@ -157,7 +157,7 @@ public class OfferingRepository {
         ArrayList<Offering> offerings = new ArrayList<>();
         try {
             String query = "select o.* from " + table
-                    + "o join booking b on o.id = b.offering_id where b.client_id = ? and active = true";
+                    + " o join booking b on o.id = b.offering_id where b.client_id = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, client.getId());
             ResultSet rs = st.executeQuery();
@@ -214,7 +214,9 @@ public class OfferingRepository {
             st.setBoolean(5, offering.isGroup());
             st.setInt(6, offering.getSeats());
             ResultSet rs = st.executeQuery();
-            id = rs.getLong(1);
+            while (rs.next()) {
+                id = rs.getLong(1);
+            }
             System.out.println("DEBUG: " + st);
             rs.close();
             st.close();

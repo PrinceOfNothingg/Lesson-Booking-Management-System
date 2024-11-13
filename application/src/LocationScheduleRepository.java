@@ -44,7 +44,7 @@ public class LocationScheduleRepository {
     public List<LocationSchedule> getByOfferingId(Offering offering) {
         ArrayList<LocationSchedule> locationSchedules = new ArrayList<>();
         try {
-            String query = "select * from " + table + "where offering_id = ? and active = true";
+            String query = "select * from " + table + " where offering_id = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, offering.getId());
             ResultSet rs = st.executeQuery();
@@ -78,7 +78,9 @@ public class LocationScheduleRepository {
             st.setLong(3, ls.getScheduleId());
             st.setLong(4, ls.getOfferingId());
             ResultSet rs = st.executeQuery();
-            id = rs.getLong(1);
+            while (rs.next()) {
+                id = rs.getLong(1);
+            }
             System.out.println("DEBUG: " + st);
             rs.close();
             st.close();

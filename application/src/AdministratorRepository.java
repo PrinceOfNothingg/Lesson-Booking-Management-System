@@ -115,7 +115,9 @@ public class AdministratorRepository {
             st.setString(4, administrator.phone);
             st.setString(5, administrator.role);
             ResultSet rs = st.executeQuery();
-            id = rs.getLong(1);
+            while (rs.next()) {
+                id = rs.getLong(1);
+            }
             System.out.println("DEBUG: " + st);
             rs.close();
             st.close();

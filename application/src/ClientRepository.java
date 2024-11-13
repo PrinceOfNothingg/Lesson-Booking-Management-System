@@ -106,7 +106,7 @@ public class ClientRepository {
         ArrayList<Client> clients = new ArrayList<>();
         try {
             String query = "select c.* from " + table
-                    + "c join representative rp on c.id = rp.client_id where rp.representative_id = ? and active = true";
+                    + " c join representative rp on c.id = rp.client_id where rp.representative_id = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, guardian.getId());
             ResultSet rs = st.executeQuery();
@@ -144,7 +144,9 @@ public class ClientRepository {
             st.setString(5, client.role);
             st.setBoolean(6, client.dependant);
             ResultSet rs = st.executeQuery();
-            id = rs.getLong(1);
+            while (rs.next()) {
+                id = rs.getLong(1);
+            }
             System.out.println("DEBUG: " + st);
             rs.close();
             st.close();
@@ -169,7 +171,9 @@ public class ClientRepository {
             st.setBoolean(6, client.isDependant());
             st.setLong(7, client.getId());
             ResultSet rs = st.executeQuery();
-            id = rs.getLong(1);
+            while (rs.next()) {
+                id = rs.getLong(1);
+            }
             System.out.println("DEBUG: " + st);
             rs.close();
             st.close();

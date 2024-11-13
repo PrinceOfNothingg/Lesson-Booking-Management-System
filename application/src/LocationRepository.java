@@ -149,7 +149,7 @@ public class LocationRepository {
         Location location = new Location();
         try {
             String query = "select l.* from " + table
-                    + " l join location_schedule ls on l.id = ls.location_id join offering o on ls.offering_id = o.id where o.id = ? and active = true";
+                    + " l join location_schedule ls on l.id = ls.location_id join offering o on ls.offering_id = o.id where o.id = ? and l.active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, offering.getId());
             ResultSet rs = st.executeQuery();
@@ -181,7 +181,9 @@ public class LocationRepository {
             st.setString(3, location.getAddress());
             st.setString(4, location.getCity());
             ResultSet rs = st.executeQuery();
-            id = rs.getLong(1);
+            while (rs.next()) {
+                id = rs.getLong(1);
+            }
             System.out.println("DEBUG: " + st);
             rs.close();
             st.close();
