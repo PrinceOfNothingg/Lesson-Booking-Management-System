@@ -23,8 +23,6 @@ public class AdministratorRepository {
             String query = "select * from " + table;
             PreparedStatement st = conn.prepareStatement(query);
             ResultSet rs = st.executeQuery();
-            System.out.println("DEBUG: " + st);
-
             while (rs.next()) {
                 administrators.add(
                         new Administrator(
@@ -51,7 +49,32 @@ public class AdministratorRepository {
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, id);
             ResultSet rs = st.executeQuery();
-            System.out.println("DEBUG: " + st);
+
+            while (rs.next()) {
+                administrator = new Administrator(
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        rs.getString(6));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return administrator;
+    }
+
+    public Administrator get(String phone) {
+        Administrator administrator = new Administrator();
+        try {
+            String query = "select * from " + table + " where  phone = ? and active = true";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setString(1, phone);
+            ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
                 administrator = new Administrator(
@@ -79,7 +102,6 @@ public class AdministratorRepository {
             st.setString(1, name);
             st.setString(2, phone);
             ResultSet rs = st.executeQuery();
-            System.out.println("DEBUG: " + st);
 
             while (rs.next()) {
                 administrator = new Administrator(
@@ -103,7 +125,7 @@ public class AdministratorRepository {
         long id = 0;
         try {
             String query = "insert into " + table
-                    + " (active, \"name\", age, phone, \"role\") values (?,?,?,?,?) returning id";
+                    + " (active, \"name\", age, phone, \"role\") values (?,?,?,?,?::roleType) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setString(2, administrator.name);
@@ -114,7 +136,6 @@ public class AdministratorRepository {
             while (rs.next()) {
                 id = rs.getLong(1);
             }
-            System.out.println("DEBUG: " + st);
             rs.close();
             st.close();
         } catch (SQLException e) {

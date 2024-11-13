@@ -17,6 +17,8 @@ Mehdi Kahouache 40250581
    - Replace pg_hba.conf with that of this repo i.e. project/database/pg_hba.conf
    - Ensure file permissions and ownership are correct <br> ```-rw-------. 1 postgres postgres 5469 Oct 28 00:39 /var/lib/pgsql/data/pg_hba.conf```
    - Restart postgresql
+3. Download json-simple jar to lib directory
+4. Download postgresql jdbc jar to libe directory
 
 ### Setup
 
@@ -39,5 +41,7 @@ psql -U soen -d soendb < database/soen.sql
 ## Usage
 
 1. Ensure ***Dependencies*** are installed.
+2. Compile: "cd /project/path; javac -cp .:application/lib/json-simple-1.1.1.jar:application/lib/postgresql-42.7.4.jar application/src/*.java"
+3. Run: "cd /project/path; java -cp .:application/lib/postgresql-42.7.4.jar:application/lib/json-simple-1.1.1.jar application.src.Application"
 
 [postgresql-install-url]: https://www.postgresql.org/docs/16/index.html

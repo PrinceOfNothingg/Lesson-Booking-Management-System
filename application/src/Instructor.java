@@ -84,41 +84,32 @@ public class Instructor extends User {
                 break;
 
             Offering offering = offerings.get(offeringId);
+            if (offering == null) {
+                System.out.println("Offering not found.");
+                continue;
+            }
+            if (offering.isTaken()) {
+                System.out.println("Offering is not available.");
+                continue;
+            }
 
             if (!getSpecializations().contains(offering.getType())) {
                 System.out.println("\nInstructor specializations do not match offering.");
-                break;
+                continue;
             }
             if (!getAvailabilities().contains(locations.getByOfferingId(offering).getCity())) {
                 System.out.println("\nInstructor availabilitiess do not match offering.");
-                break;
+                continue;
             }
 
-            List<Offering> offeringList = offerings.getByInstructorId(this);
-            List<Location> locationList = new ArrayList<>();
-            List<List<Schedule>> scheduleListList = new ArrayList<>();
-            for (Offering o : offeringList) {
-                locationList.add(locations.getByOfferingId(o));
-                scheduleListList.add(schedules.getByOfferingId(o));
-            }
-
-            Location curLocation = locations.getByOfferingId(offering);
-            List<Schedule> curScheduleList = schedules.getByOfferingId(offering);
-            boolean bookingConflict = false;
-            for (Location location : locationList) {
-                if (location.getName().equalsIgnoreCase(curLocation.getName()) &&
-                        location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
-                        location.getCity().equalsIgnoreCase(curLocation.getCity())) {
-                    if (scheduleListList.contains(curScheduleList)) {
-                        bookingConflict = true;
-                        break;
-                    }
+            List<Schedule> scheduleList = schedules.getByInstructorId(this);
+            List<Schedule> newScheduleList = schedules.getByOfferingId(offering);
+            
+            for (Schedule schedule : newScheduleList) {
+                if(scheduleList.contains(schedule)) {
+                    System.out.println("You already have a booking at the same time.");
+                    return;
                 }
-            }
-
-            if (bookingConflict) {
-                System.out.println("Another offering at that location and time already exists.");
-                break;
             }
 
             instructorOfferings.insert(this, offering);
@@ -133,6 +124,13 @@ public class Instructor extends User {
 
     private void removeOfferings(Scanner scanner, OfferingRepository offerings,
             InstructorOfferingRepository instructorOfferings) {
+
+        List<Offering> offeringList = offerings.getTaken(false);
+        if (offeringList.isEmpty()){
+            System.out.println("No offerings available.");
+            return;
+        }
+
         boolean done = false;
         while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
@@ -177,6 +175,7 @@ public class Instructor extends User {
 
             if (instructor.isEmpty()) {
                 System.out.println("Invalid credentials.");
+                instructor = null;
             } else {
                 System.out.println("Login Successful.");
                 break;
@@ -220,17 +219,20 @@ public class Instructor extends User {
             ArrayList<String> specs = Utils.getSpecializations(scanner);
             ArrayList<String> avails = Utils.getAvailabilities(scanner);
 
-            instructor = instructors.get(username, phone);
+            instructor = instructors.get(phone);
 
             if (instructor.isEmpty()) {
                 instructor = new Instructor(0, true, username, age, phone, "instructor", specs, avails);
-                instructors.insert(instructor);
-                instructor = instructors.get(username, phone);
+                long id = instructors.insert(instructor);
+                instructor = instructors.get(id);
                 break;
             } else {
-                System.out.println("User already exists.");
+                System.out.println("User conflict");
+                instructor = new Instructor();
             }
         }
+        if(!instructor.isEmpty())
+            System.out.println("Registered " + instructor);
 
         return instructor;
     }
@@ -291,6 +293,11 @@ public class Instructor extends User {
                     break;
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object b){
+        return this.id == ((Instructor)b).id;
     }
 
     @Override

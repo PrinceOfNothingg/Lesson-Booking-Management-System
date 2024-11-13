@@ -103,9 +103,65 @@ public class ScheduleRepository {
         ArrayList<Schedule> schedules = new ArrayList<>();
         try {
             String query = "select s.* from " + table
-                    + " s join location_schedule ls on s.id = ls.schedule_id where ls.offering_id = ? and s.active = true";
+                    + " s join location_schedule ls on s.id = ls.schedule_id join event e on e.location_schedule_id = ls.id where e.offering_id = ? and s.active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, offering.getId());
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                PGobject tsrange = new PGobject();
+                tsrange.setType("tsrange");
+                tsrange = (PGobject) rs.getObject(3);
+                schedules.add(
+                        new Schedule(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                tsrange.toString()));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return schedules;
+    }
+
+    public List<Schedule> getByClientId(Client client) {
+        ArrayList<Schedule> schedules = new ArrayList<>();
+        try {
+            String query = "select s.* from " + table
+                    + " s join location_schedule ls on s.id = ls.schedule_id join event e on e.location_schedule_id = ls.id join booking b on b.offering_id = e.offering_id where b.client_id = ? and s.active = true";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1, client.getId());
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                PGobject tsrange = new PGobject();
+                tsrange.setType("tsrange");
+                tsrange = (PGobject) rs.getObject(3);
+                schedules.add(
+                        new Schedule(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                tsrange.toString()));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return schedules;
+    }
+
+    public List<Schedule> getByInstructorId(Instructor instructor) {
+        ArrayList<Schedule> schedules = new ArrayList<>();
+        try {
+            String query = "select s.* from " + table
+                    + " s join location_schedule ls on s.id = ls.schedule_id join event e on e.location_schedule_id = ls.id join instructor_offering io on b.offering_id = io.offering_id where io.instructor_id = ? and s.active = true";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setLong(1, instructor.getId());
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
@@ -144,7 +200,6 @@ public class ScheduleRepository {
             while (rs.next()) {
                 id = rs.getLong(1);
             }
-            System.out.println("DEBUG: " + st);
             rs.close();
             st.close();
         } catch (SQLException e) {

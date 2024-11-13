@@ -6,18 +6,18 @@ public class Location {
 
     private long id = -1;
     private boolean active = false;
-    private String address = null;
     private String name = null;
+    private String address = null;
     private String city = null;
 
     protected Location() {
     }
 
-    protected Location(long id, boolean active, String address, String name, String city) {
+    protected Location(long id, boolean active, String name, String address, String city) {
         this.id = id;
         this.active = active;
-        this.address = address;
         this.name = name;
+        this.address = address;
         this.city = city;
     }
 
@@ -62,7 +62,12 @@ public class Location {
     }
 
     public boolean isEmpty() {
-        return this.name == null && this.city == null;
+        return this.city == null;
+    }
+
+    @Override
+    public boolean equals(Object b){
+        return this.id == ((Location)b).id;
     }
 
     public String toString() {

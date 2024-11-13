@@ -17,6 +17,7 @@ public class App extends Thread {
     ScheduleRepository scheduleRepo = new ScheduleRepository(psql);
     LocationScheduleRepository locationScheduleRepo = new LocationScheduleRepository(psql);
     OfferingRepository offeringRepo = new OfferingRepository(psql);
+    EventRepository events = new EventRepository(psql);
 
     App() {
     }
@@ -46,15 +47,23 @@ public class App extends Thread {
                     switch (selectedLogin) {
                         case User.Type.CLIENT:
                             user = Client.login(scanner, clientRepo);
+                            if(user == null)
+                                restart = true;
                             break;
                         case User.Type.GUARDIAN:
                             user = Guardian.login(scanner, guardianRepo);
+                            if(user == null)
+                                restart = true;
                             break;
                         case User.Type.INTRUCTOR:
                             user = Instructor.login(scanner, instructorRepo);
+                            if(user == null)
+                                restart = true;
                             break;
                         case User.Type.ADMIN:
                             user = Administrator.login(scanner, administratorRepo);
+                            if(user == null)
+                                restart = true;
                             break;
                         default:
                             restart = true;
@@ -67,15 +76,23 @@ public class App extends Thread {
                     switch (selectedRegistration) {
                         case User.Type.CLIENT:
                             user = Client.register(scanner, clientRepo);
+                            if(user == null)
+                                restart = true;
                             break;
                         case User.Type.GUARDIAN:
                             user = Guardian.register(scanner, guardianRepo, clientRepo, representativeRepo);
+                            if(user == null)
+                                restart = true;
                             break;
                         case User.Type.INTRUCTOR:
                             user = Instructor.register(scanner, instructorRepo);
+                            if(user == null)
+                                restart = true;
                             break;
                         case User.Type.ADMIN:
                             user = Administrator.register(scanner, administratorRepo);
+                            if(user == null)
+                                restart = true;
                             break;
                         default:
                             restart = true;
@@ -83,7 +100,7 @@ public class App extends Thread {
                     }
                     // fall through
                 case 2: // View offerings
-                    if (user == null) {
+                    if (user.isEmpty() && !user.getRole().equals("guest")) {
                         System.out.println("Invalid User. Restarting.");
                         restart = true;
                     }
@@ -93,7 +110,7 @@ public class App extends Thread {
                     System.out.println("\nQuitting.");
                     running = false;
                     break;
-            }
+                }
 
             if (restart || !running) {
                 continue;
@@ -115,7 +132,7 @@ public class App extends Thread {
                 case "admin":
                     administrator = (Administrator) user;
                     administrator.process(scanner, bookingRepo, offeringRepo, scheduleRepo, locationRepo, clientRepo,
-                            guardianRepo, instructorRepo, administratorRepo, locationScheduleRepo, representativeRepo);
+                            guardianRepo, instructorRepo, administratorRepo, locationScheduleRepo, representativeRepo, events);
                     break;
                 case "guest":
                     user.process(scanner, instructorRepo, offeringRepo, locationRepo, scheduleRepo);

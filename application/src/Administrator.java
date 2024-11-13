@@ -71,10 +71,11 @@ public class Administrator extends User {
         administrators.get().forEach(System.out::println);
     }
 
-    public void createBooking(Scanner scanner, ClientRepository clients, OfferingRepository offerings, BookingRepository bookings,
-    LocationRepository locations, ScheduleRepository schedules) {
+    public void createBooking(Scanner scanner, ClientRepository clients, OfferingRepository offerings,
+            BookingRepository bookings,
+            LocationRepository locations, ScheduleRepository schedules) {
         Booking booking;
-        
+
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                        Make a Booking" + this.name);
         System.out.println("--------------------------------------------------------------------------------");
@@ -88,32 +89,29 @@ public class Administrator extends User {
             return;
 
         Offering offering = offerings.get(offeringId);
-        Client client = clients.get(clientId);
-        List<Offering> offeringList = offerings.getByClientId(client);
-        List<Location> locationList = new ArrayList<>();
-        List<List<Schedule>> scheduleListList = new ArrayList<>();
-        for (Offering o : offeringList) {
-            locationList.add(locations.getByOfferingId(o));
-            scheduleListList.add(schedules.getByOfferingId(o));
-        }
-
-        Location curLocation = locations.getByOfferingId(offering);
-        List<Schedule> curScheduleList = schedules.getByOfferingId(offering);
-        boolean bookingConflict = false;
-        for (Location location : locationList) {
-            if (location.getName().equalsIgnoreCase(curLocation.getName()) &&
-                    location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
-                    location.getCity().equalsIgnoreCase(curLocation.getCity())) {
-                if (scheduleListList.contains(curScheduleList)) {
-                    bookingConflict = true;
-                    break;
-                }
-            }
-        }
-
-        if (bookingConflict) {
-            System.out.println("Another booking at that location and time already exists.");
+        if (offering == null) {
+            System.out.println("Offering not found.");
             return;
+        }
+        if (offering.getStatus().equals("non-available")) {
+            System.out.println("Offering is not available.");
+            return;
+        }
+
+        Client client = clients.get(clientId);
+        if (client.isEmpty()) {
+            System.out.println("Client not found.");
+            return;
+        }
+
+        List<Schedule> scheduleList = schedules.getByClientId(client);
+        List<Schedule> newScheduleList = schedules.getByOfferingId(offering);
+        
+        for (Schedule schedule : newScheduleList) {
+            if(scheduleList.contains(schedule)){
+                System.out.println("You already have a booking at the same time.");
+                return;
+            }       
         }
 
         long id = bookings.insert(client, offering);
@@ -130,13 +128,13 @@ public class Administrator extends User {
     }
 
     public void createOffering(Scanner scanner, OfferingRepository offerings, ScheduleRepository schedules,
-            LocationRepository locations, LocationScheduleRepository locationSchedules) {
+            LocationRepository locations, LocationScheduleRepository locationSchedules, EventRepository events) {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          Create an Offering " + this.name);
         System.out.println("--------------------------------------------------------------------------------");
 
-        String val = Utils.getString(scanner, "\nCreate a new Schedule? y/n (q to quit):");
-        if (!val.isEmpty() || val.equalsIgnoreCase("y")) {
+        String val = Utils.getString(scanner, "\nCreate a new Schedule? y (q to quit):");
+        if (val.equalsIgnoreCase("y")) {
             createSchedules(scanner, schedules);
         }
 
@@ -149,12 +147,23 @@ public class Administrator extends User {
             id = Utils.getInt(scanner, "\nEnter a schedule id (q to quit):");
             if (id == 0)
                 break;
-            scheduleList.add(schedules.get(id));
+            Schedule temp = schedules.get(id);
+            boolean exists = false;
+            if (!temp.isEmpty()) {
+                for (Schedule schedule : scheduleList) {
+                    if (schedule.getId() == id)
+                        exists = true;
+                }
+                if (!exists)
+                    scheduleList.add(temp);
+            }
         }
+        if (scheduleList.isEmpty())
+            return;
 
         // create location
-        val = Utils.getString(scanner, "\nCreate a new location? y/n (q to quit):");
-        if (!val.isEmpty() || val.equalsIgnoreCase("y")) {
+        val = Utils.getString(scanner, "\nCreate a new location? y? (q to quit):");
+        if (val.equalsIgnoreCase("y")) {
             createLocations(scanner, locations);
         }
 
@@ -162,8 +171,12 @@ public class Administrator extends User {
         id = Utils.getLong(scanner, "\nEnter the location id:");
         if (id == 0)
             return;
-        
+
         Location location = locations.get(id);
+        if (location.isEmpty()) {
+            System.out.println("Location invalid.");
+            return;
+        }
 
         Offering offering = new Offering();
         offering.setActive(true);
@@ -182,16 +195,29 @@ public class Administrator extends User {
             offering = offerings.get(id);
 
             for (Schedule schedule : scheduleList) {
-                LocationSchedule ls = new LocationSchedule(0, true, location.getId(), schedule.getId(),
-                        offering.getId());
-                id = locationSchedules.insert(ls);
-                if (id == 0) {
-                    System.out.println("Failed to add schedule " + schedule + "to offering");
+                LocationSchedule ls = locationSchedules.getByLocationIdAndScheduleId(location, schedule);
+                if(ls.isEmpty()){
+                    id = locationSchedules.insert(new LocationSchedule(0, true, location.getId(), schedule.getId()));
+                    if (id == 0) {
+                        System.out.println("Failed to add schedule " + schedule + " to offering");
+                        offerings.delete(offering);
+                        System.out.println("Deleted offering " + offering);
+                        return;
+                    }
+                    ls = locationSchedules.get(id);
+                }
+
+                Event event = new Event(0, true, offering.getId(), ls.getId());
+                id = events.insert(event);
+                event = events.get(id);
+                if (event.isEmpty()) {
+                    System.out.println("LocationSchedule invalid.");
+                    locationSchedules.delete(ls);
                     offerings.delete(offering);
-                    break;
-                } 
-                else
-                    System.out.println("Offering " + offering + " has been created.");
+                    System.out.println("Deleted offering " + offering);
+                    return;
+                }
+                System.out.println("Created private Offering " + offering.getId() + " with location:" + location.getId() + ", schedule: " + schedule.getId());
             }
         }
         if (val.equalsIgnoreCase("both") || val.equalsIgnoreCase("group")) {
@@ -205,15 +231,29 @@ public class Administrator extends User {
                 offering = offerings.get(id);
 
                 for (Schedule schedule : scheduleList) {
-                    LocationSchedule ls = new LocationSchedule(0, true, location.getId(), schedule.getId(),
-                            offering.getId());
-                    id = locationSchedules.insert(ls);
-                    if (id == 0) {
-                        System.out.println("Failed to add schedule " + schedule + " to offering");
+                    LocationSchedule ls = locationSchedules.getByLocationIdAndScheduleId(location, schedule);
+                    if(ls.isEmpty()){
+                        id = locationSchedules.insert(new LocationSchedule(0, true, location.getId(), schedule.getId()));
+                        if (id == 0) {
+                            System.out.println("Failed to add schedule " + schedule + " to offering");
+                            offerings.delete(offering);
+                            System.out.println("Deleted offering " + offering);
+                            break;
+                        }
+                        ls = locationSchedules.get(id);
+                    }
+
+                    Event event = new Event(0, true, offering.getId(), ls.getId());
+                    id = events.insert(event);
+                    event = events.get(id);
+                    if (event.isEmpty()) {
+                        System.out.println("LocationSchedule invalid.");
+                        locationSchedules.delete(ls);
                         offerings.delete(offering);
-                        break;
-                    } else
-                        System.out.println("Offering " + offering + " has been created.");
+                        System.out.println("Deleted offering " + offering);
+                        return;
+                    }
+                    System.out.println("Created group Offering " + offering.getId() + " with location:" + location.getId() + ", schedule: " + schedule.getId());
                 }
             }
         }
@@ -226,10 +266,10 @@ public class Administrator extends User {
             System.out.println("                          Create a schedule " + this.name);
             System.out.println("--------------------------------------------------------------------------------");
 
-            String start = Utils.getDate(scanner, "Please enter the start time 'YYYY-MM-DD hh:mm:ss':");
+            String start = Utils.getTimestamp(scanner, "Please enter the start time 'YYYY-MM-DD hh:mm:ss':");
             if (start == null || start.isEmpty())
                 break;
-            String end = Utils.getDate(scanner, "Please enter the end time 'YYYY-MM-DD hh:mm:ss':");
+            String end = Utils.getTimestamp(scanner, "Please enter the end time 'YYYY-MM-DD hh:mm:ss':");
             if (end == null || end.isEmpty())
                 break;
 
@@ -244,7 +284,7 @@ public class Administrator extends User {
 
             System.out.println("Schedule " + schedule + " has been created.");
 
-            String input = Utils.getString(scanner, "Enter q to quit:");
+            String input = Utils.getString(scanner, "Enter q to quit, c to continue:");
             if (input == null || input.isEmpty())
                 break;
         }
@@ -270,19 +310,19 @@ public class Administrator extends User {
             Location location = new Location(0, true, name, address, city);
 
             Location temp = locations.get(name, address, city);
-            if (temp.getName().equalsIgnoreCase(name) &&
+            if (temp != null && !temp.isEmpty() && temp.getName().equalsIgnoreCase(name) &&
                     temp.getAddress().equalsIgnoreCase(address) &&
                     temp.getCity().equalsIgnoreCase(city)) {
                 System.out.println("Location already exists.");
                 break;
             }
 
-            locations.insert(location);
-            location = locations.get(name, address, city);
+            long id = locations.insert(location);
+            location = locations.get(id);
 
             System.out.println("Location " + location + " has been created.");
 
-            String input = Utils.getString(scanner, "Enter q to quit:");
+            String input = Utils.getString(scanner, "Enter q to quit, c to continue:");
             if (input == null || input.isEmpty())
                 break;
         }
@@ -323,7 +363,7 @@ public class Administrator extends User {
 
     public void deleteBookings(Scanner scanner, OfferingRepository offerings, BookingRepository bookings) {
         long id = Utils.getLong(scanner, "Enter the ID of the booking to delete:");
-        if(id == 0) {
+        if (id == 0) {
             System.out.println("Exiting.");
             return;
         }
@@ -344,7 +384,7 @@ public class Administrator extends User {
 
     public void deleteOfferings(Scanner scanner, OfferingRepository offerings) {
         long id = Utils.getLong(scanner, "Enter the ID of the offering to delete:");
-        if(id == 0) {
+        if (id == 0) {
             System.out.println("Exiting.");
             return;
         }
@@ -360,7 +400,7 @@ public class Administrator extends User {
 
     public void deleteSchedules(Scanner scanner, ScheduleRepository schedules) {
         long id = Utils.getLong(scanner, "Enter the ID of the schedule to delete:");
-        if(id == 0) {
+        if (id == 0) {
             System.out.println("Exiting.");
             return;
         }
@@ -376,7 +416,7 @@ public class Administrator extends User {
 
     public void deleteLocations(Scanner scanner, LocationRepository locations) {
         long id = Utils.getLong(scanner, "Enter the ID of the location to delete:");
-        if(id == 0) {
+        if (id == 0) {
             System.out.println("Exiting.");
             return;
         }
@@ -392,7 +432,7 @@ public class Administrator extends User {
 
     public void deleteClients(Scanner scanner, ClientRepository clients) {
         long id = Utils.getLong(scanner, "Enter the ID of the client to delete:");
-        if(id == 0) {
+        if (id == 0) {
             System.out.println("Exiting.");
             return;
         }
@@ -408,7 +448,7 @@ public class Administrator extends User {
 
     public void deleteGuardians(Scanner scanner, ClientRepository clients, GuardianRepository guardians) {
         long id = Utils.getLong(scanner, "Enter the ID of the guardian to delete:");
-        if(id == 0) {
+        if (id == 0) {
             System.out.println("Exiting.");
             return;
         }
@@ -429,7 +469,7 @@ public class Administrator extends User {
 
     public void deleteInstructors(Scanner scanner, OfferingRepository offerings, InstructorRepository instructors) {
         long id = Utils.getLong(scanner, "Enter the ID of the instructor to delete:");
-        if(id == 0) {
+        if (id == 0) {
             System.out.println("Exiting.");
             return;
         }
@@ -485,6 +525,7 @@ public class Administrator extends User {
 
             if (administrator.isEmpty()) {
                 System.out.println("Invalid credentials.");
+                administrator = null;
             } else {
                 System.out.println("Login Successful.");
                 break;
@@ -522,15 +563,16 @@ public class Administrator extends User {
             if (age < 18)
                 break;
 
-            administrator = administrators.get(username, phone);
+            administrator = administrators.get(phone);
 
             if (administrator.isEmpty()) {
                 administrator = new Administrator(0, true, username, age, phone, "admin");
-                administrators.insert(administrator);
-                administrator = administrators.get(username, phone);
+                long id = administrators.insert(administrator);
+                administrator = administrators.get(id);
                 break;
             } else {
-                System.out.println("User already exists.");
+                System.out.println("User conflict");
+                administrator = new Administrator();
             }
         }
 
@@ -590,7 +632,7 @@ public class Administrator extends User {
     public void process(Scanner scanner, BookingRepository bookings, OfferingRepository offerings,
             ScheduleRepository schedules, LocationRepository locations, ClientRepository clients,
             GuardianRepository guardians, InstructorRepository instructors, AdministratorRepository administrators,
-            LocationScheduleRepository locationSchedules, RepresentativeRepository representatives) {
+            LocationScheduleRepository locationSchedules, RepresentativeRepository representatives, EventRepository events) {
         boolean done = false;
         while (!done) {
             int action = handleSelection(scanner);
@@ -624,7 +666,7 @@ public class Administrator extends User {
                     createBooking(scanner, clients, offerings, bookings, locations, schedules);
                     break;
                 case 9:
-                    createOffering(scanner, offerings, schedules, locations, locationSchedules);
+                    createOffering(scanner, offerings, schedules, locations, locationSchedules, events);
                     break;
                 case 10:
                     createSchedules(scanner, schedules);

@@ -42,7 +42,12 @@ public class Schedule {
     }
 
     public boolean isEmpty() {
-        return this.slot == null;
+        return this.id == -1 && this.slot == null;
+    }
+
+    @Override
+    public boolean equals(Object b){
+        return this.id == ((Schedule)b).id;
     }
 
     public String toString() {

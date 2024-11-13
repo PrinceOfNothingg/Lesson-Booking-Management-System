@@ -55,7 +55,6 @@ public class RepresentativeRepository {
             while (rs.next()) {
                 id = rs.getLong(1);
             }
-            System.out.println("DEBUG: " + st);
             rs.close();
             st.close();
         } catch (SQLException e) {

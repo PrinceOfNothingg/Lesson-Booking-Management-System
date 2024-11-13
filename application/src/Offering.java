@@ -81,6 +81,11 @@ public class Offering {
         this.seats = seats;
     }
 
+    @Override
+    public boolean equals(Object b){
+        return this.id == ((Offering)b).id;
+    }
+
     public String toString() {
         JSONObject json = new JSONObject();
         json.put("id", id);

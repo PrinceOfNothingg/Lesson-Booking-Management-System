@@ -132,22 +132,17 @@ public class Utils {
         return getString(scanner, "Enter your phone (q to exit, r to retry):");
     }
 
-    public static String getDate(Scanner scanner, String msg) {
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("YYYY-MM-DD");
+    public static String getTimestamp(Scanner scanner, String msg) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter tf = DateTimeFormatter.ofPattern("HH:mm:ss");
         String input = getString(scanner, msg);
         if(input == null || input.isEmpty())
             return null;
-        LocalDate date = LocalDate.parse(input, df);
-        return date.toString();
-    }
 
-    public static String getTime(Scanner scanner, String msg) {
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("hh:mm:ss");
-        String input = getString(scanner, msg);
-        if(input == null || input.isEmpty())
-            return null;
-        LocalTime time = LocalTime.parse(input, df);
-        return time.toString();
+            String[] datetime = input.split("\\s+");
+        LocalDate date = LocalDate.parse(datetime[0], df);
+        LocalTime time = LocalTime.parse(datetime[1], tf);
+        return date+" "+time;
     }
 
     public static int getAge(Scanner scanner) {
@@ -173,14 +168,21 @@ public class Utils {
 
         while (!done) {
             System.out.println(msg);
-            input = scanner.nextLine().trim();
+            input = scanner.next().trim();
+            if (scanner.hasNextLine()) {
+                scanner.nextLine();
+            }
 
             if (input.equalsIgnoreCase("q"))
                 break;
             else if (input.equalsIgnoreCase("r"))
                 continue;
 
-            value = Integer.parseInt(input);
+            try {
+                value = Integer.parseInt(input);
+            } catch (NumberFormatException e){
+                System.out.println("not a number");
+            }
             done = true;
         }
 
@@ -194,7 +196,10 @@ public class Utils {
 
         while (!done) {
             System.out.println(msg);
-            input = scanner.nextLine().trim();
+            input = scanner.next().trim();
+            if (scanner.hasNextLine()) {
+                scanner.nextLine();
+            }
 
             if (input.equalsIgnoreCase("q"))
                 break;

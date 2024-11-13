@@ -64,7 +64,6 @@ public class InstructorRepository {
             while (rs.next()) {
                 specs = (String[]) rs.getArray(7).getArray();
                 avails = (String[]) rs.getArray(8).getArray();
-                System.out.println("DEBUG: " + rs);
                 instructor = new Instructor(
                         rs.getLong(1),
                         rs.getBoolean(2),
@@ -98,7 +97,6 @@ public class InstructorRepository {
             while (rs.next()) {
                 specs = (String[]) rs.getArray(7).getArray();
                 avails = (String[]) rs.getArray(8).getArray();
-                System.out.println("DEBUG: " + rs);
                 instructor = new Instructor(
                         rs.getLong(1),
                         rs.getBoolean(2),
@@ -131,7 +129,39 @@ public class InstructorRepository {
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                System.out.println("DEBUG: " + rs);
+                specs = (String[]) rs.getArray(7).getArray();
+                avails = (String[]) rs.getArray(8).getArray();
+                instructor = new Instructor(
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        rs.getString(6),
+                        new ArrayList<String>(Arrays.asList(specs)),
+                        new ArrayList<String>(Arrays.asList(avails)));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return instructor;
+    }
+
+    public Instructor get(String phone) {
+        Instructor instructor = new Instructor();
+        String[] specs = null;
+        String[] avails = null;
+
+        try {
+            String query = "select * from " + table + " where phone = ? and active = true";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setString(1, phone);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
                 specs = (String[]) rs.getArray(7).getArray();
                 avails = (String[]) rs.getArray(8).getArray();
                 instructor = new Instructor(
@@ -176,7 +206,6 @@ public class InstructorRepository {
             while (rs.next()) {
                 id = rs.getLong(1);
             }
-            System.out.println("DEBUG: " + st);
             rs.close();
             st.close();
         } catch (SQLException e) {

@@ -95,6 +95,32 @@ public class GuardianRepository {
         return guardian;
     }
 
+    public Guardian get(String phone) {
+        Guardian guardian = new Guardian();
+        try {
+            String query = "select * from " + table + " where phone = ? and active = true";
+            PreparedStatement st = conn.prepareStatement(query);
+            st.setString(1, phone);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                guardian = new Guardian(
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        rs.getString(6));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return guardian;
+    }
+
     public long insert(Guardian guardian) {
         long id = 0;
         try {
@@ -110,7 +136,6 @@ public class GuardianRepository {
             while (rs.next()) {
                 id = rs.getLong(1);
             }
-            System.out.println("DEBUG: " + st);
             rs.close();
             st.close();
         } catch (SQLException e) {

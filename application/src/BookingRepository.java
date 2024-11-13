@@ -132,7 +132,6 @@ public class BookingRepository {
             while (rs.next()) {
                 id = rs.getLong(1);
             }
-            System.out.println("DEBUG: " + st);
             rs.close();
             st.close();
         } catch (SQLException e) {
@@ -150,7 +149,6 @@ public class BookingRepository {
             st.setLong(1, booking.getId());
             st.setLong(2, client.getId());
             st.executeQuery();
-            System.out.println("DEBUG: " + st);
             st.close();
             success = true;
         } catch (SQLException e) {

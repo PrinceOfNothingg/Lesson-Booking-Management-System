@@ -76,7 +76,6 @@ public class InstructorOfferingRepository {
             while (rs.next()) {
                 id = rs.getLong(1);
             }
-            System.out.println("DEBUG: " + st);
             rs.close();
             st.close();
         } catch (SQLException e) {
@@ -94,7 +93,6 @@ public class InstructorOfferingRepository {
             st.setLong(1, instructor.getId());
             st.setLong(2, offering.getId());
             st.executeQuery();
-            System.out.println("DEBUG: " + st);
             st.close();
             success = true;
         } catch (SQLException e) {

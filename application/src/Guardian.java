@@ -51,6 +51,10 @@ public class Guardian extends User {
                 System.out.println("Offering not found.");
                 continue;
             }
+            if (offering.getStatus().equals("non-available")) {
+                System.out.println("Offering is not available.");
+                continue;
+            }
 
             List<Offering> offeringList = offerings.getByClientId(dependant);
             List<Location> locationList = new ArrayList<>();
@@ -101,7 +105,12 @@ public class Guardian extends User {
 
         for (Client dependant : dependants) {
             System.out.println("Bookings for " + dependant.getName() + ":");
-            bookings.getByClientId(dependant).forEach(System.out::println);
+            List<Booking> booklist = bookings.getByClientId(dependant);
+            if (booklist.isEmpty()) {
+                System.out.println("You have no bookings.");
+                return;
+            }
+            booklist.forEach(System.out::println);
         }
     }
 
@@ -110,10 +119,17 @@ public class Guardian extends User {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          View Booking Details for Dependants");
         System.out.println("--------------------------------------------------------------------------------");
-
+            
         for (Client dependant : dependants) {
             System.out.println("Select a booking for " + dependant.getName() + ":");
-            bookings.getByClientId(dependant).forEach(System.out::println);
+            
+            List<Booking> booklist = bookings.getByClientId(dependant);
+            if (booklist.isEmpty()) {
+                System.out.println("You have no bookings.");
+                return;
+            }
+
+            booklist.forEach(System.out::println);
 
             int bookingId = Utils.getInt(scanner, "Enter booking ID to view details (q to quit):");
             if (bookingId == 0)
@@ -138,6 +154,7 @@ public class Guardian extends User {
 
     public void cancelBooking(Scanner scanner, ClientRepository clients, BookingRepository bookings,
             OfferingRepository offerings) {
+        
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          Cancel Booking for Dependants");
         System.out.println("--------------------------------------------------------------------------------");
@@ -150,8 +167,14 @@ public class Guardian extends User {
 
         Client dependant = clients.get(dependantId);
 
+        List<Booking> booklist = bookings.getByClientId(dependant);
+        if (booklist.isEmpty()) {
+            System.out.println("Dependant has no bookings.");
+            return;
+        }
+
         System.out.println("Select a booking to cancel for " + dependant.getName() + ":");
-        bookings.getByClientId(dependant).forEach(System.out::println);
+        booklist.forEach(System.out::println);
 
         // enter booking ID to cancel
         int bookingId = Utils.getInt(scanner, "Enter booking ID (q to quit):");
@@ -191,6 +214,7 @@ public class Guardian extends User {
 
             if (guardian.isEmpty()) {
                 System.out.println("Invalid credentials.");
+                guardian = null;
             } else {
                 System.out.println("Login Successful.");
                 break;
@@ -227,15 +251,15 @@ public class Guardian extends User {
                 break;
 
             int age = Utils.getAge(scanner);
-            guardian = guardians.get(username, phone);
+            guardian = guardians.get(phone);
 
             // register dependants if guardian doesn't exist
             if (guardian.isEmpty()) {
                 ArrayList<Client> children = registerDependants(scanner, clients);
 
                 guardian = new Guardian(0, true, username, age, phone, "guardian");
-                guardians.insert(guardian);
-                guardian = guardians.get(username, phone);
+                long id = guardians.insert(guardian);
+                guardian = guardians.get(id);
 
                 // link each dependant to guardian
                 for (Client client : children) {
@@ -243,9 +267,12 @@ public class Guardian extends User {
                 }
                 break;
             } else {
-                System.out.println("User already exists.");
+                System.out.println("User conflict");
+                guardian = new Guardian();
             }
         }
+        if(!guardian.isEmpty())
+            System.out.println("Registered " + guardian);
 
         return guardian;
     }
@@ -256,11 +283,42 @@ public class Guardian extends User {
 
         for (int i = 1; i <= count; i++) {
             System.out.println("\nEnter dependant " + i + " information.");
-            Client dependant = Client.register(scanner, clients);
+            Client dependant = registerDependant(scanner, clients);
+            if(dependant == null || dependant.isEmpty())
+                continue;
             children.add(dependant);
         }
 
         return children;
+    }
+
+    private static Client registerDependant(Scanner scanner, ClientRepository clients){
+        Client client = new Client();
+        String username;
+        String phone;
+        username = Utils.getUserName(scanner);
+        if (username.isEmpty())
+            return null;
+
+        phone = Utils.getPhone(scanner);
+        if (phone.isEmpty())
+            return null;
+
+        int age = Utils.getInt(scanner, "Enter the childs age:");
+        if (age == 0)
+            return null;
+
+        client = clients.get(phone);
+
+        if (client.isEmpty()) {
+            client = new Client(0, true, username, age, phone, "client", false);
+            long id = clients.insert(client);
+            client = clients.get(id);
+        } else {
+            System.out.println("User already exists.");
+        }
+
+        return client;
     }
 
     @Override
@@ -323,6 +381,11 @@ public class Guardian extends User {
                     break;
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object b){
+        return this.id == ((Guardian)b).id;
     }
 
     @Override

@@ -27,7 +27,12 @@ public class Client extends User {
     }
 
     private void viewBookings(BookingRepository bookings) {
-        bookings.getByClientId(this).forEach(System.out::println);
+        List<Booking> booklist = bookings.getByClientId(this);
+        if (booklist.isEmpty()) {
+            System.out.println("You have no bookings.");
+            return;
+        }
+        booklist.forEach(System.out::println);
     }
 
     private void viewBookingDetails(Scanner scanner, ClientRepository clients, InstructorRepository instructors,
@@ -36,8 +41,14 @@ public class Client extends User {
         boolean done = false;
         while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
-            System.out.println("                          View Booking Details" + this.name);
+            System.out.println("                          View Booking Details " + this.name);
             System.out.println("--------------------------------------------------------------------------------");
+
+            List<Booking> booklist = bookings.getByClientId(this);
+            if (booklist.isEmpty()) {
+                System.out.println("You have no bookings.");
+                break;
+            }
 
             int bookingId = Utils.getInt(scanner, "Please enter the id of a booking (q to quit):");
             if (bookingId == 0)
@@ -68,39 +79,31 @@ public class Client extends User {
         boolean done = false;
         while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
-            System.out.println("                        Make a Booking" + this.name);
+            System.out.println("                        Make a Booking " + this.name);
             System.out.println("--------------------------------------------------------------------------------");
 
-            int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
+            long offeringId = Utils.getLong(scanner, "Please enter the id of an Offering (q to quit):");
             if (offeringId == 0)
                 break;
 
             Offering offering = offerings.get(offeringId);
-            List<Offering> offeringList = offerings.getByClientId(this);
-            List<Location> locationList = new ArrayList<>();
-            List<List<Schedule>> scheduleListList = new ArrayList<>();
-            for (Offering o : offeringList) {
-                locationList.add(locations.getByOfferingId(o));
-                scheduleListList.add(schedules.getByOfferingId(o));
+            if (offering == null) {
+                System.out.println("Offering not found.");
+                continue;
+            }
+            if (offering.getStatus().equals("non-available")) {
+                System.out.println("Offering is not available.");
+                continue;
             }
 
-            Location curLocation = locations.getByOfferingId(offering);
-            List<Schedule> curScheduleList = schedules.getByOfferingId(offering);
-            boolean bookingConflict = false;
-            for (Location location : locationList) {
-                if (location.getName().equalsIgnoreCase(curLocation.getName()) &&
-                        location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
-                        location.getCity().equalsIgnoreCase(curLocation.getCity())) {
-                    if (scheduleListList.contains(curScheduleList)) {
-                        bookingConflict = true;
-                        break;
-                    }
+
+            List<Schedule> scheduleList = schedules.getByClientId(this);
+            List<Schedule> newScheduleList = schedules.getByOfferingId(offering);
+            for (Schedule schedule : newScheduleList) {
+                if(scheduleList.contains(schedule)){
+                    System.out.println("You already have a booking at the same time.");
+                    return;
                 }
-            }
-
-            if (bookingConflict) {
-                System.out.println("Another booking at that location and time already exists.");
-                break;
             }
 
             long id = bookings.insert(this, offering);
@@ -113,15 +116,21 @@ public class Client extends User {
 
             offerings.update(offering);
 
-            System.out.println(booking);
+            System.out.println("Created booking " + booking);
         }
     }
 
     private void cancelBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings) {
+        List<Booking> booklist = bookings.getByClientId(this);
+        if (booklist.isEmpty()) {
+            System.out.println("You have no bookings.");
+            return;
+        }
+
         boolean done = false;
         while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
-            System.out.println("                          Cancel a Booking" + this.name);
+            System.out.println("                          Cancel a Booking " + this.name);
             System.out.println("--------------------------------------------------------------------------------");
 
             int bookingId = Utils.getInt(scanner, "Please enter the id of a Booking (q to quit):");
@@ -164,6 +173,7 @@ public class Client extends User {
 
             if (client.isEmpty()) {
                 System.out.println("Invalid credentials.");
+                client = null;
             } else {
                 System.out.println("Login Successful.");
                 break;
@@ -202,7 +212,7 @@ public class Client extends User {
             if (age < 18)
                 break;
 
-            client = clients.get(username, phone);
+            client = clients.get(phone);
 
             if (client.isEmpty()) {
                 client = new Client(0, true, username, age, phone, "client", false);
@@ -210,9 +220,12 @@ public class Client extends User {
                 client = clients.get(username, phone);
                 break;
             } else {
-                System.out.println("User already exists.");
+                System.out.println("User conflict");
+                client = new Client();
             }
         }
+        if(!client.isEmpty())
+            System.out.println("Registered " + client);
 
         return client;
     }
@@ -277,6 +290,11 @@ public class Client extends User {
                     break;
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object b){
+        return this.id == ((Client)b).id;
     }
 
     @Override

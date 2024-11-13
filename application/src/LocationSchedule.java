@@ -1,7 +1,5 @@
 package application.src;
 
-import java.util.ArrayList;
-import java.util.Scanner;
 
 public class LocationSchedule {
 
@@ -9,17 +7,15 @@ public class LocationSchedule {
     private boolean active = false;
     private long locationId = -1;
     private long scheduleId = -1;
-    private long offeringId = -1;
 
     public LocationSchedule() {
     }
 
-    public LocationSchedule(long id, boolean active, long locationId, long scheduleId, long offeringId) {
+    public LocationSchedule(long id, boolean active, long locationId, long scheduleId) {
         this.id = id;
         this.active = active;
         this.locationId = locationId;
         this.scheduleId = scheduleId;
-        this.offeringId = offeringId;
     }
 
     public long getId() {
@@ -54,11 +50,12 @@ public class LocationSchedule {
         this.scheduleId = scheduleId;
     }
 
-    public long getOfferingId() {
-        return offeringId;
+    public boolean isEmpty(){
+        return this.locationId == -1 && this.scheduleId == -1;
     }
 
-    public void setOfferingId(long offeringId) {
-        this.offeringId = offeringId;
+    @Override
+    public boolean equals(Object b){
+        return this.id == ((LocationSchedule)b).id;
     }
 }

@@ -129,7 +129,7 @@ public class OfferingRepository {
     public Offering getByBookingId(Booking booking) {
         Offering offering = new Offering();
         try {
-            String query = "select * from " + table + " where booking_id = ? and active = true";
+            String query = "select o.* from " + table + " o join booking b on o.id = b.offering_id where b.id = ? and o.active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, booking.getId());
             ResultSet rs = st.executeQuery();
@@ -157,7 +157,7 @@ public class OfferingRepository {
         ArrayList<Offering> offerings = new ArrayList<>();
         try {
             String query = "select o.* from " + table
-                    + " o join booking b on o.id = b.offering_id where b.client_id = ? and active = true";
+                    + " o join booking b on o.id = b.offering_id where b.client_id = ? and o.active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, client.getId());
             ResultSet rs = st.executeQuery();
@@ -193,6 +193,7 @@ public class OfferingRepository {
             st.setBoolean(5, offering.isGroup());
             st.setInt(6, offering.getSeats());
             st.setLong(7, offering.getId());
+            st.executeQuery();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -217,7 +218,6 @@ public class OfferingRepository {
             while (rs.next()) {
                 id = rs.getLong(1);
             }
-            System.out.println("DEBUG: " + st);
             rs.close();
             st.close();
         } catch (SQLException e) {
@@ -233,7 +233,7 @@ public class OfferingRepository {
             String query = "delete from " + table + " where id = ?";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, offering.getId());
-            System.out.println("DEBUG: " + st);
+            st.executeQuery();
             st.close();
             success = true;
         } catch (SQLException e) {

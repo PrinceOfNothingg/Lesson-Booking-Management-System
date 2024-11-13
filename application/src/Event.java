@@ -1,19 +1,19 @@
 package application.src;
 
-public class InstructorOffering {
+public class Event {
 
     private long id = -1;
     private boolean active = false;
-    private long instructorId = -1;
+    private long locationScheduleId = -1;
     private long offeringId = -1;
 
-    public InstructorOffering() {
+    public Event() {
     }
 
-    public InstructorOffering(long id, boolean active, long instructorId, long offeringId) {
+    public Event(long id, boolean active, long offeringId, long locationScheduleId) {
         this.id = id;
         this.active = active;
-        this.instructorId = instructorId;
+        this.locationScheduleId = locationScheduleId;
         this.offeringId = offeringId;
     }
 
@@ -33,13 +33,6 @@ public class InstructorOffering {
         this.active = active;
     }
 
-    public long getInstructorId() {
-        return instructorId;
-    }
-
-    public void setInstructorId(long instructorId) {
-        this.instructorId = instructorId;
-    }
 
     public long getOfferingId() {
         return offeringId;
@@ -49,9 +42,20 @@ public class InstructorOffering {
         this.offeringId = offeringId;
     }
 
-    @Override
-    public boolean equals(Object b){
-        return this.id == ((InstructorOffering)b).id;
+    public long getLocationScheduleId() {
+        return locationScheduleId;
     }
 
+    public void setLocationScheduleId(long locationScheduleId) {
+        this.locationScheduleId = locationScheduleId;
+    }
+
+    public boolean isEmpty(){
+        return this.offeringId == -1 && this.locationScheduleId == -1;
+    }
+
+    @Override
+    public boolean equals(Object b){
+        return this.id == ((Event)b).id;
+    }
 }

@@ -18,8 +18,7 @@ public class User {
         CLIENT, GUARDIAN, INTRUCTOR, ADMIN, GUEST
     }
 
-    protected User() {
-    }
+    protected User() {}
 
     protected User(long id, boolean active, String name, int age, String phone, String role) {
         this.id = id;
