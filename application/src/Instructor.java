@@ -216,14 +216,18 @@ public class Instructor extends User {
             if (age < 18)
                 break;
 
-            ArrayList<String> specs = Utils.getSpecializations(scanner);
-            ArrayList<String> avails = Utils.getAvailabilities(scanner);
-
             instructor = instructors.get(phone);
 
             if (instructor.isEmpty()) {
+                ArrayList<String> specs = Utils.getSpecializations(scanner);
+                ArrayList<String> avails = Utils.getAvailabilities(scanner);
+
                 instructor = new Instructor(0, true, username, age, phone, "instructor", specs, avails);
                 long id = instructors.insert(instructor);
+                if(id == 0){
+                    instructor = new Instructor();
+                    break;
+                }
                 instructor = instructors.get(id);
                 break;
             } else {

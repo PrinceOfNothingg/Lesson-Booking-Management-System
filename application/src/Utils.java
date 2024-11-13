@@ -227,8 +227,8 @@ public class Utils {
             else if (input.equalsIgnoreCase("r"))
                 continue;
 
-            while (scanner.hasNext()) {
-                specs.add(scanner.next().trim());
+            for (String string : input.split(" ")) {
+                specs.add(string);
             }
 
             System.out.println(specs);

@@ -192,13 +192,18 @@ public class InstructorRepository {
             String query = "insert into " + table
                     + " (active, \"name\", age, phone, \"role\", specializations, availabilities) values (?,?,?,?,?::roleType,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
-            specs = (Array) instructor.getSpecializations();
-            avails = (Array) instructor.getAvailabilities();
+            ArrayList<String> s = instructor.getSpecializations();
+            String[] dataSpecs = s.toArray(new String[s.size()]);
+            ArrayList<String> a = instructor.getSpecializations();
+            String[] dataAvails = a.toArray(new String[s.size()]);
+
+            specs = conn.createArrayOf("text", dataSpecs);
+            avails = conn.createArrayOf("text", dataAvails);
 
             st.setBoolean(1, true);
             st.setString(2, instructor.name);
-            st.setInt(4, instructor.age);
-            st.setString(3, instructor.phone);
+            st.setInt(3, instructor.age);
+            st.setString(4, instructor.phone);
             st.setString(5, instructor.role);
             st.setArray(6, specs);
             st.setArray(7, avails);

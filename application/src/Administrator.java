@@ -186,9 +186,9 @@ public class Administrator extends User {
         String type = Utils.getString(scanner, "Enter offering lesson type (q to quit):");
         offering.setType(type);
 
-        val = Utils.getString(scanner, "Make an Offering private/group/both? (q to quit):");
+        val = Utils.getString(scanner, "Make an Offering private/group? (q to quit):");
 
-        if (val.equalsIgnoreCase("both") || val.equalsIgnoreCase("private")) {
+        if (val.equalsIgnoreCase("private")) {
             offering.setGroup(false);
             offering.setSeats(1);
             id = offerings.insert(offering);
@@ -199,7 +199,7 @@ public class Administrator extends User {
                 if(ls.isEmpty()){
                     id = locationSchedules.insert(new LocationSchedule(0, true, location.getId(), schedule.getId()));
                     if (id == 0) {
-                        System.out.println("Failed to add schedule " + schedule + " to offering");
+                        System.out.println("Failed to add location schedule ");
                         offerings.delete(offering);
                         System.out.println("Deleted offering " + offering);
                         return;
@@ -211,8 +211,7 @@ public class Administrator extends User {
                 id = events.insert(event);
                 event = events.get(id);
                 if (event.isEmpty()) {
-                    System.out.println("LocationSchedule invalid.");
-                    locationSchedules.delete(ls);
+                    System.out.println("Failed to create event");
                     offerings.delete(offering);
                     System.out.println("Deleted offering " + offering);
                     return;
@@ -220,7 +219,7 @@ public class Administrator extends User {
                 System.out.println("Created private Offering " + offering.getId() + " with location:" + location.getId() + ", schedule: " + schedule.getId());
             }
         }
-        if (val.equalsIgnoreCase("both") || val.equalsIgnoreCase("group")) {
+        else if (val.equalsIgnoreCase("group")) {
             int value = Utils.getInt(scanner, "How many participants? (q to quit):");
             if (value == 0) {
                 System.out.println("Exiting without creating group offering");
@@ -235,7 +234,7 @@ public class Administrator extends User {
                     if(ls.isEmpty()){
                         id = locationSchedules.insert(new LocationSchedule(0, true, location.getId(), schedule.getId()));
                         if (id == 0) {
-                            System.out.println("Failed to add schedule " + schedule + " to offering");
+                            System.out.println("Failed to add schedule " + schedule);
                             offerings.delete(offering);
                             System.out.println("Deleted offering " + offering);
                             break;
@@ -247,8 +246,7 @@ public class Administrator extends User {
                     id = events.insert(event);
                     event = events.get(id);
                     if (event.isEmpty()) {
-                        System.out.println("LocationSchedule invalid.");
-                        locationSchedules.delete(ls);
+                        System.out.println("Failed to create event.");
                         offerings.delete(offering);
                         System.out.println("Deleted offering " + offering);
                         return;
