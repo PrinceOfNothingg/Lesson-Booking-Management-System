@@ -1,6 +1,5 @@
 package application.src;
 
-
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,8 +12,8 @@ public class AdministratorRepository {
 
     private Connection conn;
     private String table = "administrator";
-    
-    public AdministratorRepository(Database db){
+
+    public AdministratorRepository(Database db) {
         this.conn = db.getConnection();
     }
 
@@ -29,20 +28,20 @@ public class AdministratorRepository {
             while (rs.next()) {
                 System.out.println("DEBUG: " + rs);
                 administrators.add(
-                    new Administrator(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    rs.getString(3),
-                    rs.getInt(4),
-                    rs.getString(5),
-                    rs.getString(6)));
+                        new Administrator(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                rs.getString(3),
+                                rs.getInt(4),
+                                rs.getString(5),
+                                rs.getString(6)));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return administrators;
     }
 
@@ -58,19 +57,19 @@ public class AdministratorRepository {
             while (rs.next()) {
                 System.out.println("DEBUG: " + rs);
                 administrator = new Administrator(
-                                    rs.getLong(1),
-                                    rs.getBoolean(2),
-                                    rs.getString(3),
-                                    rs.getInt(4),
-                                    rs.getString(5),
-                                    rs.getString(6));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        rs.getString(6));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return administrator;
     }
 
@@ -87,12 +86,12 @@ public class AdministratorRepository {
             while (rs.next()) {
                 System.out.println("DEBUG: " + rs);
                 administrator = new Administrator(
-                                rs.getLong(1),
-                                rs.getBoolean(2),
-                                rs.getString(3),
-                                rs.getInt(4),
-                                rs.getString(5),
-                                rs.getString(6));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        rs.getString(6));
                 System.out.println("DEBUG: " + rs);
             }
             rs.close();
@@ -100,15 +99,16 @@ public class AdministratorRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return administrator;
     }
 
     public long insert(Administrator administrator) {
         long id = 0;
         try {
-            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\") values (?,?,?,?,?) returning id";
-            PreparedStatement st = conn.prepareStatement(query);            
+            String query = "insert into " + table
+                    + " (active, \"name\", age, phone, \"role\") values (?,?,?,?,?) returning id";
+            PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setString(2, administrator.name);
             st.setInt(3, administrator.age);
@@ -122,7 +122,7 @@ public class AdministratorRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return id;
     }
 

@@ -14,9 +14,13 @@ public class User {
     protected String phone = null;
     protected String role = "guest";
 
-    enum Type {CLIENT, GUARDIAN, INTRUCTOR, ADMIN, GUEST}
+    enum Type {
+        CLIENT, GUARDIAN, INTRUCTOR, ADMIN, GUEST
+    }
 
-    protected User() {}
+    protected User() {
+    }
+
     protected User(long id, boolean active, String name, int age, String phone, String role) {
         this.id = id;
         this.active = active;
@@ -69,6 +73,7 @@ public class User {
     public String getRole() {
         return role;
     }
+
     public void setRole(String role) {
         this.role = role;
     }
@@ -77,7 +82,7 @@ public class User {
         return this.name == null && this.phone == null;
     }
 
-    protected void viewOfferings(OfferingRepository offerings){
+    protected void viewOfferings(OfferingRepository offerings) {
         List<Offering> result = offerings.getTaken(true);
         if (result.isEmpty())
             System.out.println("No offerings available.");
@@ -85,7 +90,7 @@ public class User {
             result.forEach(System.out::println);
     }
 
-    protected int printMenu(){
+    protected int printMenu() {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          Welcome!");
         System.out.println("--------------------------------------------------------------------------------");
@@ -107,9 +112,9 @@ public class User {
         return choice;
     }
 
-    public void process(Scanner scanner, OfferingRepository offerings){
+    public void process(Scanner scanner, OfferingRepository offerings) {
         boolean done = false;
-        while(!done){
+        while (!done) {
             int action = handleSelection(scanner);
 
             switch (action) {
@@ -128,7 +133,7 @@ public class User {
     public String toString() {
         JSONObject json = new JSONObject();
         json.put("id", id);
-        json.put("active",active);
+        json.put("active", active);
         json.put("name", name);
         json.put("phone", phone);
         json.put("age", age);

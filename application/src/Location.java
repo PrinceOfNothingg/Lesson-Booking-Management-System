@@ -10,7 +10,9 @@ public class Location {
     private String name = null;
     private String city = null;
 
-    protected Location() {}
+    protected Location() {
+    }
+
     protected Location(long id, boolean active, String address, String name, String city) {
         this.id = id;
         this.active = active;
@@ -22,10 +24,11 @@ public class Location {
     public long getId() {
         return id;
     }
-    
+
     public String getAddress() {
         return address;
     }
+
     public String getName() {
         return name;
     }
@@ -45,7 +48,7 @@ public class Location {
     public void setId(long id) {
         this.id = id;
     }
-    
+
     public void setAddress(String address) {
         this.address = address;
     }
@@ -65,7 +68,7 @@ public class Location {
     public String toString() {
         JSONObject json = new JSONObject();
         json.put("id", id);
-        json.put("active",active);
+        json.put("active", active);
         json.put("name", name);
         json.put("city", city);
         json.put("address", address);

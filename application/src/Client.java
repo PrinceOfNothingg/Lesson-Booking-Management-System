@@ -51,11 +51,12 @@ public class Client extends User {
         }
     }
 
-    private void makeBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings, LocationRepository locations, ScheduleRepository schedules) {
+    private void makeBooking(Scanner scanner, OfferingRepository offerings, BookingRepository bookings,
+            LocationRepository locations, ScheduleRepository schedules) {
 
         Booking booking;
         boolean done = false;
-        while(!done){
+        while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
             System.out.println("                        Make a Booking" + this.name);
             System.out.println("--------------------------------------------------------------------------------");
@@ -63,7 +64,7 @@ public class Client extends User {
             int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
             if (offeringId == 0)
                 break;
-            
+
             Offering offering = offerings.get(offeringId);
             List<Offering> offeringList = offerings.getByClientId(this);
             List<Location> locationList = new ArrayList<>();
@@ -78,18 +79,16 @@ public class Client extends User {
             boolean bookingConflict = false;
             for (Location location : locationList) {
                 if (location.getName().equalsIgnoreCase(curLocation.getName()) &&
-                location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
-                location.getCity().equalsIgnoreCase(curLocation.getCity())
-                )
-                {
-                    if (scheduleListList.contains(curScheduleList)){
+                        location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
+                        location.getCity().equalsIgnoreCase(curLocation.getCity())) {
+                    if (scheduleListList.contains(curScheduleList)) {
                         bookingConflict = true;
                         break;
                     }
                 }
             }
 
-            if(bookingConflict){
+            if (bookingConflict) {
                 System.out.println("Another booking at that location and time already exists.");
                 break;
             }
@@ -97,9 +96,8 @@ public class Client extends User {
             long id = bookings.insert(this, offering);
             booking = bookings.get(id);
 
-
             offering.setSeats(offering.getSeats() - 1);
-            if(offering.getSeats() == 0){
+            if (offering.getSeats() == 0) {
                 offering.setStatus("non-available");
             }
 
@@ -237,7 +235,8 @@ public class Client extends User {
         return choice;
     }
 
-    public void process(Scanner scanner, OfferingRepository offerings, BookingRepository bookings, LocationRepository locations, ScheduleRepository schedules) {
+    public void process(Scanner scanner, OfferingRepository offerings, BookingRepository bookings,
+            LocationRepository locations, ScheduleRepository schedules) {
         boolean done = false;
         while (!done) {
             int action = handleSelection(scanner);

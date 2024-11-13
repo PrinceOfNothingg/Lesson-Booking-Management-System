@@ -5,7 +5,7 @@ import java.sql.*;
 import org.postgresql.ds.PGSimpleDataSource;
 
 public class Database {
-    
+
     private static String url = "jdbc:postgresql://localhost:5432/soendb";
     private static String user = "soen";
     private static String passwd = "";
@@ -31,17 +31,16 @@ public class Database {
             e.printStackTrace();
         }
 
-
     }
 
-    public Connection getConnection() {        
+    public Connection getConnection() {
         return connection;
     }
 
     public void test() throws SQLException {
         PreparedStatement st = connection.prepareStatement("select * from administrator");
         ResultSet rs = st.executeQuery();
-        
+
         while (rs.next()) {
             System.out.println(rs.getString(3));
         }

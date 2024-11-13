@@ -1,6 +1,5 @@
 package application.src;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,8 +11,8 @@ public class UserRepository {
 
     private Connection conn;
     private String table = "users";
-    
-    public UserRepository(Database db){
+
+    public UserRepository(Database db) {
         this.conn = db.getConnection();
     }
 
@@ -26,21 +25,20 @@ public class UserRepository {
 
             while (rs.next()) {
                 users.add(
-                    new User(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    rs.getString(3),
-                    rs.getInt(4),
-                    rs.getString(5),
-                    rs.getString(6)
-                    ));
+                        new User(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                rs.getString(3),
+                                rs.getInt(4),
+                                rs.getString(5),
+                                rs.getString(6)));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return users;
     }
 
@@ -54,19 +52,19 @@ public class UserRepository {
 
             while (rs.next()) {
                 user = new User(
-                                rs.getLong(1),
-                                rs.getBoolean(2),
-                                rs.getString(3),
-                                rs.getInt(4),
-                                rs.getString(5),
-                                rs.getString(6));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        rs.getString(6));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return user;
     }
 
@@ -81,19 +79,19 @@ public class UserRepository {
 
             while (rs.next()) {
                 user = new User(
-                                rs.getLong(1),
-                                rs.getBoolean(2),
-                                rs.getString(3),
-                                rs.getInt(4),
-                                rs.getString(5),
-                                rs.getString(6));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        rs.getString(6));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return user;
     }
 }

@@ -1,6 +1,6 @@
 package application.src;
-import java.sql.SQLException;
 
+import java.sql.SQLException;
 
 public class Application {
 
@@ -8,7 +8,6 @@ public class Application {
         App app = new App();
         app.setName("App");
 
-        
         Database psql = new Database();
         try {
             System.out.println("Testing DB conection.");

@@ -106,6 +106,7 @@ CREATE TYPE day_of_week AS enum (
     'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'
 );
 
+
 -- public.schedule definition
 DROP TABLE IF EXISTS public.schedule;
 
@@ -130,8 +131,8 @@ CREATE TABLE public."space" (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	active bool NULL DEFAULT true,
 	"type" varchar NULL,
-	location_id int8 NOT NULL,
-	schedule_id int8 NOT NULL,
+	location_id int8 NULL,
+	schedule_id int8 NULL,
 	CONSTRAINT space_pk PRIMARY KEY (id),
 	CONSTRAINT space_fk_1 FOREIGN KEY (location_id) REFERENCES public.location(id),
 	CONSTRAINT space_fk_2 FOREIGN KEY (schedule_id) REFERENCES public.schedule(id)
@@ -150,7 +151,8 @@ CREATE TABLE public.offering (
 	"type" varchar NOT NULL,
 	mode bool NOT NULL DEFAULT false,
 	seats int4 NOT NULL DEFAULT 1,
-	CONSTRAINT offering_pk PRIMARY KEY (id)
+	CONSTRAINT offering_pk PRIMARY KEY (id),
+	CHECK (seats >= 0)
 );
 
 
@@ -165,10 +167,9 @@ CREATE TABLE public.location_schedule (
 	schedule_id int8 NOT NULL,
 	offering_id int8 NOT NULL,
 	CONSTRAINT location_schedule_pk PRIMARY KEY (id),
-	CONSTRAINT location_schedule_fk FOREIGN KEY (location_id) REFERENCES public.location(id),
-	CONSTRAINT location_schedule_fk_1 FOREIGN KEY (schedule_id) REFERENCES public.schedule(id),
-	CONSTRAINT location_schedule_fk_2 FOREIGN KEY (offering_id) REFERENCES public.offering(id),
-	-- UNIQUE (offering_id), doesn't have to be unique; if each schedule is unique
+	CONSTRAINT location_schedule_fk FOREIGN KEY (location_id) REFERENCES public.location(id) ON DELETE CASCADE,
+	CONSTRAINT location_schedule_fk_1 FOREIGN KEY (schedule_id) REFERENCES public.schedule(id) ON DELETE CASCADE,
+	CONSTRAINT location_schedule_fk_2 FOREIGN KEY (offering_id) REFERENCES public.offering(id) ON DELETE CASCADE,
 	-- have multiple location-schedules to not have to check for overlapping weekdays etc
 	-- 1 schedule_id == 1 unique schedule
 	UNIQUE (location_id, schedule_id)
@@ -182,8 +183,8 @@ CREATE TABLE public.instructor_offering (
 	instructor_id int8 NOT NULL,
 	offering_id int8 NOT NULL,
 	CONSTRAINT instructor_offering_pk PRIMARY KEY (id),
-	CONSTRAINT instructor_offering_fk FOREIGN KEY (instructor_id) REFERENCES public.instructor(id),
-	CONSTRAINT instructor_offering_fk_1 FOREIGN KEY (offering_id) REFERENCES public.offering(id),
+	CONSTRAINT instructor_offering_fk FOREIGN KEY (instructor_id) REFERENCES public.instructor(id) ON DELETE CASCADE,
+	CONSTRAINT instructor_offering_fk_1 FOREIGN KEY (offering_id) REFERENCES public.offering(id) ON DELETE CASCADE,
 	UNIQUE (offering_id)
 );
 
@@ -199,41 +200,42 @@ CREATE TABLE public.booking (
 	offering_id int8 NOT NULL,
 	"status" varchar NULL,
 	CONSTRAINT booking_pk PRIMARY KEY (id),
-	CONSTRAINT booking_fk FOREIGN KEY (client_id) REFERENCES public.client(id),
-	CONSTRAINT booking_fk_1 FOREIGN KEY (offering_id) REFERENCES public.offering(id)
+	CONSTRAINT booking_fk FOREIGN KEY (client_id) REFERENCES public.client(id) ON DELETE CASCADE,
+	CONSTRAINT booking_fk_1 FOREIGN KEY (offering_id) REFERENCES public.offering(id) ON DELETE CASCADE
 );
     
 -- FUNCTIONS
 
-CREATE OR REPLACE FUNCTION dates_overlap(cid bigint, startDate date, endDate date)
-  RETURNS setof schedule
-  LANGUAGE plpgsql AS
-$$
-	begin return query
-		select s.*
-		from schedule s
-		join location_schedule ls on s.id = ls.schedule_id 
-		join offering o on ls.offering_id = o.id 
-		join booking b on o.id = b.offering_id 
-		where b.client_id = cid
-		and (s.start_date, s.end_date) overlaps (startDate, endDate);
-	end;
-$$;
+-- CREATE OR REPLACE FUNCTION dates_overlap(cid bigint, startDate date, endDate date)
+--   RETURNS setof schedule
+--   LANGUAGE plpgsql AS
+-- $$
+-- 	begin return query
+-- 		select s.*
+-- 		from schedule s
+-- 		join location_schedule ls on s.id = ls.schedule_id 
+-- 		join offering o on ls.offering_id = o.id 
+-- 		join booking b on o.id = b.offering_id 
+-- 		where b.client_id = cid
+-- 		and (s.start_date, s.end_date) overlaps (startDate, endDate);
+-- 	end;
+-- $$;
 
-CREATE OR REPLACE FUNCTION weekdays_overlap(cid bigint, weekdays _day_of_week)
-  RETURNS setof schedule
-  LANGUAGE plpgsql AS
-$$
-	begin return query
-		select s.*
-		from schedule s
-		join location_schedule ls on s.id = ls.schedule_id 
-		join offering o on ls.offering_id = o.id 
-		join booking b on o.id = b.offering_id 
-		where b.client_id = cid
-		and weekdays && s.weekdays;
-	end;
-$$;
+-- CREATE OR REPLACE FUNCTION weekdays_overlap(cid bigint, weekdays _day_of_week)
+--   RETURNS setof schedule
+--   LANGUAGE plpgsql AS
+-- $$
+-- 	begin return query
+-- 		select s.*
+-- 		from schedule s
+-- 		join location_schedule ls on s.id = ls.schedule_id 
+-- 		join offering o on ls.offering_id = o.id 
+-- 		join booking b on o.id = b.offering_id 
+-- 		where b.client_id = cid
+-- 		and weekdays && s.weekdays;
+-- 	end;
+-- $$;
+
 
 
 -- Test Data

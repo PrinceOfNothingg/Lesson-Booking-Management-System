@@ -1,6 +1,5 @@
 package application.src;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,8 +11,8 @@ public class OfferingRepository {
 
     private Connection conn;
     private String table = "offering";
-    
-    public OfferingRepository(Database db){
+
+    public OfferingRepository(Database db) {
         this.conn = db.getConnection();
     }
 
@@ -26,21 +25,21 @@ public class OfferingRepository {
 
             while (rs.next()) {
                 offerings.add(
-                    new Offering(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    rs.getString(3),
-                    rs.getBoolean(4),
-                    rs.getString(5),
-                    rs.getBoolean(6),
-                    rs.getInt(7)));
+                        new Offering(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                rs.getString(3),
+                                rs.getBoolean(4),
+                                rs.getString(5),
+                                rs.getBoolean(6),
+                                rs.getInt(7)));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return offerings;
     }
 
@@ -54,20 +53,20 @@ public class OfferingRepository {
 
             while (rs.next()) {
                 offering = new Offering(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    rs.getString(3),
-                    rs.getBoolean(4),
-                    rs.getString(5),
-                    rs.getBoolean(6),
-                    rs.getInt(7));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getBoolean(4),
+                        rs.getString(5),
+                        rs.getBoolean(6),
+                        rs.getInt(7));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return offering;
     }
 
@@ -81,48 +80,49 @@ public class OfferingRepository {
 
             while (rs.next()) {
                 offerings.add(
-                    new Offering(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    rs.getString(3),
-                    rs.getBoolean(4),
-                    rs.getString(5),
-                    rs.getBoolean(6),
-                    rs.getInt(7)));
+                        new Offering(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                rs.getString(3),
+                                rs.getBoolean(4),
+                                rs.getString(5),
+                                rs.getBoolean(6),
+                                rs.getInt(7)));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return offerings;
     }
 
     public List<Offering> getByInstructorId(Instructor instructor) {
         ArrayList<Offering> offerings = new ArrayList<>();
         try {
-            String query = "select o.* from " + table + " o join instructor_offering io on o.id = io.offering_id where io.instructor_id = ? and active = true";
+            String query = "select o.* from " + table
+                    + " o join instructor_offering io on o.id = io.offering_id where io.instructor_id = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, instructor.getId());
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
                 offerings.add(new Offering(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    rs.getString(3),
-                    rs.getBoolean(4),
-                    rs.getString(5),
-                    rs.getBoolean(6),
-                    rs.getInt(7)));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getBoolean(4),
+                        rs.getString(5),
+                        rs.getBoolean(6),
+                        rs.getInt(7)));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return offerings;
     }
 
@@ -135,55 +135,56 @@ public class OfferingRepository {
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                offering = 
-                    new Offering(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    rs.getString(3),
-                    rs.getBoolean(4),
-                    rs.getString(5),
-                    rs.getBoolean(6),
-                    rs.getInt(7));
+                offering = new Offering(
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getBoolean(4),
+                        rs.getString(5),
+                        rs.getBoolean(6),
+                        rs.getInt(7));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return offering;
     }
 
     public ArrayList<Offering> getByClientId(Client client) {
         ArrayList<Offering> offerings = new ArrayList<>();
         try {
-            String query = "select o.* from " + table + "o join booking b on o.id = b.offering_id where b.client_id = ? and active = true";
+            String query = "select o.* from " + table
+                    + "o join booking b on o.id = b.offering_id where b.client_id = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, client.getId());
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
                 offerings.add(new Offering(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    rs.getString(3),
-                    rs.getBoolean(4),
-                    rs.getString(5),
-                    rs.getBoolean(6),
-                    rs.getInt(7)));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getBoolean(4),
+                        rs.getString(5),
+                        rs.getBoolean(6),
+                        rs.getInt(7)));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return offerings;
     }
 
     public Offering update(Offering offering) {
         try {
-            String query = "update " + table + " set active = ?, taken = ?, status = ?, type = ?, mode = ?, seats = ? where id = ?";
+            String query = "update " + table
+                    + " set active = ?, taken = ?, status = ?, type = ?, mode = ?, seats = ? where id = ?";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, offering.isActive());
             st.setBoolean(2, offering.isTaken());
@@ -196,14 +197,15 @@ public class OfferingRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return offering;
     }
 
     public long insert(Offering offering) {
         long id = 0;
         try {
-            String query = "insert into " + table + " (active, status, taken, type, mode, seats) values (?,?,?,?,?,?) returning id";
+            String query = "insert into " + table
+                    + " (active, status, taken, type, mode, seats) values (?,?,?,?,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, offering.isActive());
             st.setString(2, offering.getStatus());

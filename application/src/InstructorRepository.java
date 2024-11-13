@@ -1,6 +1,5 @@
 package application.src;
 
-
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,8 +13,8 @@ public class InstructorRepository {
 
     private Connection conn;
     private String table = "instructor";
-    
-    public InstructorRepository(Database db){
+
+    public InstructorRepository(Database db) {
         this.conn = db.getConnection();
     }
 
@@ -29,25 +28,25 @@ public class InstructorRepository {
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                specs = (String[])rs.getArray(7).getArray();
-                avails = (String[])rs.getArray(8).getArray();
+                specs = (String[]) rs.getArray(7).getArray();
+                avails = (String[]) rs.getArray(8).getArray();
                 instructors.add(
-                    new Instructor(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    rs.getString(3),
-                    rs.getInt(4),
-                    rs.getString(5),
-                    rs.getString(6),
-                    new ArrayList<String>(Arrays.asList(specs)),
-                    new ArrayList<String>(Arrays.asList(avails))));
+                        new Instructor(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                rs.getString(3),
+                                rs.getInt(4),
+                                rs.getString(5),
+                                rs.getString(6),
+                                new ArrayList<String>(Arrays.asList(specs)),
+                                new ArrayList<String>(Arrays.asList(avails))));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return instructors;
     }
 
@@ -63,25 +62,25 @@ public class InstructorRepository {
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                specs = (String[])rs.getArray(7).getArray();
-                avails = (String[])rs.getArray(8).getArray();
+                specs = (String[]) rs.getArray(7).getArray();
+                avails = (String[]) rs.getArray(8).getArray();
                 System.out.println("DEBUG: " + rs);
                 instructor = new Instructor(
-                                    rs.getLong(1),
-                                    rs.getBoolean(2),
-                                    rs.getString(3),
-                                    rs.getInt(4),
-                                    rs.getString(5),
-                                    rs.getString(6),
-                                    new ArrayList<String>(Arrays.asList(specs)),
-                                    new ArrayList<String>(Arrays.asList(avails)));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        rs.getString(6),
+                        new ArrayList<String>(Arrays.asList(specs)),
+                        new ArrayList<String>(Arrays.asList(avails)));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return instructor;
     }
 
@@ -89,7 +88,7 @@ public class InstructorRepository {
         Instructor instructor = new Instructor();
         String[] specs = null;
         String[] avails = null;
-        
+
         try {
             String query = "select * from " + table + " where name = ? and phone = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
@@ -99,24 +98,24 @@ public class InstructorRepository {
 
             while (rs.next()) {
                 System.out.println("DEBUG: " + rs);
-                specs = (String[])rs.getArray(7).getArray();
-                avails = (String[])rs.getArray(8).getArray();
+                specs = (String[]) rs.getArray(7).getArray();
+                avails = (String[]) rs.getArray(8).getArray();
                 instructor = new Instructor(
-                                rs.getLong(1),
-                                rs.getBoolean(2),
-                                rs.getString(3),
-                                rs.getInt(4),
-                                rs.getString(5),
-                                rs.getString(6),
-                                new ArrayList<String>(Arrays.asList(specs)),
-                                new ArrayList<String>(Arrays.asList(avails)));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        rs.getString(6),
+                        new ArrayList<String>(Arrays.asList(specs)),
+                        new ArrayList<String>(Arrays.asList(avails)));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return instructor;
     }
 
@@ -126,11 +125,12 @@ public class InstructorRepository {
 
         long id = 0;
         try {
-            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\", specializations, availabilities) values (?,?,?,?,?::roleType,?,?) returning id";
+            String query = "insert into " + table
+                    + " (active, \"name\", age, phone, \"role\", specializations, availabilities) values (?,?,?,?,?::roleType,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             specs = (Array) instructor.getSpecializations();
             avails = (Array) instructor.getAvailabilities();
-            
+
             st.setBoolean(1, true);
             st.setString(2, instructor.name);
             st.setInt(4, instructor.age);
@@ -146,7 +146,7 @@ public class InstructorRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return id;
     }
 

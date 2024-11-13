@@ -1,6 +1,5 @@
 package application.src;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,8 +11,8 @@ public class RepresentativeRepository {
 
     private Connection conn;
     private String table = "representative";
-    
-    public RepresentativeRepository(Database db){
+
+    public RepresentativeRepository(Database db) {
         this.conn = db.getConnection();
     }
 
@@ -26,27 +25,27 @@ public class RepresentativeRepository {
 
             while (rs.next()) {
                 representatives.add(
-                    new Representative(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    rs.getLong(3),
-                    rs.getLong(4),
-                    rs.getString(5)));
+                        new Representative(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                rs.getLong(3),
+                                rs.getLong(4),
+                                rs.getString(5)));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return representatives;
     }
-
 
     public long insert(Guardian guardian, Client dependant) {
         long id = 0;
         try {
-            String query = "insert into "+ table +" (active, representative_id, client_id, relationshp) values (?,?,?,?) returning id";
+            String query = "insert into " + table
+                    + " (active, representative_id, client_id, relationshp) values (?,?,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setLong(2, guardian.getId());

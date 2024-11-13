@@ -1,6 +1,5 @@
 package application.src;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,8 +11,8 @@ public class GuardianRepository {
 
     private Connection conn;
     private String table = "guardian";
-    
-    public GuardianRepository(Database db){
+
+    public GuardianRepository(Database db) {
         this.conn = db.getConnection();
     }
 
@@ -26,20 +25,20 @@ public class GuardianRepository {
 
             while (rs.next()) {
                 guardians.add(
-                    new Guardian(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    rs.getString(3),
-                    rs.getInt(4),
-                    rs.getString(5),
-                    rs.getString(6)));
+                        new Guardian(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                rs.getString(3),
+                                rs.getInt(4),
+                                rs.getString(5),
+                                rs.getString(6)));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return guardians;
     }
 
@@ -53,19 +52,19 @@ public class GuardianRepository {
 
             while (rs.next()) {
                 guardian = new Guardian(
-                                    rs.getLong(1),
-                                    rs.getBoolean(2),
-                                    rs.getString(3),
-                                    rs.getInt(4),
-                                    rs.getString(5),
-                                    rs.getString(6));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        rs.getString(6));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return guardian;
     }
 
@@ -80,26 +79,27 @@ public class GuardianRepository {
 
             while (rs.next()) {
                 guardian = new Guardian(
-                                rs.getLong(1),
-                                rs.getBoolean(2),
-                                rs.getString(3),
-                                rs.getInt(4),
-                                rs.getString(5),
-                                rs.getString(6));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        rs.getString(6));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return guardian;
     }
 
     public long insert(Guardian guardian) {
         long id = 0;
         try {
-            String query = "insert into " + table + " (active, \"name\", age, phone, \"role\") values (?,?,?,?,?::roleType) returning id";
+            String query = "insert into " + table
+                    + " (active, \"name\", age, phone, \"role\") values (?,?,?,?,?::roleType) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setString(2, guardian.name);
@@ -114,7 +114,7 @@ public class GuardianRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return id;
     }
 

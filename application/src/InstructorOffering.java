@@ -7,7 +7,9 @@ public class InstructorOffering {
     private long instructorId = -1;
     private long offeringId = -1;
 
-    public InstructorOffering(){}
+    public InstructorOffering() {
+    }
+
     public InstructorOffering(long id, boolean active, long instructorId, long offeringId) {
         this.id = id;
         this.active = active;
@@ -18,26 +20,33 @@ public class InstructorOffering {
     public long getId() {
         return id;
     }
+
     public void setId(long id) {
         this.id = id;
     }
+
     public boolean isActive() {
         return active;
     }
+
     public void setActive(boolean active) {
         this.active = active;
     }
+
     public long getInstructorId() {
         return instructorId;
     }
+
     public void setInstructorId(long instructorId) {
         this.instructorId = instructorId;
     }
+
     public long getOfferingId() {
         return offeringId;
     }
+
     public void setOfferingId(long offeringId) {
         this.offeringId = offeringId;
     }
-    
+
 }

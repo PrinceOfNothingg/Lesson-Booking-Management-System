@@ -3,7 +3,7 @@ package application.src;
 import java.util.Scanner;
 
 public class App extends Thread {
-    
+
     Database psql = new Database();
     UserRepository userRepo = new UserRepository(psql);
     ClientRepository clientRepo = new ClientRepository(psql);
@@ -18,7 +18,8 @@ public class App extends Thread {
     LocationScheduleRepository locationScheduleRepo = new LocationScheduleRepository(psql);
     OfferingRepository offeringRepo = new OfferingRepository(psql);
 
-    App() {}
+    App() {
+    }
 
     public void run() {
 
@@ -28,7 +29,7 @@ public class App extends Thread {
 
         // enum StartMenu {LOGIN, REGISTER, VIEW_OFFERINGS, QUIT}
 
-        while(running) {
+        while (running) {
 
             User user = new User();
             Client client = null;
@@ -39,63 +40,63 @@ public class App extends Thread {
             int choice = Utils.handleStartSelection(scanner);
             boolean restart = false;
             switch (choice) {
-            case 0: //Login
-                
-                User.Type selectedLogin = User.Type.values()[Utils.handleLoginSelection(scanner)];
+                case 0: // Login
 
-                switch (selectedLogin) {
-                    case User.Type.CLIENT:
-                        user = Client.login(scanner, clientRepo);
-                        break;
-                    case User.Type.GUARDIAN:
-                        user = Guardian.login(scanner, guardianRepo);
-                        break;
-                    case User.Type.INTRUCTOR:
-                        user = Instructor.login(scanner, instructorRepo);
-                        break;
-                    case User.Type.ADMIN:
-                        user = Administrator.login(scanner, administratorRepo);
-                        break;
-                    default:
-                        restart = true;
-                        break;
-                }
-                break;
-            case 1: //Register
-                User.Type selectedRegistration = User.Type.values()[Utils.handleRegistrationSelection(scanner)];
+                    User.Type selectedLogin = User.Type.values()[Utils.handleLoginSelection(scanner)];
 
-                switch (selectedRegistration) {
-                    case User.Type.CLIENT:
-                        user = Client.register(scanner, clientRepo);
-                        break;
-                    case User.Type.GUARDIAN:
-                        user = Guardian.register(scanner, guardianRepo, clientRepo, representativeRepo);
-                        break;
-                    case User.Type.INTRUCTOR:
-                        user = Instructor.register(scanner, instructorRepo);
-                        break;
-                    case User.Type.ADMIN:
-                        user = Administrator.register(scanner, administratorRepo);
-                        break;
-                    default:
+                    switch (selectedLogin) {
+                        case User.Type.CLIENT:
+                            user = Client.login(scanner, clientRepo);
+                            break;
+                        case User.Type.GUARDIAN:
+                            user = Guardian.login(scanner, guardianRepo);
+                            break;
+                        case User.Type.INTRUCTOR:
+                            user = Instructor.login(scanner, instructorRepo);
+                            break;
+                        case User.Type.ADMIN:
+                            user = Administrator.login(scanner, administratorRepo);
+                            break;
+                        default:
+                            restart = true;
+                            break;
+                    }
+                    break;
+                case 1: // Register
+                    User.Type selectedRegistration = User.Type.values()[Utils.handleRegistrationSelection(scanner)];
+
+                    switch (selectedRegistration) {
+                        case User.Type.CLIENT:
+                            user = Client.register(scanner, clientRepo);
+                            break;
+                        case User.Type.GUARDIAN:
+                            user = Guardian.register(scanner, guardianRepo, clientRepo, representativeRepo);
+                            break;
+                        case User.Type.INTRUCTOR:
+                            user = Instructor.register(scanner, instructorRepo);
+                            break;
+                        case User.Type.ADMIN:
+                            user = Administrator.register(scanner, administratorRepo);
+                            break;
+                        default:
+                            restart = true;
+                            break;
+                    }
+                    // fall through
+                case 2: // View offerings
+                    if (user == null) {
+                        System.out.println("Invalid User. Restarting.");
                         restart = true;
-                        break;
-                }
-                //fall through
-            case 2: //View offerings
-                if(user == null){
-                    System.out.println("Invalid User. Restarting.");
-                    restart = true;
-                }
-                break;
-            case 3: // quit
-            default:
-                System.out.println("\nQuitting.");
-                running = false;
-                break;
+                    }
+                    break;
+                case 3: // quit
+                default:
+                    System.out.println("\nQuitting.");
+                    running = false;
+                    break;
             }
 
-            if(restart || !running){
+            if (restart || !running) {
                 continue;
             }
 
@@ -114,7 +115,8 @@ public class App extends Thread {
                     break;
                 case "admin":
                     administrator = (Administrator) user;
-                    administrator.process(scanner, bookingRepo, offeringRepo, scheduleRepo, locationRepo, clientRepo, guardianRepo, instructorRepo, administratorRepo, locationScheduleRepo, representativeRepo);
+                    administrator.process(scanner, bookingRepo, offeringRepo, scheduleRepo, locationRepo, clientRepo,
+                            guardianRepo, instructorRepo, administratorRepo, locationScheduleRepo, representativeRepo);
                     break;
                 case "guest":
                     user.process(scanner, offeringRepo);

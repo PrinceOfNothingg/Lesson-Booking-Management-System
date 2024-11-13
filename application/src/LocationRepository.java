@@ -1,6 +1,5 @@
 package application.src;
 
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -14,8 +13,8 @@ public class LocationRepository {
 
     private Connection conn;
     private String table = "location";
-    
-    public LocationRepository(Database db){
+
+    public LocationRepository(Database db) {
         this.conn = db.getConnection();
     }
 
@@ -28,19 +27,19 @@ public class LocationRepository {
 
             while (rs.next()) {
                 locations.add(
-                    new Location(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    rs.getString(3),
-                    rs.getString(4),
-                    rs.getString(5)));
+                        new Location(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                rs.getString(3),
+                                rs.getString(4),
+                                rs.getString(5)));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return locations;
     }
 
@@ -54,18 +53,18 @@ public class LocationRepository {
 
             while (rs.next()) {
                 location = new Location(
-                                rs.getLong(1),
-                                rs.getBoolean(2),
-                                rs.getString(3),
-                                rs.getString(4),
-                                rs.getString(5));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getString(5));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return location;
     }
 
@@ -81,20 +80,21 @@ public class LocationRepository {
 
             while (rs.next()) {
                 location = new Location(
-                                rs.getLong(1),
-                                rs.getBoolean(2),
-                                rs.getString(3),
-                                rs.getString(4),
-                                rs.getString(5));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getString(5));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return location;
     }
+
     public List<Location> getByName(String name) {
         ArrayList<Location> locations = new ArrayList<>();
         try {
@@ -105,18 +105,18 @@ public class LocationRepository {
 
             while (rs.next()) {
                 locations.add(new Location(
-                                rs.getLong(1),
-                                rs.getBoolean(2),
-                                rs.getString(3),
-                                rs.getString(4),
-                                rs.getString(5)));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getString(5)));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return locations;
     }
 
@@ -130,50 +130,51 @@ public class LocationRepository {
 
             while (rs.next()) {
                 locations.add(new Location(
-                                rs.getLong(1),
-                                rs.getBoolean(2),
-                                rs.getString(3),
-                                rs.getString(4),
-                                rs.getString(5)));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getString(5)));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return locations;
     }
 
     public Location getByOfferingId(Offering offering) {
         Location location = new Location();
         try {
-            String query = "select l.* from " + table + " l join location_schedule ls on l.id = ls.location_id join offering o on ls.offering_id = o.id where o.id = ? and active = true";
+            String query = "select l.* from " + table
+                    + " l join location_schedule ls on l.id = ls.location_id join offering o on ls.offering_id = o.id where o.id = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
-            st.setLong(1,offering.getId());
+            st.setLong(1, offering.getId());
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
                 location = new Location(
-                                rs.getLong(1),
-                                rs.getBoolean(2),
-                                rs.getString(3),
-                                rs.getString(4),
-                                rs.getString(5));
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getString(5));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return location;
     }
 
     public long insert(Location location) {
         long id = 0;
         try {
-            String query = "insert into "+ table +" (active, name, address, city) values (?,?,?,?) returning id";
+            String query = "insert into " + table + " (active, name, address, city) values (?,?,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setString(2, location.getName());

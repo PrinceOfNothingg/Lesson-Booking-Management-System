@@ -9,7 +9,8 @@ public class Guardian extends User {
 
     private ArrayList<Client> dependants = new ArrayList<>();
 
-    public Guardian() {}
+    public Guardian() {
+    }
 
     public Guardian(long id, boolean active, String name, int age, String phone, String role) {
         super(id, active, name, age, phone, role);
@@ -23,13 +24,14 @@ public class Guardian extends User {
         this.dependants = dependants;
     }
 
-    public void makeBooking(Scanner scanner, ClientRepository clients, OfferingRepository offerings, BookingRepository bookings, LocationRepository locations, ScheduleRepository schedules) {
+    public void makeBooking(Scanner scanner, ClientRepository clients, OfferingRepository offerings,
+            BookingRepository bookings, LocationRepository locations, ScheduleRepository schedules) {
         boolean done = false;
         while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
             System.out.println("                          Make a Booking for Dependant");
             System.out.println("--------------------------------------------------------------------------------");
-            
+
             // select a dependnt client by index
             int dependantIndex = Utils.getInt(scanner, "Select a dependant by index (q to quit):");
             if (dependantIndex < 0 || dependantIndex >= dependants.size()) {
@@ -40,7 +42,8 @@ public class Guardian extends User {
             Client dependant = clients.get(dependantIndex);
 
             int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
-            if (offeringId == 0) break;
+            if (offeringId == 0)
+                break;
 
             Offering offering = offerings.get(offeringId);
             if (offering == null) {
@@ -61,18 +64,16 @@ public class Guardian extends User {
             boolean bookingConflict = false;
             for (Location location : locationList) {
                 if (location.getName().equalsIgnoreCase(curLocation.getName()) &&
-                location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
-                location.getCity().equalsIgnoreCase(curLocation.getCity())
-                )
-                {
-                    if (scheduleListList.contains(curScheduleList)){
+                        location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
+                        location.getCity().equalsIgnoreCase(curLocation.getCity())) {
+                    if (scheduleListList.contains(curScheduleList)) {
                         bookingConflict = true;
                         break;
                     }
                 }
             }
 
-            if(bookingConflict){
+            if (bookingConflict) {
                 System.out.println("Another booking at that location and time already exists.");
                 break;
             }
@@ -103,7 +104,8 @@ public class Guardian extends User {
         }
     }
 
-    public void viewBookingDetails(Scanner scanner, BookingRepository bookings, OfferingRepository offerings, LocationRepository locations, ScheduleRepository schedules) {
+    public void viewBookingDetails(Scanner scanner, BookingRepository bookings, OfferingRepository offerings,
+            LocationRepository locations, ScheduleRepository schedules) {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          View Booking Details for Dependants");
         System.out.println("--------------------------------------------------------------------------------");
@@ -113,7 +115,8 @@ public class Guardian extends User {
             bookings.getByClientId(dependant).forEach(System.out::println);
 
             int bookingId = Utils.getInt(scanner, "Enter booking ID to view details (q to quit):");
-            if (bookingId == 0) break;
+            if (bookingId == 0)
+                break;
 
             Booking booking = bookings.get(bookingId);
             Offering offering = offerings.getByBookingId(booking);
@@ -126,7 +129,8 @@ public class Guardian extends User {
         }
     }
 
-    public void cancelBooking(Scanner scanner, ClientRepository clients, BookingRepository bookings, OfferingRepository offerings) {
+    public void cancelBooking(Scanner scanner, ClientRepository clients, BookingRepository bookings,
+            OfferingRepository offerings) {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          Cancel Booking for Dependants");
         System.out.println("--------------------------------------------------------------------------------");
@@ -138,7 +142,8 @@ public class Guardian extends User {
 
             // enter booking ID to cancel
             int bookingId = Utils.getInt(scanner, "Enter booking ID to cancel (q to quit):");
-            if (bookingId == 0) break;
+            if (bookingId == 0)
+                break;
 
             Booking booking = bookings.get(bookingId);
             if (booking != null && booking.getClientId() == dependant.getId()) {
@@ -171,10 +176,12 @@ public class Guardian extends User {
 
         while (true) {
             username = Utils.getUserName(scanner);
-            if (username.isEmpty()) break;
+            if (username.isEmpty())
+                break;
 
             phone = Utils.getPhone(scanner);
-            if (phone.isEmpty()) break;
+            if (phone.isEmpty())
+                break;
 
             guardian = guardians.get(username, phone);
 
@@ -189,7 +196,7 @@ public class Guardian extends User {
         return guardian;
     }
 
-    public Guardian logout(){
+    public Guardian logout() {
         Guardian guardian = new Guardian();
         this.id = guardian.id;
         this.active = guardian.active;
@@ -200,17 +207,20 @@ public class Guardian extends User {
         return guardian;
     }
 
-    public static Guardian register(Scanner scanner, GuardianRepository guardians, ClientRepository clients, RepresentativeRepository representatives) {
+    public static Guardian register(Scanner scanner, GuardianRepository guardians, ClientRepository clients,
+            RepresentativeRepository representatives) {
         Guardian guardian = new Guardian();
         String username;
         String phone;
 
         while (true) {
             username = Utils.getUserName(scanner);
-            if (username.isEmpty()) break;
+            if (username.isEmpty())
+                break;
 
             phone = Utils.getPhone(scanner);
-            if (phone.isEmpty()) break;
+            if (phone.isEmpty())
+                break;
 
             int age = Utils.getAge(scanner);
             guardian = guardians.get(username, phone);
@@ -250,7 +260,7 @@ public class Guardian extends User {
     }
 
     @Override
-    protected int printMenu(){
+    protected int printMenu() {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          " + this.name);
         System.out.println("--------------------------------------------------------------------------------");
@@ -277,9 +287,10 @@ public class Guardian extends User {
         return choice;
     }
 
-    public void process(Scanner scanner, ClientRepository clients, OfferingRepository offerings, BookingRepository bookings, LocationRepository locations, ScheduleRepository schedules){
+    public void process(Scanner scanner, ClientRepository clients, OfferingRepository offerings,
+            BookingRepository bookings, LocationRepository locations, ScheduleRepository schedules) {
         boolean done = false;
-        while(!done){
+        while (!done) {
             int action = handleSelection(scanner);
 
             switch (action) {
@@ -302,13 +313,12 @@ public class Guardian extends User {
                     done = true;
                     logout();
                     break;
-                
+
                 default:
                     break;
-            }       
+            }
         }
     }
-
 
     @Override
     public String toString() {

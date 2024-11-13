@@ -10,13 +10,13 @@ import java.util.Scanner;
 
 public class Utils {
 
-    public static void printBanner(){
+    public static void printBanner() {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("-----------------------Welcome to the Activities Board!-------------------------");
         System.out.println("--------------------------------------------------------------------------------\n");
     }
 
-    public static int printStartMenu(){
+    public static int printStartMenu() {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("--------------------------           Start            --------------------------");
         System.out.println("--------------------------------------------------------------------------------");
@@ -29,7 +29,7 @@ public class Utils {
         return 4;
     }
 
-    public static int printLoginMenu(){
+    public static int printLoginMenu() {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("--------------------------           Login            --------------------------");
         System.out.println("--------------------------------------------------------------------------------");
@@ -43,7 +43,7 @@ public class Utils {
         return 5;
     }
 
-    public static int printRegistrationMenu(){
+    public static int printRegistrationMenu() {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("--------------------------        Registration        --------------------------");
         System.out.println("--------------------------------------------------------------------------------");
@@ -62,7 +62,7 @@ public class Utils {
         while (true) {
             try {
                 choice = Integer.parseInt(scanner.nextLine());
-                
+
                 if (choice < min || choice > max) {
                     System.out.println("Please select between " + min + " and " + max + ".");
                 } else {
@@ -107,55 +107,56 @@ public class Utils {
         } while (choice < min || choice > max);
         return choice;
     }
-    
-    public static String getString(Scanner scanner, String msg){
+
+    public static String getString(Scanner scanner, String msg) {
         String s = "";
         String input;
         boolean done = false;
 
-        while(!done){
+        while (!done) {
             System.out.println(msg);
             input = scanner.nextLine().trim();
             System.out.println(input);
-            if(input.equalsIgnoreCase("q"))
+            if (input.equalsIgnoreCase("q"))
                 break;
-            else if(input.equalsIgnoreCase("r"))
+            else if (input.equalsIgnoreCase("r"))
                 continue;
 
             s = input;
-            if (!s.isEmpty()){ done = true;}
+            if (!s.isEmpty()) {
+                done = true;
+            }
         }
         return s;
     }
 
-    public static String getUserName(Scanner scanner){
+    public static String getUserName(Scanner scanner) {
         return getString(scanner, "Enter your username (q to exit, r to retry):");
     }
 
-    public static String getPhone(Scanner scanner){
+    public static String getPhone(Scanner scanner) {
         return getString(scanner, "Enter your phone (q to exit, r to retry):");
     }
 
-    public static String getDate(Scanner scanner, String msg){
+    public static String getDate(Scanner scanner, String msg) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("YYYY-MM-DD");
         LocalDate date = LocalDate.parse(getString(scanner, msg), df);
         return date.toString();
     }
 
-    public static String getTime(Scanner scanner, String msg){
+    public static String getTime(Scanner scanner, String msg) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("hh:mm:ss");
         LocalTime time = LocalTime.parse(getString(scanner, msg), df);
         return time.toString();
     }
 
-
-    public static int getAge(Scanner scanner){
+    public static int getAge(Scanner scanner) {
         int age = 0;
 
-        while(true){
+        while (true) {
             age = getInt(scanner, "Enter your age (q to exit, r to retry):");
             System.out.println(age);
-            if(age < 18){
+            if (age < 18) {
                 System.out.println("Invalid age");
             } else {
                 break;
@@ -165,18 +166,18 @@ public class Utils {
         return age;
     }
 
-    public static int getInt(Scanner scanner, String msg){
+    public static int getInt(Scanner scanner, String msg) {
         int value = 0;
         String input;
         boolean done = false;
 
-        while(!done){
+        while (!done) {
             System.out.println(msg);
             input = scanner.nextLine().trim();
             System.out.println(input);
-            if(input.equalsIgnoreCase("q"))
+            if (input.equalsIgnoreCase("q"))
                 break;
-            else if(input.equalsIgnoreCase("r"))
+            else if (input.equalsIgnoreCase("r"))
                 continue;
 
             value = Integer.parseInt(input);
@@ -186,18 +187,18 @@ public class Utils {
         return value;
     }
 
-    public static long getLong(Scanner scanner, String msg){
+    public static long getLong(Scanner scanner, String msg) {
         long value = 0;
         String input;
         boolean done = false;
 
-        while(!done){
+        while (!done) {
             System.out.println(msg);
             input = scanner.nextLine().trim();
             System.out.println(input);
-            if(input.equalsIgnoreCase("q"))
+            if (input.equalsIgnoreCase("q"))
                 break;
-            else if(input.equalsIgnoreCase("r"))
+            else if (input.equalsIgnoreCase("r"))
                 continue;
 
             value = Long.parseLong(input);
@@ -212,23 +213,23 @@ public class Utils {
         scanner.useDelimiter(" ");
         String input;
 
-        while(true){
+        while (true) {
             System.out.println(msg);
 
             input = scanner.nextLine().trim();
-            if(input.equalsIgnoreCase("q"))
+            if (input.equalsIgnoreCase("q"))
                 break;
-            else if(input.equalsIgnoreCase("r"))
+            else if (input.equalsIgnoreCase("r"))
                 continue;
 
-            while(scanner.hasNext()){
+            while (scanner.hasNext()) {
                 specs.add(scanner.next().trim());
             }
 
             System.out.println(specs);
             System.out.println("Are the above values correct? y/n (q to exit):");
             input = scanner.nextLine().trim();
-            if(input.equalsIgnoreCase("q") || input.equalsIgnoreCase("y")){
+            if (input.equalsIgnoreCase("q") || input.equalsIgnoreCase("y")) {
                 break;
             }
         }
@@ -239,6 +240,7 @@ public class Utils {
     public static ArrayList<String> getSpecializations(Scanner scanner) {
         return getStringArrayList(scanner, "Enter specializations seperated by spaces. (q to exit, r to retry):");
     }
+
     public static ArrayList<String> getAvailabilities(Scanner scanner) {
         return getStringArrayList(scanner, "Enter availabilities seperated by spaces. (q to exit, r to retry):");
     }

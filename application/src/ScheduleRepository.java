@@ -13,8 +13,8 @@ public class ScheduleRepository {
 
     private Connection conn;
     private String table = "schedule";
-    
-    public ScheduleRepository(Database db){
+
+    public ScheduleRepository(Database db) {
         this.conn = db.getConnection();
     }
 
@@ -28,19 +28,19 @@ public class ScheduleRepository {
             while (rs.next()) {
                 PGobject tsrange = new PGobject();
                 tsrange.setType("tsrange");
-                tsrange = (PGobject)rs.getObject("tsrangeType");
+                tsrange = (PGobject) rs.getObject(3);
                 schedules.add(
-                    new Schedule(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    tsrange.toString()));
+                        new Schedule(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                tsrange.toString()));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return schedules;
     }
 
@@ -55,26 +55,27 @@ public class ScheduleRepository {
             while (rs.next()) {
                 PGobject tsrange = new PGobject();
                 tsrange.setType("tsrange");
-                tsrange = (PGobject)rs.getObject("tsrangeType");
+                tsrange = (PGobject) rs.getObject(3);
 
                 schedule = new Schedule(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    tsrange.toString());
+                        rs.getLong(1),
+                        rs.getBoolean(2),
+                        tsrange.toString());
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return schedule;
     }
 
     public List<Schedule> getByLocationId(Location location) {
         ArrayList<Schedule> schedules = new ArrayList<>();
         try {
-            String query = "select s.* from " + table + "s join location_schedule ls on s.id = ls.schedule_id where ls.location_id = ? and active = true";
+            String query = "select s.* from " + table
+                    + "s join location_schedule ls on s.id = ls.schedule_id where ls.location_id = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, location.getId());
             ResultSet rs = st.executeQuery();
@@ -82,26 +83,27 @@ public class ScheduleRepository {
             while (rs.next()) {
                 PGobject tsrange = new PGobject();
                 tsrange.setType("tsrange");
-                tsrange = (PGobject)rs.getObject("tsrangeType");
+                tsrange = (PGobject) rs.getObject(3);
                 schedules.add(
-                    new Schedule(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    tsrange.toString()));    
-                }
+                        new Schedule(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                tsrange.toString()));
+            }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return schedules;
     }
 
     public List<Schedule> getByOfferingId(Offering offering) {
         ArrayList<Schedule> schedules = new ArrayList<>();
         try {
-            String query = "select s.* from " + table + "s join location_schedule ls on s.id = ls.schedule_id where ls.offering_id = ? and active = true";
+            String query = "select s.* from " + table
+                    + "s join location_schedule ls on s.id = ls.schedule_id where ls.offering_id = ? and active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, offering.getId());
             ResultSet rs = st.executeQuery();
@@ -109,26 +111,26 @@ public class ScheduleRepository {
             while (rs.next()) {
                 PGobject tsrange = new PGobject();
                 tsrange.setType("tsrange");
-                tsrange = (PGobject)rs.getObject("tsrangeType");
+                tsrange = (PGobject) rs.getObject(3);
                 schedules.add(
-                    new Schedule(
-                    rs.getLong(1),
-                    rs.getBoolean(2),
-                    tsrange.toString()));    
-                }
+                        new Schedule(
+                                rs.getLong(1),
+                                rs.getBoolean(2),
+                                tsrange.toString()));
+            }
             rs.close();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return schedules;
     }
 
     public long insert(Schedule schedule) {
         long id = 0;
         try {
-            String query = "insert into "+ table +" (active, slot) values (?,?) returning id";
+            String query = "insert into " + table + " (active, slot) values (?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
 
             PGobject tsrange = new PGobject();
@@ -137,7 +139,7 @@ public class ScheduleRepository {
 
             st.setBoolean(1, true);
             st.setObject(2, tsrange);
-            
+
             ResultSet rs = st.executeQuery();
             id = rs.getLong(1);
             System.out.println("DEBUG: " + st);

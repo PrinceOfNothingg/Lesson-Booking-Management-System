@@ -11,9 +11,12 @@ public class Instructor extends User {
     private ArrayList<String> specializations = new ArrayList<>();
     private ArrayList<String> availabilities = new ArrayList<>();
 
-    public Instructor(){}
-    public Instructor(long id, boolean active, String name, int age, String phone, String role, ArrayList<String> specializations, ArrayList<String> availabilities) {
-        super( id, active, name, age, phone, role);
+    public Instructor() {
+    }
+
+    public Instructor(long id, boolean active, String name, int age, String phone, String role,
+            ArrayList<String> specializations, ArrayList<String> availabilities) {
+        super(id, active, name, age, phone, role);
         this.specializations = specializations;
         this.availabilities = availabilities;
     }
@@ -21,43 +24,47 @@ public class Instructor extends User {
     public ArrayList<String> getSpecializations() {
         return specializations;
     }
+
     public void setSpecializations(ArrayList<String> specializations) {
         this.specializations = specializations;
     }
+
     public ArrayList<String> getAvailabilities() {
         return availabilities;
     }
+
     public void setAvailabilities(ArrayList<String> availabilities) {
         this.availabilities = availabilities;
     }
-   
+
     @Override
-    protected void viewOfferings(OfferingRepository offerings){
+    protected void viewOfferings(OfferingRepository offerings) {
         offerings.getByInstructorId(this).forEach(System.out::println);
     }
 
-    private void viewAvailableOfferings(OfferingRepository offerings){
+    private void viewAvailableOfferings(OfferingRepository offerings) {
         offerings.getTaken(false).forEach(System.out::println);
     }
 
-    private void takeOfferings(Scanner scanner, OfferingRepository offerings, LocationRepository locations, ScheduleRepository schedules, InstructorOfferingRepository instructorOfferings){
+    private void takeOfferings(Scanner scanner, OfferingRepository offerings, LocationRepository locations,
+            ScheduleRepository schedules, InstructorOfferingRepository instructorOfferings) {
         boolean done = false;
-        while(!done){
+        while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
             System.out.println("                          Take an Offering" + this.name);
             System.out.println("--------------------------------------------------------------------------------");
-            
+
             int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
             if (offeringId == 0)
                 break;
-        
+
             Offering offering = offerings.get(offeringId);
-            
-            if(!getSpecializations().contains(offering.getType())){
+
+            if (!getSpecializations().contains(offering.getType())) {
                 System.out.println("\nInstructor specializations do not match offering.");
                 break;
             }
-            if(!getAvailabilities().contains(locations.getByOfferingId(offering).getCity())){
+            if (!getAvailabilities().contains(locations.getByOfferingId(offering).getCity())) {
                 System.out.println("\nInstructor availabilitiess do not match offering.");
                 break;
             }
@@ -75,18 +82,16 @@ public class Instructor extends User {
             boolean bookingConflict = false;
             for (Location location : locationList) {
                 if (location.getName().equalsIgnoreCase(curLocation.getName()) &&
-                location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
-                location.getCity().equalsIgnoreCase(curLocation.getCity())
-                )
-                {
-                    if (scheduleListList.contains(curScheduleList)){
+                        location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
+                        location.getCity().equalsIgnoreCase(curLocation.getCity())) {
+                    if (scheduleListList.contains(curScheduleList)) {
                         bookingConflict = true;
                         break;
                     }
                 }
             }
 
-            if(bookingConflict){
+            if (bookingConflict) {
                 System.out.println("Another offering at that location and time already exists.");
                 break;
             }
@@ -101,20 +106,21 @@ public class Instructor extends User {
         }
     }
 
-    private void removeOfferings(Scanner scanner, OfferingRepository offerings, InstructorOfferingRepository instructorOfferings){
+    private void removeOfferings(Scanner scanner, OfferingRepository offerings,
+            InstructorOfferingRepository instructorOfferings) {
         boolean done = false;
-        while(!done){
+        while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
             System.out.println("                          Remove an Offering" + this.name);
             System.out.println("--------------------------------------------------------------------------------");
-            
+
             int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
             if (offeringId == 0)
                 break;
-        
+
             Offering offering = offerings.get(offeringId);
 
-            if(instructorOfferings.getByOfferingId(offering).getInstructorId() != this.id){
+            if (instructorOfferings.getByOfferingId(offering).getInstructorId() != this.id) {
                 System.out.println("\nOffering does not belong to instructor.");
                 break;
             }
@@ -129,26 +135,24 @@ public class Instructor extends User {
         }
     }
 
-
-    public static Instructor login(Scanner scanner, InstructorRepository instructors){
+    public static Instructor login(Scanner scanner, InstructorRepository instructors) {
         Instructor instructor = null;
         String username;
         String phone;
-        while(true){
+        while (true) {
             username = Utils.getUserName(scanner);
-            if(username.isEmpty())
+            if (username.isEmpty())
                 break;
 
             phone = Utils.getPhone(scanner);
-            if(phone.isEmpty())
+            if (phone.isEmpty())
                 break;
 
             instructor = instructors.get(username, phone);
 
-            if(instructor.isEmpty()){
+            if (instructor.isEmpty()) {
                 System.out.println("Invalid credentials.");
-            }
-            else {
+            } else {
                 System.out.println("Login Successful.");
                 break;
             }
@@ -157,7 +161,7 @@ public class Instructor extends User {
         return instructor;
     }
 
-    public Instructor logout(){
+    public Instructor logout() {
         Instructor instructor = new Instructor();
         this.id = instructor.id;
         this.active = instructor.active;
@@ -170,46 +174,44 @@ public class Instructor extends User {
         return instructor;
     }
 
-    public static Instructor register(Scanner scanner, InstructorRepository instructors){
+    public static Instructor register(Scanner scanner, InstructorRepository instructors) {
         Instructor instructor = new Instructor();
         String username;
         String phone;
 
-        while(true){
+        while (true) {
             username = Utils.getUserName(scanner);
-            if(username.isEmpty())
+            if (username.isEmpty())
                 break;
 
             phone = Utils.getPhone(scanner);
-            if(phone.isEmpty())
+            if (phone.isEmpty())
                 break;
 
             int age = Utils.getAge(scanner);
-            if(age < 18)
+            if (age < 18)
                 break;
 
             ArrayList<String> specs = Utils.getSpecializations(scanner);
             ArrayList<String> avails = Utils.getAvailabilities(scanner);
-            
-            
+
             instructor = instructors.get(username, phone);
 
-            if(instructor.isEmpty()){
+            if (instructor.isEmpty()) {
                 instructor = new Instructor(0, true, username, age, phone, "instructor", specs, avails);
                 instructors.insert(instructor);
                 instructor = instructors.get(username, phone);
                 break;
-            }
-            else {
+            } else {
                 System.out.println("User already exists.");
             }
         }
 
         return instructor;
     }
-    
+
     @Override
-    protected int printMenu(){
+    protected int printMenu() {
         System.out.println("\n--------------------------------------------------------------------------------");
         System.out.println("                          " + this.name);
         System.out.println("--------------------------------------------------------------------------------");
@@ -235,9 +237,10 @@ public class Instructor extends User {
         return choice;
     }
 
-    public void process(Scanner scanner, OfferingRepository offerings, LocationRepository locations, ScheduleRepository schedules, InstructorOfferingRepository instructorOfferings){
+    public void process(Scanner scanner, OfferingRepository offerings, LocationRepository locations,
+            ScheduleRepository schedules, InstructorOfferingRepository instructorOfferings) {
         boolean done = false;
-        while(!done){
+        while (!done) {
             int action = handleSelection(scanner);
 
             switch (action) {
@@ -257,10 +260,10 @@ public class Instructor extends User {
                     done = true;
                     logout();
                     break;
-                
+
                 default:
                     break;
-            }       
+            }
         }
     }
 
@@ -268,7 +271,7 @@ public class Instructor extends User {
     public String toString() {
         JSONObject json = new JSONObject();
         json.put("id", id);
-        json.put("active",active);
+        json.put("active", active);
         json.put("name", name);
         json.put("phone", phone);
         json.put("age", age);

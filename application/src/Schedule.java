@@ -8,29 +8,35 @@ public class Schedule {
     private boolean active = false;
     private String slot = null;
 
-    protected Schedule() {}
+    protected Schedule() {
+    }
+
     protected Schedule(long id, boolean active, String slot) {
         this.id = id;
         this.active = active;
         this.slot = slot;
     }
 
-
     public long getId() {
         return id;
     }
+
     public void setId(long id) {
         this.id = id;
     }
+
     public boolean isActive() {
         return active;
     }
+
     public void setActive(boolean active) {
         this.active = active;
     }
+
     public String getSlot() {
         return slot;
     }
+
     public void setSlot(String slot) {
         this.slot = slot;
     }
@@ -40,7 +46,7 @@ public class Schedule {
     }
 
     public String toString() {
-       JSONObject json = new JSONObject();
+        JSONObject json = new JSONObject();
         json.put("id", id);
         json.put("active", active);
         json.put("slot", slot);

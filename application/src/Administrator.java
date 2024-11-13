@@ -8,53 +8,134 @@ import org.json.simple.JSONObject;
 
 public class Administrator extends User {
 
-    public Administrator() {}
+    public Administrator() {
+    }
 
     public Administrator(long id, boolean active, String name, int age, String phone, String role) {
         super(id, active, name, age, phone, role);
     }
 
     public void viewBookings(BookingRepository bookings) {
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          View Bookings " + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
         bookings.get().forEach(System.out::println);
     }
 
     @Override
     public void viewOfferings(OfferingRepository offerings) {
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          View Offerings " + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
         offerings.get().forEach(System.out::println);
     }
 
     public void viewSchedules(ScheduleRepository schedules) {
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          View Schedules " + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
         schedules.get().forEach(System.out::println);
     }
 
-    public void viewLocations(LocationRepository locations){
+    public void viewLocations(LocationRepository locations) {
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          View Locations " + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
         locations.get().forEach(System.out::println);
     }
 
     public void viewClients(ClientRepository clients) {
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          View Clients " + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
         clients.get().forEach(System.out::println);
     }
 
     public void viewGuardians(GuardianRepository guardians) {
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          View Guardians " + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
         guardians.get().forEach(System.out::println);
     }
 
     public void viewInstructors(InstructorRepository instructors) {
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          View Instructors " + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
         instructors.get().forEach(System.out::println);
     }
 
     public void viewAdmins(AdministratorRepository administrators) {
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("                          View Admins " + this.name);
+        System.out.println("--------------------------------------------------------------------------------");
         administrators.get().forEach(System.out::println);
     }
 
-    public void createBookings(BookingRepository bookings) {
-        throw new UnsupportedOperationException("Unimplemented method 'createBookings'");
+    public void createBookings(Scanner scanner, ClientRepository clients, OfferingRepository offerings, BookingRepository bookings,
+    LocationRepository locations, ScheduleRepository schedules) {
+        Booking booking;
+        boolean done = false;
+        while (!done) {
+            System.out.println("\n--------------------------------------------------------------------------------");
+            System.out.println("                        Make a Booking" + this.name);
+            System.out.println("--------------------------------------------------------------------------------");
+
+            long clientId = Utils.getLong(scanner, "Please enter the id of the Client (q to quit):");
+            if (clientId == 0)
+                break;
+
+            long offeringId = Utils.getLong(scanner, "Please enter the id of an Offering (q to quit):");
+            if (offeringId == 0)
+                break;
+
+            Offering offering = offerings.get(offeringId);
+            Client client = clients.get(clientId);
+            List<Offering> offeringList = offerings.getByClientId(client);
+            List<Location> locationList = new ArrayList<>();
+            List<List<Schedule>> scheduleListList = new ArrayList<>();
+            for (Offering o : offeringList) {
+                locationList.add(locations.getByOfferingId(o));
+                scheduleListList.add(schedules.getByOfferingId(o));
+            }
+
+            Location curLocation = locations.getByOfferingId(offering);
+            List<Schedule> curScheduleList = schedules.getByOfferingId(offering);
+            boolean bookingConflict = false;
+            for (Location location : locationList) {
+                if (location.getName().equalsIgnoreCase(curLocation.getName()) &&
+                        location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
+                        location.getCity().equalsIgnoreCase(curLocation.getCity())) {
+                    if (scheduleListList.contains(curScheduleList)) {
+                        bookingConflict = true;
+                        break;
+                    }
+                }
+            }
+
+            if (bookingConflict) {
+                System.out.println("Another booking at that location and time already exists.");
+                break;
+            }
+
+            long id = bookings.insert(client, offering);
+            booking = bookings.get(id);
+
+            offering.setSeats(offering.getSeats() - 1);
+            if (offering.getSeats() == 0) {
+                offering.setStatus("non-available");
+            }
+
+            offerings.update(offering);
+
+            System.out.println(booking);
+        }
     }
 
     public void createOfferings(Scanner scanner, OfferingRepository offerings, ScheduleRepository schedules,
             LocationRepository locations, LocationScheduleRepository locationSchedules) {
         System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("                          Create an Offering" + this.name);
+        System.out.println("                          Create an Offering " + this.name);
         System.out.println("--------------------------------------------------------------------------------");
 
         String val = Utils.getString(scanner, "Create a new Schedule? y/n (q to quit):");
@@ -140,7 +221,7 @@ public class Administrator extends User {
         boolean done = false;
         while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
-            System.out.println("                          Create a schedule" + this.name);
+            System.out.println("                          Create a schedule " + this.name);
             System.out.println("--------------------------------------------------------------------------------");
 
             String start = Utils.getDate(scanner, "Please enter the start time 'YYYY-MM-DD hh:mm:ss':");
@@ -170,7 +251,7 @@ public class Administrator extends User {
         boolean done = false;
         while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
-            System.out.println("                          Create a location" + this.name);
+            System.out.println("                          Create a location " + this.name);
             System.out.println("--------------------------------------------------------------------------------");
 
             String name = Utils.getString(scanner, "Please enter location name:");
@@ -205,7 +286,7 @@ public class Administrator extends User {
 
     public void createClient(Scanner scanner, ClientRepository clients) {
         System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("                          Create a Client" + this.name);
+        System.out.println("                          Create a Client " + this.name);
         System.out.println("--------------------------------------------------------------------------------");
 
         Client.register(scanner, clients);
@@ -214,7 +295,7 @@ public class Administrator extends User {
     public void createGuardian(Scanner scanner, GuardianRepository guardians, ClientRepository clients,
             RepresentativeRepository representatives) {
         System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("                          Create a Guardian" + this.name);
+        System.out.println("                          Create a Guardian " + this.name);
         System.out.println("--------------------------------------------------------------------------------");
 
         Guardian.register(scanner, guardians, clients, representatives);
@@ -222,7 +303,7 @@ public class Administrator extends User {
 
     public void createInstructor(Scanner scanner, InstructorRepository instructors) {
         System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("                          Create an Instructor" + this.name);
+        System.out.println("                          Create an Instructor " + this.name);
         System.out.println("--------------------------------------------------------------------------------");
 
         Instructor.register(scanner, instructors);
@@ -230,31 +311,35 @@ public class Administrator extends User {
 
     public void createAdministrator(Scanner scanner, AdministratorRepository administrators) {
         System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("                          Create an Instructor" + this.name);
+        System.out.println("                          Create an Instructor " + this.name);
         System.out.println("--------------------------------------------------------------------------------");
 
         Administrator.register(scanner, administrators);
     }
 
-    public void deleteBookings(Scanner scanner, BookingRepository bookings) {
-        // TODO update offering after
-
+    public void deleteBookings(Scanner scanner, OfferingRepository offerings, BookingRepository bookings) {
         long id = Utils.getLong(scanner, "Enter the ID of the booking to delete:");
         Booking booking = bookings.get(id);
         if (booking != null) {
             bookings.delete(id);
             System.out.println("Booking " + id + " has been deleted.");
+
+            Offering offering = offerings.get(booking.getOfferingId());
+            offering.setSeats(offering.getSeats() + 1);
+            offering.setStatus("available");
+
+            offerings.update(offering);
         } else {
             System.out.println("Booking not found.");
         }
     }
 
     public void deleteOfferings(Scanner scanner, OfferingRepository offerings) {
-        // TODO delete location_schedules associated first
         long id = Utils.getLong(scanner, "Enter the ID of the offering to delete:");
         Offering offering = offerings.get(id);
         if (offering != null) {
             offerings.delete(offering);
+            // associated location schedules are delete by DB cascade
             System.out.println("Offering " + id + " has been deleted.");
         } else {
             System.out.println("Offering not found.");
@@ -262,11 +347,11 @@ public class Administrator extends User {
     }
 
     public void deleteSchedules(Scanner scanner, ScheduleRepository schedules) {
-        // TODO delete location_schedules associated first
         long id = Utils.getLong(scanner, "Enter the ID of the schedule to delete:");
         Schedule schedule = schedules.get(id);
         if (schedule != null) {
             schedules.delete(id);
+            // associated location schedules are delete by DB cascade
             System.out.println("Schedule " + id + " has been deleted.");
         } else {
             System.out.println("Schedule not found.");
@@ -274,11 +359,11 @@ public class Administrator extends User {
     }
 
     public void deleteLocations(Scanner scanner, LocationRepository locations) {
-        // TODO delete location_schedules associated first
         long id = Utils.getLong(scanner, "Enter the ID of the location to delete:");
         Location location = locations.get(id);
         if (location != null) {
             locations.delete(id);
+            // associated location schedules are delete by DB cascade
             System.out.println("Location " + id + " has been deleted.");
         } else {
             System.out.println("Location not found.");
@@ -286,35 +371,47 @@ public class Administrator extends User {
     }
 
     public void deleteClients(Scanner scanner, ClientRepository clients) {
-        // TODO delete bookings first
         long id = Utils.getLong(scanner, "Enter the ID of the client to delete:");
         Client client = clients.get(id);
         if (client != null) {
             clients.delete(id);
+            // associated bookings are delete by DB cascade
             System.out.println("Client " + id + " has been deleted.");
         } else {
             System.out.println("Client not found.");
         }
     }
 
-    public void deleteGuardians(Scanner scanner, GuardianRepository guardians) {
-        // TODO delete dependants first
+    public void deleteGuardians(Scanner scanner, ClientRepository clients, GuardianRepository guardians) {
         long id = Utils.getLong(scanner, "Enter the ID of the guardian to delete:");
         Guardian guardian = guardians.get(id);
         if (guardian != null) {
             guardians.delete(id);
+            // associated dependant associations are delete by DB cascade
+            // make child inactive
+            for (Client client : clients.getByGuardianId(guardian)) {
+                client.setActive(false);
+                clients.update(client);
+            }
             System.out.println("Guardian " + id + " has been deleted.");
         } else {
             System.out.println("Guardian not found.");
         }
     }
 
-    public void deleteInstructors(Scanner scanner, InstructorRepository instructors) {
-        // TODO remove all offerings first
+    public void deleteInstructors(Scanner scanner, OfferingRepository offerings, InstructorRepository instructors) {
         long id = Utils.getLong(scanner, "Enter the ID of the instructor to delete:");
         Instructor instructor = instructors.get(id);
         if (instructor != null) {
             instructors.delete(id);
+            // offering associations are delete by DB cascade
+            // update assoiated offerings
+            for (Offering offering : offerings.getByInstructorId(instructor)) {
+                offering.setTaken(false);
+                offering.setStatus("non-available");
+                offerings.update(offering);
+            }
+
             System.out.println("Instructor " + id + " has been deleted.");
         } else {
             System.out.println("Instructor not found.");
@@ -413,7 +510,7 @@ public class Administrator extends User {
     @Override
     protected int printMenu() {
         System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.println("                          " + this.name);
+        System.out.println("                               " + this.name);
         System.out.println("--------------------------------------------------------------------------------");
         System.out.println("Please select one of the following options:");
         System.out.println("1. View Bookings");
@@ -494,7 +591,7 @@ public class Administrator extends User {
                     viewAdmins(administrators);
                     break;
                 case 8:
-                    createBookings(bookings);
+                    createBookings(scanner, clients, offerings, bookings, locations, schedules);
                     break;
                 case 9:
                     createOfferings(scanner, offerings, schedules, locations, locationSchedules);
@@ -518,7 +615,7 @@ public class Administrator extends User {
                     createAdministrator(scanner, administrators);
                     break;
                 case 16:
-                    deleteBookings(scanner, bookings);
+                    deleteBookings(scanner, offerings, bookings);
                     break;
                 case 17:
                     deleteOfferings(scanner, offerings);
@@ -533,10 +630,10 @@ public class Administrator extends User {
                     deleteClients(scanner, clients);
                     break;
                 case 21:
-                    deleteGuardians(scanner, guardians);
+                    deleteGuardians(scanner, clients, guardians);
                     break;
                 case 22:
-                    deleteInstructors(scanner, instructors);
+                    deleteInstructors(scanner, offerings, instructors);
                     break;
                 case 23:
                     deleteAdmins(scanner, administrators);
