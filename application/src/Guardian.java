@@ -312,6 +312,7 @@ public class Guardian extends User {
                 case 5: // logout
                     done = true;
                     logout();
+                    System.out.println("Logged out.");
                     break;
 
                 default:

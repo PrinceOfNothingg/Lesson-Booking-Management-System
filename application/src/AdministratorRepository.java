@@ -26,7 +26,6 @@ public class AdministratorRepository {
             System.out.println("DEBUG: " + st);
 
             while (rs.next()) {
-                System.out.println("DEBUG: " + rs);
                 administrators.add(
                         new Administrator(
                                 rs.getLong(1),
@@ -55,7 +54,6 @@ public class AdministratorRepository {
             System.out.println("DEBUG: " + st);
 
             while (rs.next()) {
-                System.out.println("DEBUG: " + rs);
                 administrator = new Administrator(
                         rs.getLong(1),
                         rs.getBoolean(2),
@@ -84,7 +82,6 @@ public class AdministratorRepository {
             System.out.println("DEBUG: " + st);
 
             while (rs.next()) {
-                System.out.println("DEBUG: " + rs);
                 administrator = new Administrator(
                         rs.getLong(1),
                         rs.getBoolean(2),
@@ -92,7 +89,6 @@ public class AdministratorRepository {
                         rs.getInt(4),
                         rs.getString(5),
                         rs.getString(6));
-                System.out.println("DEBUG: " + rs);
             }
             rs.close();
             st.close();

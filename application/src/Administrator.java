@@ -147,21 +147,25 @@ public class Administrator extends User {
         System.out.println("Enter 1 or more schedule ids to associate with offering:");
         List<Schedule> scheduleList = new ArrayList<>();
 
+        long id = 0;
         while (true) {
-            long id = Utils.getInt(scanner, "Enter a schedule id (q to quit):");
+            id = Utils.getInt(scanner, "Enter a schedule id (q to quit):");
             if (id == 0)
                 break;
             scheduleList.add(schedules.get(id));
         }
 
         // create location
-        val = Utils.getString(scanner, "Create a new location? y/n (q to quit):");
+        val = Utils.getString(scanner, "\nCreate a new location? y/n (q to quit):");
         if (!val.isEmpty() || val.equalsIgnoreCase("y")) {
             createLocations(scanner, locations);
         }
 
         viewLocations(locations);
-        id = Utils.getInt(scanner, "Enter the location id:");
+        id = Utils.getLong(scanner, "\nEnter the location id:");
+        if (id == 0)
+            return;
+        
         Location location = locations.get(id);
 
         Offering offering = new Offering();
@@ -225,10 +229,10 @@ public class Administrator extends User {
             System.out.println("--------------------------------------------------------------------------------");
 
             String start = Utils.getDate(scanner, "Please enter the start time 'YYYY-MM-DD hh:mm:ss':");
-            if (start.isEmpty())
+            if (start == null || start.isEmpty())
                 break;
             String end = Utils.getDate(scanner, "Please enter the end time 'YYYY-MM-DD hh:mm:ss':");
-            if (end.isEmpty())
+            if (end == null || end.isEmpty())
                 break;
 
             Schedule schedule = new Schedule(0, true, "[" + start + ", " + end + ")");
@@ -242,7 +246,8 @@ public class Administrator extends User {
 
             System.out.println("Schedule " + schedule + " has been created.");
 
-            if (Utils.getString(scanner, "Enter q to quit:").isEmpty())
+            String input = Utils.getString(scanner, "Enter q to quit:");
+            if (input == null || input.isEmpty())
                 break;
         }
     }
@@ -255,13 +260,13 @@ public class Administrator extends User {
             System.out.println("--------------------------------------------------------------------------------");
 
             String name = Utils.getString(scanner, "Please enter location name:");
-            if (name.isEmpty())
+            if (name == null || name.isEmpty())
                 break;
             String address = Utils.getString(scanner, "Please enter location address:");
-            if (address.isEmpty())
+            if (address == null || address.isEmpty())
                 break;
             String city = Utils.getString(scanner, "Please enter location city:");
-            if (city.isEmpty())
+            if (city == null || city.isEmpty())
                 break;
 
             Location location = new Location(0, true, name, address, city);
@@ -279,7 +284,8 @@ public class Administrator extends User {
 
             System.out.println("Location " + location + " has been created.");
 
-            if (Utils.getString(scanner, "Enter q to quit:").isEmpty())
+            String input = Utils.getString(scanner, "Enter q to quit:");
+            if (input == null || input.isEmpty())
                 break;
         }
     }
@@ -319,6 +325,10 @@ public class Administrator extends User {
 
     public void deleteBookings(Scanner scanner, OfferingRepository offerings, BookingRepository bookings) {
         long id = Utils.getLong(scanner, "Enter the ID of the booking to delete:");
+        if(id == 0) {
+            System.out.println("Exiting.");
+            return;
+        }
         Booking booking = bookings.get(id);
         if (booking != null) {
             bookings.delete(id);
@@ -336,6 +346,10 @@ public class Administrator extends User {
 
     public void deleteOfferings(Scanner scanner, OfferingRepository offerings) {
         long id = Utils.getLong(scanner, "Enter the ID of the offering to delete:");
+        if(id == 0) {
+            System.out.println("Exiting.");
+            return;
+        }
         Offering offering = offerings.get(id);
         if (offering != null) {
             offerings.delete(offering);
@@ -348,6 +362,10 @@ public class Administrator extends User {
 
     public void deleteSchedules(Scanner scanner, ScheduleRepository schedules) {
         long id = Utils.getLong(scanner, "Enter the ID of the schedule to delete:");
+        if(id == 0) {
+            System.out.println("Exiting.");
+            return;
+        }
         Schedule schedule = schedules.get(id);
         if (schedule != null) {
             schedules.delete(id);
@@ -360,6 +378,10 @@ public class Administrator extends User {
 
     public void deleteLocations(Scanner scanner, LocationRepository locations) {
         long id = Utils.getLong(scanner, "Enter the ID of the location to delete:");
+        if(id == 0) {
+            System.out.println("Exiting.");
+            return;
+        }
         Location location = locations.get(id);
         if (location != null) {
             locations.delete(id);
@@ -372,6 +394,10 @@ public class Administrator extends User {
 
     public void deleteClients(Scanner scanner, ClientRepository clients) {
         long id = Utils.getLong(scanner, "Enter the ID of the client to delete:");
+        if(id == 0) {
+            System.out.println("Exiting.");
+            return;
+        }
         Client client = clients.get(id);
         if (client != null) {
             clients.delete(id);
@@ -384,6 +410,10 @@ public class Administrator extends User {
 
     public void deleteGuardians(Scanner scanner, ClientRepository clients, GuardianRepository guardians) {
         long id = Utils.getLong(scanner, "Enter the ID of the guardian to delete:");
+        if(id == 0) {
+            System.out.println("Exiting.");
+            return;
+        }
         Guardian guardian = guardians.get(id);
         if (guardian != null) {
             guardians.delete(id);
@@ -401,6 +431,10 @@ public class Administrator extends User {
 
     public void deleteInstructors(Scanner scanner, OfferingRepository offerings, InstructorRepository instructors) {
         long id = Utils.getLong(scanner, "Enter the ID of the instructor to delete:");
+        if(id == 0) {
+            System.out.println("Exiting.");
+            return;
+        }
         Instructor instructor = instructors.get(id);
         if (instructor != null) {
             instructors.delete(id);
@@ -458,8 +492,6 @@ public class Administrator extends User {
                 break;
             }
         }
-
-        System.out.println(administrator);
 
         return administrator;
     }
@@ -641,6 +673,7 @@ public class Administrator extends User {
                 case 24: // logout
                     done = true;
                     logout();
+                    System.out.println("Logged out.");
                     break;
 
                 default:

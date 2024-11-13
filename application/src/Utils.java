@@ -134,13 +134,19 @@ public class Utils {
 
     public static String getDate(Scanner scanner, String msg) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("YYYY-MM-DD");
-        LocalDate date = LocalDate.parse(getString(scanner, msg), df);
+        String input = getString(scanner, msg);
+        if(input == null || input.isEmpty())
+            return null;
+        LocalDate date = LocalDate.parse(input, df);
         return date.toString();
     }
 
     public static String getTime(Scanner scanner, String msg) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("hh:mm:ss");
-        LocalTime time = LocalTime.parse(getString(scanner, msg), df);
+        String input = getString(scanner, msg);
+        if(input == null || input.isEmpty())
+            return null;
+        LocalTime time = LocalTime.parse(input, df);
         return time.toString();
     }
 

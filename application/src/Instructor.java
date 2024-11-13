@@ -259,6 +259,7 @@ public class Instructor extends User {
                 case 4: // logout
                     done = true;
                     logout();
+                    System.out.println("Logged out.");
                     break;
 
                 default:
