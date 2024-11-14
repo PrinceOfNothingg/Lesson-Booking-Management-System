@@ -125,11 +125,11 @@ public class Utils {
     }
 
     public static String getUserName(Scanner scanner) {
-        return getString(scanner, "Enter your username (q to exit, r to retry):");
+        return getString(scanner, "\nEnter your username (q to exit, r to retry):");
     }
 
     public static String getPhone(Scanner scanner) {
-        return getString(scanner, "Enter your phone (q to exit, r to retry):");
+        return getString(scanner, "\nEnter your phone (q to exit, r to retry):");
     }
 
     public static String getTimestamp(Scanner scanner, String msg) {
@@ -149,7 +149,7 @@ public class Utils {
         int age = 0;
 
         while (true) {
-            age = getInt(scanner, "Enter your age (q to exit, r to retry):");
+            age = getInt(scanner, "\nEnter your age (q to exit, r to retry):");
 
             if (age < 18) {
                 System.out.println("Invalid age");
@@ -232,7 +232,7 @@ public class Utils {
             }
 
             System.out.println(specs);
-            System.out.println("Are the above values correct? y/n (q to exit):");
+            System.out.println("\nAre the above values correct? y/n (q to exit):");
             input = scanner.nextLine().trim();
             if (input.equalsIgnoreCase("q") || input.equalsIgnoreCase("y")) {
                 break;
@@ -243,10 +243,10 @@ public class Utils {
     }
 
     public static ArrayList<String> getSpecializations(Scanner scanner) {
-        return getStringArrayList(scanner, "Enter specializations seperated by spaces. (q to exit, r to retry):");
+        return getStringArrayList(scanner, "\nEnter specializations seperated by spaces. (q to exit, r to retry):");
     }
 
     public static ArrayList<String> getAvailabilities(Scanner scanner) {
-        return getStringArrayList(scanner, "Enter availabilities seperated by spaces. (q to exit, r to retry):");
+        return getStringArrayList(scanner, "\nEnter availabilities seperated by spaces. (q to exit, r to retry):");
     }
 }
