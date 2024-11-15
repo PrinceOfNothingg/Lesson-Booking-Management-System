@@ -159,7 +159,7 @@ public class ScheduleRepository {
         ArrayList<Schedule> schedules = new ArrayList<>();
         try {
             String query = "select s.* from " + table
-                    + " s join location_schedule ls on s.id = ls.schedule_id join event e on e.location_schedule_id = ls.id join instructor_offering io on b.offering_id = io.offering_id where io.instructor_id = ? and s.active = true";
+                    + " s join location_schedule ls on s.id = ls.schedule_id join event e on e.location_schedule_id = ls.id join instructor_offering io on e.offering_id = io.offering_id where io.instructor_id = ? and s.active = true";
             PreparedStatement st = conn.prepareStatement(query);
             st.setLong(1, instructor.getId());
             ResultSet rs = st.executeQuery();

@@ -71,20 +71,39 @@ public class Instructor extends User {
         }
     }
 
+    private void updateSpecializations(Scanner scanner, InstructorRepository instructors) {
+        ArrayList<String> specs = Utils.getSpecializations(scanner);
+        if (specs == null || specs.isEmpty())
+            return;
+
+        this.setSpecializations(specs);
+
+        instructors.update(this);
+    }
+    private void updateAvailabilities(Scanner scanner, InstructorRepository instructors) {
+        ArrayList<String> avails = Utils.getAvailabilities(scanner);
+        if (avails == null || avails.isEmpty())
+            return;
+
+        this.setAvailabilities(avails);
+
+        instructors.update(this);
+    }
+
     private void takeOfferings(Scanner scanner, OfferingRepository offerings, LocationRepository locations,
             ScheduleRepository schedules, InstructorOfferingRepository instructorOfferings) {
         boolean done = false;
         while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
-            System.out.println("                          Take an Offering" + this.name);
+            System.out.println("                          Take an Offering " + this.name);
             System.out.println("--------------------------------------------------------------------------------");
 
-            int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
+            long offeringId = Utils.getLong(scanner, "Please enter the id of an Offering (q to quit):");
             if (offeringId == 0)
                 break;
 
             Offering offering = offerings.get(offeringId);
-            if (offering == null) {
+            if (offering == null || offering.isEmpty()) {
                 System.out.println("Offering not found.");
                 continue;
             }
@@ -134,10 +153,10 @@ public class Instructor extends User {
         boolean done = false;
         while (!done) {
             System.out.println("\n--------------------------------------------------------------------------------");
-            System.out.println("                          Remove an Offering" + this.name);
+            System.out.println("                          Remove an Offering " + this.name);
             System.out.println("--------------------------------------------------------------------------------");
 
-            int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
+            long offeringId = Utils.getLong(scanner, "Please enter the id of an Offering (q to quit):");
             if (offeringId == 0)
                 break;
 
@@ -251,9 +270,11 @@ public class Instructor extends User {
         System.out.println("2. View Your Offerings");
         System.out.println("3. Take Offerings");
         System.out.println("4. Remove Offerings");
-        System.out.println("5. Logout");
+        System.out.println("5. Update Specializations");
+        System.out.println("6. Update Availabilities");
+        System.out.println("7. Logout");
         System.out.println("--------------------------------------------------------------------------------\n");
-        return 5;
+        return 7;
     }
 
     @Override
@@ -287,7 +308,13 @@ public class Instructor extends User {
                 case 3: // remove offering
                     removeOfferings(scanner, offerings, instructorOfferings);
                     break;
-                case 4: // logout
+                case 4:
+                    updateSpecializations(scanner, instructors);
+                    break;
+                case 5: 
+                    updateAvailabilities(scanner, instructors);
+                    break;
+                case 6: // logout
                     done = true;
                     logout();
                     System.out.println("Logged out.");

@@ -121,6 +121,7 @@ CREATE TABLE public.schedule (
 	CONSTRAINT slot_less_than_a_day CHECK (upper(slot) - lower(slot) < '1 day'::interval),
 	EXCLUDE USING GIST (slot WITH &&)
 	-- EXCLUDE USING gist (tsrange(start_t, end_t) WITH &&)
+	-- each schedule has unique timerange that cannot overlap
 );
 
 -- public."space" definition
@@ -169,6 +170,8 @@ CREATE TABLE public.location_schedule (
 	CONSTRAINT location_schedule_fk FOREIGN KEY (location_id) REFERENCES public.location(id) ON DELETE CASCADE,
 	CONSTRAINT location_schedule_fk_1 FOREIGN KEY (schedule_id) REFERENCES public.schedule(id) ON DELETE CASCADE,
 	UNIQUE (location_id, schedule_id)
+	-- each schedule_id guarantees no time overlap so creating unique pair means locations cannot have overlapping schedules
+	-- but locations can be associated to many unique schedules e.g 1 for every hour of a day
 );
 
 -- public.event definition
@@ -184,6 +187,7 @@ CREATE TABLE public.event (
 	CONSTRAINT event_fk FOREIGN KEY (offering_id) REFERENCES public.offering(id) ON DELETE CASCADE,
 	CONSTRAINT event_fk_1 FOREIGN KEY (location_schedule_id) REFERENCES public.location_schedule(id) ON DELETE CASCADE,
 	UNIQUE (location_schedule_id)
+	-- each location schedule is guaranteed unique by prior rules; so loc-schedule pair is unique to each offering; no possible overlap
 );
 
 
@@ -242,7 +246,7 @@ INSERT INTO guardian (active, "name", age, phone, "role") VALUES
 
 INSERT INTO instructor (active, "name", age, phone, "role", specializations, availabilities) VALUES 
 (true, 'i1', 20, '1', 'instructor', '{gym, swimming, judo}', '{montreal, laval}'),
-(true, 'i2', 20, '2', 'instructor', '{yoga}', '{montreal}'),
+(true, 'i2', 20, '2', 'instructor', '{yoga, gym, swimming, judo}', '{montreal}'),
 (true, 'i3', 20, '3', 'instructor', '{boxing, dance}', '{montreal, laval, brossard}');
 
 
@@ -256,12 +260,12 @@ INSERT INTO "location" (active, "name", "address", city) VALUES
 (true, 'A building room 1', '1000 St Catherine', 'montreal'),
 (true, 'B building room 2', '1001 St Catherine', 'montreal'),
 (true, 'C building room 3', '1002 St Catherine', 'montreal'),
+(true, 'A building room 1', '1000 street', 'montreal'),
+(true, 'B building room 2', '1001 street', 'montreal'),
+(true, 'C building room 3', '1002 street', 'montreal'),
 (true, 'A building room 1', '1000 street', 'laval'),
 (true, 'B building room 2', '1001 street', 'laval'),
-(true, 'C building room 3', '1002 street', 'laval'),
-(true, 'A building room 1', '1000 street', 'brossard'),
-(true, 'B building room 2', '1001 street', 'brossard'),
-(true, 'C building room 3', '1002 street', 'brossard');
+(true, 'C building room 3', '1002 street', 'laval');
 
 
 INSERT INTO schedule (active, slot) VALUES 
@@ -286,27 +290,36 @@ INSERT INTO schedule (active, slot) VALUES
 
 
 INSERT INTO offering (active, "status", taken, "type", mode, seats) VALUES 
-(true, 'non-available', false, 'yoga', false, 1),
-(true, 'non-available', false, 'yoga', true, 16),
-(true, 'non-available', true, 'swimming', false, 0),
-(true, 'available', true, 'swimming', false, 1),
-(true, 'available', true, 'judo', true, 12);
+(true, 'non-available', false, 'yoga', false, 1),  	-- not take private
+(true, 'non-available', false, 'yoga', true, 16),	-- not taken group
+(true, 'available', true, 'swimming', false, 1),	-- taken private avail
+(true, 'available', true, 'judo', true, 12),		-- taken group avail
+(true, 'non-available', true, 'swimming', false, 0),	-- taken provate non-avail
+(true, 'non-available', true, 'swimming', true, 0);		-- taken group non-avail
 
 
 INSERT INTO location_schedule (active, location_id, schedule_id) VALUES 
 (true, 1, 1),
 (true, 1, 2),
-(true, 1, 3);
+(true, 1, 3),
+(true, 2, 1),
+(true, 2, 2),
+(true, 2, 3),
+(true, 3, 1);
 
 INSERT INTO event (active, offering_id, location_schedule_id) VALUES 
+(true, 1, 4),
+(true, 2, 5),
+(true, 3, 6),
 (true, 3, 1),
 (true, 4, 2),
-(true, 5, 3);
+(true, 5, 3),
+(true, 6, 7);
 
 INSERT INTO instructor_offering (active, instructor_id, offering_id) VALUES 
 (true, 1, 3),
 (true, 1, 4),
-(true, 1, 5);
+(true, 2, 5);
 
 INSERT INTO booking (active, client_id, offering_id, "status") VALUES 
-(true, 1, 3, 'booked');
+(true, 1, 5, 'booked');

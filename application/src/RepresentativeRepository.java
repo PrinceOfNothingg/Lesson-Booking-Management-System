@@ -45,7 +45,7 @@ public class RepresentativeRepository {
         long id = 0;
         try {
             String query = "insert into " + table
-                    + " (active, representative_id, client_id, relationshp) values (?,?,?,?) returning id";
+                    + " (active, guardian_id, client_id, relationship) values (?,?,?,?) returning id";
             PreparedStatement st = conn.prepareStatement(query);
             st.setBoolean(1, true);
             st.setLong(2, guardian.getId());

@@ -194,7 +194,7 @@ public class InstructorRepository {
             PreparedStatement st = conn.prepareStatement(query);
             ArrayList<String> s = instructor.getSpecializations();
             String[] dataSpecs = s.toArray(new String[s.size()]);
-            ArrayList<String> a = instructor.getSpecializations();
+            ArrayList<String> a = instructor.getAvailabilities();
             String[] dataAvails = a.toArray(new String[s.size()]);
 
             specs = conn.createArrayOf("text", dataSpecs);
@@ -212,6 +212,40 @@ public class InstructorRepository {
                 id = rs.getLong(1);
             }
             rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return id;
+    }
+
+    public long update(Instructor instructor) {
+        Array specs = null;
+        Array avails = null;
+
+        long id = 0;
+        try {
+            String query = "update " + table
+                    + " set active = ?, \"name\" = ?, age = ?, phone = ?, \"role\" = ?::roleType, specializations = ?, availabilities = ? where id = ?";
+            PreparedStatement st = conn.prepareStatement(query);
+            ArrayList<String> s = instructor.getSpecializations();
+            String[] dataSpecs = s.toArray(new String[s.size()]);
+            ArrayList<String> a = instructor.getAvailabilities();
+            String[] dataAvails = a.toArray(new String[s.size()]);
+
+            specs = conn.createArrayOf("text", dataSpecs);
+            avails = conn.createArrayOf("text", dataAvails);
+
+            st.setBoolean(1, instructor.active);
+            st.setString(2, instructor.name);
+            st.setInt(3, instructor.age);
+            st.setString(4, instructor.phone);
+            st.setString(5, instructor.role);
+            st.setArray(6, specs);
+            st.setArray(7, avails);
+            st.setLong(8, instructor.id);
+            st.executeQuery();
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();

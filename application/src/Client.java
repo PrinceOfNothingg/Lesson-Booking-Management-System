@@ -53,8 +53,14 @@ public class Client extends User {
             int bookingId = Utils.getInt(scanner, "Please enter the id of a booking (q to quit):");
             if (bookingId == 0)
                 break;
+
             
             Booking booking = bookings.get(bookingId);
+            if(!booklist.contains(booking))
+            {
+                System.out.println("Invalid booking selected.");
+                break;
+            }
             Offering offering = offerings.getByBookingId(booking);
             Client client = clients.get(booking.getClientId());
             Instructor instructor = instructors.getByOfferingId(offering);

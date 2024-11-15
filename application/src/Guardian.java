@@ -264,7 +264,9 @@ public class Guardian extends User {
                 // link each dependant to guardian
                 for (Client client : children) {
                     representatives.insert(guardian, client);
+                    System.out.println("Added dependant " + client);
                 }
+                guardian.setDependants(children);
                 break;
             } else {
                 System.out.println("User conflict");
@@ -311,7 +313,7 @@ public class Guardian extends User {
         client = clients.get(phone);
 
         if (client.isEmpty()) {
-            client = new Client(0, true, username, age, phone, "client", false);
+            client = new Client(0, true, username, age, phone, "client", true);
             long id = clients.insert(client);
             client = clients.get(id);
         } else {
@@ -387,6 +389,7 @@ public class Guardian extends User {
     public boolean equals(Object b){
         return this.id == ((Guardian)b).id;
     }
+    
 
     @Override
     public String toString() {

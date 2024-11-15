@@ -86,6 +86,10 @@ public class Offering {
         return this.id == ((Offering)b).id;
     }
 
+    public boolean isEmpty() {
+        return this.id == -1;
+    }
+
     public String toString() {
         JSONObject json = new JSONObject();
         json.put("id", id);

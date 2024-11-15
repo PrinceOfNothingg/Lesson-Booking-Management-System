@@ -109,7 +109,7 @@ public class Utils {
 
         while (!done) {
             System.out.println(msg);
-            input = scanner.nextLine().trim();
+            input = scanner.nextLine();
 
             if (input.equalsIgnoreCase("q"))
                 break;
@@ -168,10 +168,10 @@ public class Utils {
 
         while (!done) {
             System.out.println(msg);
-            input = scanner.next().trim();
-            if (scanner.hasNextLine()) {
-                scanner.nextLine();
-            }
+            input = scanner.nextLine();
+            // while (!scanner.hasNextInt()) {
+            //     scanner.nextLine();
+            // }
 
             if (input.equalsIgnoreCase("q"))
                 break;
@@ -196,10 +196,10 @@ public class Utils {
 
         while (!done) {
             System.out.println(msg);
-            input = scanner.next().trim();
-            if (scanner.hasNextLine()) {
-                scanner.nextLine();
-            }
+            input = scanner.nextLine();
+            // while (!scanner.hasNextLong()) {
+            //     scanner.nextLine();
+            // }
 
             if (input.equalsIgnoreCase("q"))
                 break;
@@ -214,14 +214,15 @@ public class Utils {
     }
 
     public static ArrayList<String> getStringArrayList(Scanner scanner, String msg) {
-        ArrayList<String> specs = new ArrayList<>();
+        ArrayList<String> specs;
         scanner.useDelimiter(" ");
         String input;
 
         while (true) {
+            specs = new ArrayList<>();
             System.out.println(msg);
 
-            input = scanner.nextLine().trim();
+            input = scanner.nextLine();
             if (input.equalsIgnoreCase("q"))
                 break;
             else if (input.equalsIgnoreCase("r"))
@@ -233,7 +234,7 @@ public class Utils {
 
             System.out.println(specs);
             System.out.println("\nAre the above values correct? y/n (q to exit):");
-            input = scanner.nextLine().trim();
+            input = scanner.nextLine();
             if (input.equalsIgnoreCase("q") || input.equalsIgnoreCase("y")) {
                 break;
             }

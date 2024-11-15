@@ -275,7 +275,7 @@ public class Administrator extends User {
 
             long id = schedules.insert(schedule);
             if (id == 0) {
-                System.out.println("\nSchedule not created due to error or overlap");
+                System.out.println("\nSchedule not created due to overlap");
                 continue;
             }
             schedule = schedules.get(id);

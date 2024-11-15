@@ -66,6 +66,10 @@ public class Booking {
         return this.id == ((Booking)b).id;
     }
 
+    public boolean isEmpty() {
+        return this.id == -1;
+    }
+
     @Override
     public String toString() {
         JSONObject json = new JSONObject();

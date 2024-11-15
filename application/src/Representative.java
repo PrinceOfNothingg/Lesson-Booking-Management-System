@@ -58,4 +58,9 @@ public class Representative {
     public void setRelationship(String relationship) {
         this.relationship = relationship;
     }
+
+    public boolean isEmpty() {
+        return this.id == -1;
+    }
+    
 }
