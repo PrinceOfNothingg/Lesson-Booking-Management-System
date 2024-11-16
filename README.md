@@ -17,8 +17,8 @@ Mehdi Kahouache 40250581
    - Replace pg_hba.conf with that of this repo i.e. project/database/pg_hba.conf
    - Ensure file permissions and ownership are correct <br> ```-rw-------. 1 postgres postgres 5469 Oct 28 00:39 /var/lib/pgsql/data/pg_hba.conf```
    - Restart postgresql
-3. Download json-simple jar to lib directory
-4. Download postgresql jdbc jar to libe directory
+3. Download json-simple jar to lib directory and add it to your IDE project as a dependancy 
+4. Download postgresql jdbc jar to lib directory add it to your IDE project as a dependancy
 
 ### Setup
 
