@@ -1,10 +1,10 @@
-# SOEN 342 II
+# SOEN 342 SECTION II
 
 ## Description
 
 ## Members
 
-Kristi Doce 40155592  
+Kristi Doce 40155592 kristidoce@gmail.com
 Mehdi Kahouache 40250581
 
 ## Getting Started
