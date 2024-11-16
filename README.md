@@ -5,7 +5,7 @@
 ## Members
 
 Kristi Doce 40155592 kristidoce@gmail.com  
-Mehdi Kahouache 40250581
+Mehdi Kahouache 40250581 mehdi.kahouache@gmail.com
 
 ## Getting Started
 
