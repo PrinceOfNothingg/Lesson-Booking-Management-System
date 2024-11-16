@@ -295,7 +295,8 @@ INSERT INTO offering (active, "status", taken, "type", mode, seats) VALUES
 (true, 'available', true, 'swimming', false, 1),	-- taken private avail
 (true, 'available', true, 'judo', true, 12),		-- taken group avail
 (true, 'non-available', true, 'swimming', false, 0),	-- taken provate non-avail
-(true, 'non-available', true, 'swimming', true, 0);		-- taken group non-avail
+(true, 'non-available', true, 'swimming', true, 0),		-- taken group non-avail
+(true, 'non-available', false, 'running', false, 1);		
 
 
 INSERT INTO location_schedule (active, location_id, schedule_id) VALUES 
@@ -305,7 +306,8 @@ INSERT INTO location_schedule (active, location_id, schedule_id) VALUES
 (true, 2, 1),
 (true, 2, 2),
 (true, 2, 3),
-(true, 3, 1);
+(true, 3, 1),
+(true, 3, 2);
 
 INSERT INTO event (active, offering_id, location_schedule_id) VALUES 
 (true, 1, 4),
@@ -314,7 +316,8 @@ INSERT INTO event (active, offering_id, location_schedule_id) VALUES
 (true, 3, 1),
 (true, 4, 2),
 (true, 5, 3),
-(true, 6, 7);
+(true, 6, 7),
+(true, 7, 8);
 
 INSERT INTO instructor_offering (active, instructor_id, offering_id) VALUES 
 (true, 1, 3),

@@ -78,7 +78,7 @@ public class Location {
         json.put("city", city);
         json.put("address", address);
 
-        String string = json.toString();
+        String string = "Location: {id: "+id+", active: "+active+", name: "+name+", address: "+address+", city: "+city+"}";
 
         return string;
     }

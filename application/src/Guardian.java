@@ -34,6 +34,7 @@ public class Guardian extends User {
             System.out.println("--------------------------------------------------------------------------------");
 
             // select a dependnt client by index
+            System.out.println(dependants);
             long dependantId= Utils.getLong(scanner, "Enter a dependant by index (q to quit):");
             if (dependantId == 0) {
                 System.out.println("Exiting.");
@@ -41,6 +42,11 @@ public class Guardian extends User {
             }
 
             Client dependant = clients.get(dependantId);
+
+            if(!dependants.contains(dependant)){
+                System.out.println("Invalid id.");
+                continue;
+            }
 
             int offeringId = Utils.getInt(scanner, "Please enter the id of an Offering (q to quit):");
             if (offeringId == 0)
@@ -56,42 +62,26 @@ public class Guardian extends User {
                 continue;
             }
 
-            List<Offering> offeringList = offerings.getByClientId(dependant);
-            List<Location> locationList = new ArrayList<>();
-            List<List<Schedule>> scheduleListList = new ArrayList<>();
-            for (Offering o : offeringList) {
-                locationList.add(locations.getByOfferingId(o));
-                scheduleListList.add(schedules.getByOfferingId(o));
-            }
-
-            Location curLocation = locations.getByOfferingId(offering);
-            List<Schedule> curScheduleList = schedules.getByOfferingId(offering);
-            boolean bookingConflict = false;
-            for (Location location : locationList) {
-                if (location.getName().equalsIgnoreCase(curLocation.getName()) &&
-                        location.getAddress().equalsIgnoreCase(curLocation.getAddress()) &&
-                        location.getCity().equalsIgnoreCase(curLocation.getCity())) {
-                    if (scheduleListList.contains(curScheduleList)) {
-                        bookingConflict = true;
-                        break;
-                    }
+            List<Schedule> scheduleList = schedules.getByClientId(dependant);
+            List<Schedule> newScheduleList = schedules.getByOfferingId(offering);
+            for (Schedule schedule : newScheduleList) {
+                if(scheduleList.contains(schedule)){
+                    System.out.println("You already have a booking at the same time.");
+                    return;
                 }
-            }
-
-            if (bookingConflict) {
-                System.out.println("Another booking at that location and time already exists.");
-                break;
             }
 
             // Check offering availability
             if (offering.getSeats() > 0) {
-                bookings.insert(dependant, offering);
+                long id = bookings.insert(dependant, offering);
+                Booking booking = bookings.get(id);
                 offering.setSeats(offering.getSeats() - 1);
                 if (offering.getSeats() == 0) {
                     offering.setStatus("non-available");
                 }
                 offerings.update(offering);
                 System.out.println("Booking successfully made for " + dependant.getName());
+                System.out.println(booking);
             } else {
                 System.out.println("No seats available for this offering.");
             }
@@ -108,9 +98,10 @@ public class Guardian extends User {
             List<Booking> booklist = bookings.getByClientId(dependant);
             if (booklist.isEmpty()) {
                 System.out.println("You have no bookings.");
-                return;
             }
-            booklist.forEach(System.out::println);
+            else{
+                booklist.forEach(System.out::println);
+            }
         }
     }
 
@@ -286,9 +277,8 @@ public class Guardian extends User {
         for (int i = 1; i <= count; i++) {
             System.out.println("\nEnter dependant " + i + " information.");
             Client dependant = registerDependant(scanner, clients);
-            if(dependant == null || dependant.isEmpty())
-                continue;
-            children.add(dependant);
+            if(dependant != null && !dependant.isEmpty())
+                children.add(dependant);
         }
 
         return children;
@@ -318,6 +308,7 @@ public class Guardian extends User {
             client = clients.get(id);
         } else {
             System.out.println("User already exists.");
+            client = new Client();
         }
 
         return client;
@@ -400,6 +391,8 @@ public class Guardian extends User {
         json.put("phone", phone);
         json.put("age", age);
         json.put("dependants", dependants);
-        return json.toString();
+        String string = "Guardian: {id: "+id+", active: "+active+", name: "+name+", phone: "+phone+", age: "+age+", dependant: "+dependants+"}";
+        
+        return string;
     }
 }

@@ -46,20 +46,33 @@ Create Booking plantUml Code
 participant "__:Client__" as actor
 participant "__:System__" as system
 
+participant "__:Bookings__" as bookings
+collections "__:Booking__" as bookingCollection
+participant "__booking:Booking__" as booking
+
 title Create Booking System Sequence Diagram
 skinparam sequenceMessageAlign center
 
-actor -> system : getOfferings()
-|||
-system --> actor : offerings
 |||
 actor -> system : makeBooking(client, offering)
-|||
-system --> system : not exists(booking at same location and time slot)
+system -> system : client.bookings.schedule -> not contains(offering.schedule)
 
-system --> system : booking := createBooking(client, offering)
-system --> system : offering.status="non-available"
+alt no overlap
+|||
+system -> bookings : createBooking(client, offering)
+bookings -> booking** : create(instructor, offering)
+bookings --> bookings : offering.setStatus("non-available")
+bookings -> bookingCollection : add(booking)
+
+bookingCollection --> bookings : confirmation
+bookings --> system : confirmation
 system --> actor : confirmation
+|||
+else overlap
+|||
+system --> actor : error
+|||
+end
 @enduml
 ```
 
@@ -79,23 +92,31 @@ Cancel Booking plantUml Code
 participant "__:Client__" as actor
 participant "__:System__" as system
 
+participant "__:Bookings__" as bookings
+collections "__:Booking__" as bookingCollection
+
+participant "__:Offerings__" as offerings
+
 title Cancel Booking System Sequence Diagram
 skinparam sequenceMessageAlign center
 
-actor -> system : getbookings(client)
 |||
-system --> actor : client bookings
-|||
-actor -> system : cancelBooking(client, bookings)
-|||
-loop for booking : bookings
-system --> system : delete(booking, offering)
-system --> system : delete(booking, client)
-system --> system : delete(booking)
-system --> system : offering.update(seats, status)
+actor -> system : cancelBooking(client, booking)
+system -> system : booking.clientId = client.id
 
-end
+alt client owns booking
+|||
+system -> bookings : deleteBooking(client, booking)
+bookings --> system : confirmation
+system -> offerings : offering := get(booking.offeringId)
+system --> system : offering.seats++, offering.setStatus("available")
 system --> actor : confirmation
+|||
+else not owns
+|||
+bookings --> system : error
+system --> actor : error
+end
 
 @enduml
 ```

@@ -56,6 +56,11 @@ Create Offering plantUml Code
 @startuml
 participant "__:Actor__" as actor
 participant "__:System__" as system
+participant "__:Offerings__" as offerings
+collections "__:Offering__" as offeringCollection
+participant "__o:Offering__" as offering
+
+
 
 title Create Offerings System Sequence Diagram
 
@@ -63,16 +68,17 @@ skinparam sequenceMessageAlign center
 
 actor -> system : makeOffering(location, schedule, format, type)
 
-system -> system : check not exists(offering at same location & schedule)
-system -> system : offering.taken=false
+system -> offerings : exists(location,schedule)
 
-alt success
-  system -> system : createOffering(location, schedule, format, type)
-  system --> actor : display offering
+alt unique slot
+system -> offerings : createOffering(location, schedule, format, type, seats)
+offerings -> offering** : create(location, schedule, format, type, seats)
+offerings -> offeringCollection : add(o)
 |||
 else location daytime slot not unique
 |||
-  system --> actor : error
+offerings --> system : error
+system --> actor : error
 end
 
 @enduml

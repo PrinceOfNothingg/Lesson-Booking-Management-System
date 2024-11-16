@@ -730,7 +730,7 @@ public class Administrator extends User {
         json.put("phone", phone);
         json.put("age", age);
 
-        String string = json.toString();
+        String string = "Administrator: {id: "+id+", active: "+active+", name: "+name+", phone: "+phone+", age: "+age+"}";
 
         return string;
     }

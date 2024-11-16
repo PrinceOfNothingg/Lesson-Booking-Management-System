@@ -313,8 +313,7 @@ public class Client extends User {
         json.put("age", age);
         json.put("dependant", dependant);
 
-        String string = json.toString();
-
+        String string = "Client: {id: "+id+", active: "+active+", name: "+name+", phone: "+phone+", age: "+age+", dependant: "+dependant+"}";
         return string;
     }
 }

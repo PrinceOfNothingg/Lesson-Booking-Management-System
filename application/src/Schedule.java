@@ -55,6 +55,7 @@ public class Schedule {
         json.put("id", id);
         json.put("active", active);
         json.put("slot", slot);
-        return json.toString();
+        String string = "Schedule: {id: "+id+", active: "+active+", slot: "+slot+"}";
+        return string;
     }
 }

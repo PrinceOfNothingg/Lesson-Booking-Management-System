@@ -100,8 +100,7 @@ public class Offering {
         json.put("mode", mode);
         json.put("seats", seats);
 
-        String string = json.toString();
-
+        String string = "Offering: {id: "+id+", active: "+active+", status: "+status+", taken: "+taken+", type: "+type+", group: "+mode+", seats: "+seats+"}";
         return string;
     }
 }

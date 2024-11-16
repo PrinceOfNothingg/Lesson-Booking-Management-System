@@ -342,7 +342,7 @@ public class Instructor extends User {
         json.put("specs", specializations);
         json.put("avails", availabilities);
 
-        String string = json.toString();
+        String string = "Instructor: {id: "+id+", active: "+active+", name: "+name+", phone: "+phone+", age: "+age+", specializations: "+specializations+", availabilities: "+availabilities+"}";
 
         return string;
     }

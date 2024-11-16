@@ -152,7 +152,7 @@ public class User {
         json.put("phone", phone);
         json.put("age", age);
 
-        String string = json.toString();
+        String string = "User: {id: "+id+", active: "+active+", name: "+name+", phone: "+phone+", age: "+age+"}";
 
         return string;
     }

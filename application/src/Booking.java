@@ -79,7 +79,7 @@ public class Booking {
         json.put("clientId", clientId);
         json.put("offeringId", offeringId);
 
-        String string = json.toString();
+        String string = "Booking: {id: "+id+", active: "+active+", status: "+status+", clientId: "+clientId+", offeringId: "+offeringId+"}";
 
         return string;
     }
