@@ -1,11 +1,19 @@
-# SOEN 342 SECTION II
+# Lesson Booking Management System
 
 ## Description
+A Java-based application that enables an organization to manage group and private lessons (e.g., yoga, swimming, judo) across multiple locations and schedules. The system supports:
+
+- Flexible Scheduling: Locations (gyms, rooms, pools) have custom time slots for lessons.
+- Instructor Management: Seasonal instructors register their availability and take on lesson offerings.
+- Client Bookings: Clients can browse available lessons, register, and book private or group sessions.
+- Guardian Support: Minors require an adult guardian to manage their bookings.
+- Administrative Control: A system administrator manages lesson offerings and user accounts.
+- Concurrency Handling: Supports multiple readers with controlled writer access for data integrity.
 
 ## Members
 
-Kristi Doce 40155592 kristidoce@gmail.com  
-Mehdi Kahouache 40250581 mehdi.kahouache@gmail.com
+Kristi Doce - kristidoce@gmail.com  
+Mehdi Kahouache - mehdi.kahouache@gmail.com
 
 ## Getting Started
 
