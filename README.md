@@ -34,7 +34,7 @@ Mehdi Kahouache - mehdi.kahouache@gmail.com
 
 ```sh
 # clone repo into folder "project"
-git clone git@github.com:DarkMed15/soen342-teamproject.git project
+git clone git@github.com:PrinceOfNothingg/Lesson-Booking-Management-System.git project
 ```
 
 ##### Create database
